@@ -1,0 +1,34 @@
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>やはり俺の青春ラブコメはまちがっている。 Counterfeit · 开场白</title>
+  <!-- FontAwesome 图标 -->
+  <link rel="stylesheet" href="https://testingcf.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" />
+  <!--
+    字体方案（Google Fonts · 国内走 fonts.loli.net 镜像，均 SIL OFL 免费商用）：
+    ZCOOL QingKe HuangYou 站酷庆科黄油体（主标题·简体中文全覆盖·海报体）
+    ZCOOL KuaiLe 站酷快乐体（屏标题/强调·简体中文全覆盖）
+    Klee One（拉丁/副标题手写体）· Zen Maru Gothic（正文圆体，与参考卡同源）
+    下载地址 https://fonts.google.com/ （搜同名）
+  -->
+  <link rel="preconnect" href="https://fonts.loli.net" />
+  <link
+    rel="stylesheet"
+    href="https://fonts.loli.net/css2?family=Klee+One:wght@400;600&family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Zen+Maru+Gothic:wght@400;700;900&display=swap"
+  />
+  <!--
+    预览降级：酒馆助手环境会向 iframe 注入全局 Vue（webpack 将 vue 设为 external 'var Vue'）；
+    纯浏览器预览时没有该全局变量，这里同步从 CDN 补一份，保证入口模块求值前 window.Vue 已存在。
+    模块脚本在文档解析完成后才执行，因此此处的 document.write 一定先生效。
+  -->
+  <script>
+    if (typeof window.Vue === 'undefined') {
+      document.write(
+        '<script src="https://testingcf.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"><\/script>',
+      );
+    }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+</body>
