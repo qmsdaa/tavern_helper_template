@@ -1,0 +1,67 @@
+/* 状态栏全局样式：樱白/淡粉/低饱和浅紫的轻文学感。
+   CSS 变量一律使用功能语义命名（--c-primary / --c-surface / --c-text …），与开场白界面同源。
+   状态栏运行在酒馆消息楼层 iframe 内：body 透明、自然文档流高度，
+   由楼层 iframe 的自动高度方案测量，禁止固定视口高度与内部滚动条。 */
+
+:root {
+  /* 色彩 */
+  --c-primary: #e58aa5;
+  --c-primary-strong: #d4698a;
+  --c-primary-soft: #f7c9d8;
+  --c-accent: #a78bfa;
+  --c-accent-soft: #ddd0fc;
+
+  --c-surface: #fffdfb;
+  --c-surface-muted: #fdf7f8;
+
+  --c-text: #5c5460;
+  --c-text-strong: #4a3b42;
+  --c-text-muted: #82636f; /* 与 --c-surface 对比度约 5:1，满足 AA */
+
+  --c-border: #f3d9de;
+  --c-border-strong: #e3b9c9;
+
+  /* 阴影 */
+  --shadow-card: 0 1px 6px rgba(213, 138, 165, 0.1);
+
+  /* 圆角 */
+  --radius-card: 10px;
+  --radius-chip: 999px;
+
+  /* 字体：不额外加载网络字体，沿用开场白字体的系统回退链 */
+  --font-main:
+    'Zen Maru Gothic', 'Source Han Sans SC', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue',
+    Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background: transparent;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* 键盘聚焦可见性 */
+:focus-visible {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
