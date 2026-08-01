@@ -1,6 +1,6 @@
 {
   "version": "2026-08-01",
-  "images_base": "__IMAGES_BASE__",
+  "images_base": "https://testingcf.jsdelivr.net/gh/qmsdaa/tavern_helper_template@3451fdaf49b0e1c82fb010ff5aac68edeb3a4888/assets/Counterfeit/CG",
   "scenes": {
     "11": {
       "file": "场景11.webp",
