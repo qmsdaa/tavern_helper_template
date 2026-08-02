@@ -32,6 +32,76 @@ const POV_INITIAL_CASH: Record<PovKey, number> = {
 };
 
 /**
+ * 初始关系表（与 世界书/MVU/更新规则.yaml §初始关系表 逐行同步，改表必须两边一起改）
+ *
+ * 之前依赖主 AI 首轮建档时按表覆写——AI 不稳定执行导致开局 bond/romance 全为 0，
+ * 改为开场白 commit 直接预建完整记录（present=false，状态栏/手机不显示，登场时由 AI 置 present）。
+ * 数值是 2013-05-20 拉芙转学日的起点，此后增减仍按更新规则各铁律。
+ */
+interface InitialRelation {
+  display: string;
+  bond: number;
+  romance: number;
+  known: boolean;
+}
+
+const INITIAL_RELATIONS: Record<PovKey, Record<string, InitialRelation>> = {
+  hachiman: {
+    雪之下雪乃: { display: '雪乃', bond: 50, romance: 10, known: true },
+    由比滨结衣: { display: '结衣', bond: 50, romance: 15, known: true },
+    比企谷小町: { display: '小町', bond: 75, romance: 0, known: true },
+    户冢彩加: { display: '户冢', bond: 30, romance: 0, known: true },
+    平冢静: { display: '平冢老师', bond: 25, romance: 0, known: true },
+    三浦优美子: { display: '优美子', bond: 15, romance: 0, known: true },
+    海老名姬菜: { display: '姬菜', bond: 15, romance: 0, known: true },
+    川崎沙希: { display: '沙希', bond: 15, romance: 0, known: true },
+  },
+  yukino: {
+    比企谷八幡: { display: '八幡', bond: 50, romance: 10, known: true },
+    由比滨结衣: { display: '结衣', bond: 50, romance: 5, known: true },
+    雪之下阳乃: { display: '阳乃', bond: 40, romance: 0, known: true },
+    平冢静: { display: '平冢老师', bond: 25, romance: 0, known: true },
+    拉芙希妮·都柏林: { display: '拉芙希妮', bond: 0, romance: 5, known: false },
+  },
+  yui: {
+    比企谷八幡: { display: '八幡', bond: 50, romance: 15, known: true },
+    雪之下雪乃: { display: '雪乃', bond: 50, romance: 5, known: true },
+    三浦优美子: { display: '优美子', bond: 40, romance: 0, known: true },
+    海老名姬菜: { display: '姬菜', bond: 40, romance: 0, known: true },
+    户冢彩加: { display: '户冢', bond: 25, romance: 0, known: true },
+    川崎沙希: { display: '沙希', bond: 15, romance: 0, known: true },
+    比企谷小町: { display: '小町', bond: 20, romance: 0, known: true },
+    平冢静: { display: '平冢老师', bond: 25, romance: 0, known: true },
+  },
+  laff: {
+    爱布拉娜: { display: '爱布拉娜', bond: 70, romance: 25, known: true },
+  },
+};
+
+/** 按初始关系表生成 characters 记录集（present=false·空记忆·穿搭未确认，与 record_creation 默认形状一致） */
+function initialCharacters(pov: PovKey): Record<string, unknown> {
+  const records: Record<string, unknown> = {};
+  for (const [name, rel] of Object.entries(INITIAL_RELATIONS[pov])) {
+    records[name] = {
+      display_name: rel.display,
+      present: false,
+      known: rel.known,
+      relationship: { bond: rel.bond, romance: rel.romance, commitment: '未确认' },
+      latest_user_memory: { memory: '', inner_thought: '' },
+      outfit: {
+        outerwear: '未确认',
+        inner_layer: '未确认',
+        bottoms: '未确认',
+        socks: '未确认',
+        underwear: '未确认',
+        shoes: '未确认',
+      },
+    };
+  }
+  return records;
+}
+
+/**
  * 世界书条目命名规则（MVU-DESIGN §3 · galgame 系统设计 §3.1）：
  * - 场景条目：/^场景\d+$/ · 1-150，pov 模式开、custom 模式关
  * - 剧本日历：固定名 "剧本日历"，pov 模式开
@@ -234,58 +304,80 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
       // 字段路径必须与 schema.ts 对齐，否则 zod 默认 strip 会静默剥离
       try {
         if (typeof getVariables === 'function' && typeof updateVariablesWith === 'function') {
-          const variables = getVariables({ type: 'message', message_id: 0 });
-          if (variables) {
-            updateVariablesWith(
-              vars => {
-                const stat = _.get(vars, 'stat_data') ?? {};
-                const isPov = mode.value === 'pov';
-                const isOpen = gameMode.value === 'open';
-                // 三模式公共项（§2.1 通行口径，路径对齐 schema.ts）
-                // open（开放世界攻略）→ stat.mode='free'：current_scene 冻结占位不参与150场路由·time_slot 锚定放课后
-                stat.mode = isOpen ? 'free' : isPov ? 'pov' : 'custom';
-                stat.current_scene = 1;
-                stat.world = {
-                  current_date: '2013-05-20',
-                  current_location: isPov && selectedPov.value
-                    ? POV_CLASSROOM[selectedPov.value]
-                    : '未确认',
-                  time_slot: isOpen ? '放课后' : null,
-                };
-                // custom 模式主角家境未知，保持 null（“未确认”）由叙事后续锚定
-                stat.player = {
-                  cash: isPov && selectedPov.value ? POV_INITIAL_CASH[selectedPov.value] : null,
-                  carried_items: [],
-                };
-                stat.characters = {};
-                stat['Ω_resonance'] = 0;
-                for (const hammer of [
-                  'hammer_thunder_1', 'hammer_tea_1', 'hammer_tea_2',
-                  'hammer_teddy_1', 'hammer_thunder_2', 'hammer_outcast_1',
-                  'hammer_teddy_2', 'hammer_outcast_2', 'hammer_tea_3',
-                ]) {
-                  stat[hammer] = 'pending';
-                }
-                stat.laff_knows_fire_truth = false;
-                stat.laff_reed_authorized_yukino = false;
-                stat.dalloway_pen_used = false;
-                stat.branch_choice = null;
-                if (isPov) {
-                  stat.current_pov = selectedPov.value;
-                  stat.custom_protagonist = null;
-                } else {
-                  stat.current_pov = null;
-                  stat.custom_protagonist = { ...form };
-                }
-                _.set(vars, 'stat_data', stat);
-                return vars;
-              },
-              { type: 'message', message_id: 0 },
-            );
-            console.info('[开场白] 已写入 MVU 变量（全量 commit）');
-          } else {
-            console.error('[开场白] getVariables 返回空，MVU 变量未能写入');
+          const buildStat = (vars: Record<string, any>) => {
+            const stat = _.get(vars, 'stat_data') ?? {};
+            const isPov = mode.value === 'pov';
+            const isOpen = gameMode.value === 'open';
+            // 三模式公共项（§2.1 通行口径，路径对齐 schema.ts）
+            // open（开放世界攻略）→ stat.mode='free'：current_scene 冻结占位不参与150场路由·time_slot 锚定放课后
+            stat.mode = isOpen ? 'free' : isPov ? 'pov' : 'custom';
+            stat.current_scene = 1;
+            stat.world = {
+              current_date: '2013-05-20',
+              current_location: isPov && selectedPov.value
+                ? POV_CLASSROOM[selectedPov.value]
+                : '未确认',
+              time_slot: isOpen ? '放课后' : null,
+            };
+            // custom 模式主角家境未知，保持 null（“未确认”）由叙事后续锚定
+            stat.player = {
+              cash: isPov && selectedPov.value ? POV_INITIAL_CASH[selectedPov.value] : null,
+              carried_items: [],
+            };
+            stat.characters =
+              (isPov || isOpen) && selectedPov.value ? initialCharacters(selectedPov.value) : {};
+            stat['Ω_resonance'] = 0;
+            for (const hammer of [
+              'hammer_thunder_1', 'hammer_tea_1', 'hammer_tea_2',
+              'hammer_teddy_1', 'hammer_thunder_2', 'hammer_outcast_1',
+              'hammer_teddy_2', 'hammer_outcast_2', 'hammer_tea_3',
+            ]) {
+              stat[hammer] = 'pending';
+            }
+            stat.laff_knows_fire_truth = false;
+            stat.laff_reed_authorized_yukino = false;
+            stat.dalloway_pen_used = false;
+            stat.branch_choice = null;
+            if (isPov) {
+              stat.current_pov = selectedPov.value;
+              stat.custom_protagonist = null;
+            } else {
+              stat.current_pov = null;
+              stat.custom_protagonist = { ...form };
+            }
+            _.set(vars, 'stat_data', stat);
+            return vars;
+          };
+          // 楼层 0：首条 user 消息所在楼层，保留楼层快照基线。
+          // MVU 可能尚未完成楼层变量初始化（桶不存在时 getVariables 返回空）——
+          // 若此时跳过楼层写入，AI 变量更新链会从 initvar 空壳起步（开局数值全 0），
+          // 因此先等框架就绪，再对 0 楼桶做有界重试；聊天级基线无论如何都写。
+          try {
+            if (typeof waitGlobalInitialized === 'function') {
+              await waitGlobalInitialized('Mvu');
+            }
+          } catch {
+            // 框架未加载时按原路径容错
           }
+          let floor0Variables: Record<string, any> | null = null;
+          for (let attempt = 0; attempt < 20 && !floor0Variables; attempt++) {
+            floor0Variables = getVariables({ type: 'message', message_id: 0 }) ?? null;
+            if (!floor0Variables) {
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          }
+          if (floor0Variables) {
+            updateVariablesWith(buildStat, { type: 'message', message_id: 0 });
+          } else {
+            console.error('[开场白] 等待 10 秒后 0 楼变量桶仍为空，跳过楼层写入（聊天级写入不受影响）');
+            showToast('楼层变量初始化超时，若开局数值异常请刷新后重新开局', 'error', 5000);
+          }
+          // 聊天级基线：状态栏/手机在 AI 首轮楼层快照缺失时回退读取 chat 级，
+          // 保证开局初始状态（现金/角色记录等）不依赖主 AI 首轮是否输出变量更新块
+          updateVariablesWith(buildStat, { type: 'chat' });
+          console.info(
+            `[开场白] 已写入 MVU 变量（楼层0${floor0Variables ? '' : '·跳过'} + 聊天级全量 commit，预建角色 ${Object.keys(buildStat({}).characters as object).length} 人）`,
+          );
         } else {
           console.error('[开场白] 无 MVU API（getVariables/updateVariablesWith 缺失），变量未能写入');
         }
@@ -361,6 +453,20 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
         committedText.value = text;
         // 正常随楼层刷新卸载；若未卸载则兜底展示完成态
         step.value = 'done';
+        // 首条 user 消息 + 自动触发主 AI 回复（更新规则 §开场白commit·首条消息）；
+        // 失败不阻断——玩家仍可手动发送第一条消息
+        try {
+          if (typeof generate === 'function') {
+            showToast('开局完成，正在生成第一段剧情…', 'info', 4000);
+            void generate({ user_input: summary, should_stream: true }).catch(error => {
+              console.error('[开场白] 自动触发首条回复失败', error);
+            });
+          } else {
+            console.warn('[开场白] 无 generate API，跳过自动触发首条回复');
+          }
+        } catch (error) {
+          console.error('[开场白] 自动触发首条回复失败', error);
+        }
       } else {
         // 纯浏览器预览：无酒馆 API，完整打印 payload 并进入完成态
         console.info('[开场白·预览模式] 提交 payload：\n' + payload);

@@ -5,11 +5,19 @@
       <!-- 当前进度卡 -->
       <section class="card">
         <h3 class="card-title">当前</h3>
-        <div class="row"><span>幕</span><b>{{ actText }}</b></div>
-        <div class="row"><span>场景</span><b>{{ sceneText }}</b></div>
-        <div class="row"><span>日期</span><b>{{ dateText }}</b></div>
-        <div class="progress-track"><i :style="{ width: `${progressPct}%` }"></i></div>
-        <div class="progress-label">{{ progressLabel }}</div>
+        <template v-if="isFree">
+          <div class="row"><span>模式</span><b>开放世界</b></div>
+          <div class="row"><span>日期</span><b>{{ dateText }}</b></div>
+          <div class="row"><span>时段</span><b>{{ timeSlotText }}</b></div>
+          <p class="free-hint">开放世界不按章节推进，下方日历仅作日期参考。</p>
+        </template>
+        <template v-else>
+          <div class="row"><span>幕</span><b>{{ actText }}</b></div>
+          <div class="row"><span>场景</span><b>{{ sceneText }}</b></div>
+          <div class="row"><span>日期</span><b>{{ dateText }}</b></div>
+          <div class="progress-track"><i :style="{ width: `${progressPct}%` }"></i></div>
+          <div class="progress-label">{{ progressLabel }}</div>
+        </template>
       </section>
 
       <!-- 场景列表 -->
@@ -34,9 +42,11 @@ import { usePhoneStore } from './store';
 const store = usePhoneStore();
 const entries = ref<SceneEntry[]>([]);
 
+const isFree = computed(() => store.snapshot.mode === 'free');
 const actText = computed(() => actNameOf(store.snapshot.scene) || '—');
 const sceneText = computed(() => (store.snapshot.scene != null ? `场景 ${store.snapshot.scene}` : '—'));
 const dateText = computed(() => (store.snapshot.date ? cnDate(store.snapshot.date) : '—'));
+const timeSlotText = computed(() => store.snapshot.timeSlot || '未确认');
 
 const total = computed(() => Math.max(entries.value.length, 150));
 const progressPct = computed(() => (store.snapshot.scene != null ? Math.min(100, (store.snapshot.scene / total.value) * 100) : 0));
@@ -47,6 +57,9 @@ function centerDateOf(item: SceneEntry): string {
 }
 
 function statusOf(index: number): string {
+  if (isFree.value) {
+    return '';
+  }
   const current = store.snapshot.scene;
   if (current == null) {
     return '';
@@ -134,6 +147,13 @@ onMounted(async () => {
 
 .empty {
   font-size: 13px;
+  color: var(--c-ios-gray);
+}
+
+.free-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.6;
   color: var(--c-ios-gray);
 }
 

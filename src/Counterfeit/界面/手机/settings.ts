@@ -259,9 +259,15 @@ export interface StoryContext {
 }
 
 /** 由 MVU 快照 + 世界书场景条目推剧情阶段（供来信/论坛 prompt 使用） */
-export async function readStoryContext(snapshot: { scene: number | null; date: string }): Promise<StoryContext> {
+export async function readStoryContext(snapshot: {
+  scene: number | null;
+  date: string;
+  mode?: string | null;
+  timeSlot?: string | null;
+}): Promise<StoryContext> {
+  const isFree = snapshot.mode === 'free';
   const ctx: StoryContext = {
-    actName: actNameOf(snapshot.scene),
+    actName: isFree ? '开放世界' : actNameOf(snapshot.scene),
     dateText: snapshot.date ? cnDate(snapshot.date) : '',
     sceneNo: snapshot.scene,
     sceneTitle: '',
@@ -280,7 +286,8 @@ export async function readStoryContext(snapshot: { scene: number | null; date: s
         return ctx;
       }
     }
-    if (snapshot.scene != null) {
+    // free 模式场景号冻结为 1，序号回退无意义，只做日期命中
+    if (!isFree && snapshot.scene != null) {
       // 条目按日期排序 ≈ 场景顺序，取不晚于当前场的最近一条
       const idx = Math.min(snapshot.scene, entries.length) - 1;
       ctx.sceneTitle = entries[Math.max(0, idx)]?.name ?? '';

@@ -39,9 +39,17 @@ import { usePhoneStore } from './store';
 
 const store = usePhoneStore();
 
-const actText = computed(() => actNameOf(store.snapshot.scene) || 'Counterfeit');
+const actText = computed(() =>
+  store.snapshot.mode === 'free' ? '开放世界' : actNameOf(store.snapshot.scene) || 'Counterfeit',
+);
 const dateText = computed(() => (store.snapshot.date ? cnDate(store.snapshot.date) : '手机助手'));
-const sceneText = computed(() => (store.snapshot.scene != null ? `场景 ${store.snapshot.scene}` : '轻点图标开始'));
+const sceneText = computed(() => {
+  if (store.snapshot.mode === 'free') {
+    const parts = [store.snapshot.timeSlot, store.snapshot.location].filter(Boolean);
+    return parts.length ? parts.join(' · ') : '自由行动';
+  }
+  return store.snapshot.scene != null ? `场景 ${store.snapshot.scene}` : '轻点图标开始';
+});
 
 const bgStyle = computed(() => {
   const w = store.wallpaper;

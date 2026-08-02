@@ -13,7 +13,8 @@
           @click="profile = contact"
         >
           <span class="avatar" :style="{ background: tintForName(contact.character) }">
-            {{ contact.display_name.slice(0, 1) }}
+            <img v-if="avatarUrlFor(contact.character)" :src="avatarUrlFor(contact.character)!" class="avatar-img" :alt="contact.display_name" loading="lazy" />
+            <template v-else>{{ contact.display_name.slice(0, 1) }}</template>
           </span>
           <span class="friend-main">
             <span class="friend-name">{{ contact.display_name }}</span>
@@ -43,7 +44,8 @@
           @click="profile = contact"
         >
           <span class="avatar" :style="{ background: tintForName(contact.character) }">
-            {{ contact.display_name.slice(0, 1) }}
+            <img v-if="avatarUrlFor(contact.character)" :src="avatarUrlFor(contact.character)!" class="avatar-img" :alt="contact.display_name" loading="lazy" />
+            <template v-else>{{ contact.display_name.slice(0, 1) }}</template>
           </span>
           <span class="friend-main">
             <span class="friend-name">{{ contact.display_name }}</span>
@@ -59,7 +61,8 @@
       <div v-if="profile" class="profile-mask" @click="profile = null">
         <div class="profile-sheet" @click.stop>
           <span class="profile-avatar" :style="{ background: tintForName(profile.character) }">
-            {{ profile.display_name.slice(0, 1) }}
+            <img v-if="avatarUrlFor(profile.character)" :src="avatarUrlFor(profile.character)!" class="avatar-img" :alt="profile.display_name" loading="lazy" />
+            <template v-else>{{ profile.display_name.slice(0, 1) }}</template>
           </span>
           <h3 class="profile-name">{{ profile.display_name }}</h3>
           <span class="status-pill" :class="profile.status">{{ statusLabel(profile.status) }}</span>
@@ -93,7 +96,7 @@
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue';
 import type { ContactStatus, PhoneContact } from './phoneData';
-import { tintForName } from './vars';
+import { avatarUrlFor, tintForName } from './vars';
 import { usePhoneStore, type IngestOutcome } from './store';
 
 const store = usePhoneStore();
@@ -267,12 +270,19 @@ function describeOutcome(outcome: IngestOutcome): { text: string; tone: 'ok' | '
   height: 48px;
   flex: none;
   border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   font-size: 18px;
   font-weight: 700;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .friend-main {
@@ -335,6 +345,7 @@ function describeOutcome(outcome: IngestOutcome): { text: string; tone: 'ok' | '
   width: 72px;
   height: 72px;
   border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;

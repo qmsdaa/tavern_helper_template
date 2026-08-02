@@ -22,6 +22,7 @@ interface CharacterSeed {
   commitment?: '未确认' | '仅朋友' | '恋人';
   memory?: string;
   inner_thought?: string;
+  outfit?: Partial<CharacterRecord['outfit']>;
 }
 
 function makeCharacter(seed: CharacterSeed): CharacterRecord {
@@ -39,12 +40,12 @@ function makeCharacter(seed: CharacterSeed): CharacterRecord {
       inner_thought: seed.inner_thought ?? '',
     },
     outfit: {
-      outerwear: '未确认',
-      inner_layer: '未确认',
-      bottoms: '未确认',
-      socks: '未确认',
-      underwear: '未确认',
-      shoes: '未确认',
+      outerwear: seed.outfit?.outerwear ?? '未确认',
+      inner_layer: seed.outfit?.inner_layer ?? '未确认',
+      bottoms: seed.outfit?.bottoms ?? '未确认',
+      socks: seed.outfit?.socks ?? '未确认',
+      underwear: seed.outfit?.underwear ?? '未确认',
+      shoes: seed.outfit?.shoes ?? '未确认',
     },
   };
 }
@@ -55,7 +56,7 @@ function baseData(): Schema {
     current_pov: null,
     custom_protagonist: null,
     current_scene: 1,
-    world: { current_date: '2013-05-20', current_location: '未确认' },
+    world: { current_date: '2013-05-20', current_location: '未确认', time_slot: null },
     player: { cash: null, carried_items: [] },
     characters: {},
     'Ω_resonance': 0,
@@ -100,16 +101,24 @@ function povData(): Schema {
   data.mode = 'pov';
   data.current_pov = 'hachiman';
   data.current_scene = 32;
-  data.world = { current_date: '2013-10-21', current_location: '总武高中 · 特别大楼四楼 · 奉仕部活动室' };
+  data.world = { current_date: '2013-10-21', current_location: '总武高中 · 特别大楼四楼 · 奉仕部活动室', time_slot: null };
   data.player = { cash: 2480, carried_items: ['MAX咖啡', '文库本'] };
   data.characters = {
     雪之下雪乃: makeCharacter({
       display_name: '雪乃',
       bond: 65,
+      romance: 12,
       memory: '部活结束后，他没有多说，只是把她忘在活动室的文库本整齐地放在了桌角。',
       inner_thought: '……谢谢。这种话，还是说不出口。',
+      outfit: {
+        outerwear: '总武高中制服西装外套',
+        inner_layer: '白色衬衫',
+        bottoms: '制服百褶裙',
+        socks: '黑色过膝袜',
+        shoes: '棕色乐福鞋',
+      },
     }),
-    由比滨结衣: makeCharacter({ display_name: '结衣', bond: 34 }),
+    由比滨结衣: makeCharacter({ display_name: '结衣', bond: 34, romance: 5 }),
     // 不在场：必须被过滤
     户冢彩加: makeCharacter({ display_name: '户冢', present: false, bond: 40 }),
     // 在场但尚未认识：必须连名字都不显示
@@ -124,7 +133,7 @@ function laffData(): Schema {
   data.mode = 'pov';
   data.current_pov = 'laff';
   data.current_scene = 97;
-  data.world = { current_date: '2014-03-08', current_location: '拉芙希妮的公寓 · 客厅' };
+  data.world = { current_date: '2014-03-08', current_location: '拉芙希妮的公寓 · 客厅', time_slot: null };
   data.player = { cash: null, carried_items: ['达洛维钢笔'] };
   data['Ω_resonance'] = 43;
   data.hammer_thunder_1 = 'missed';
@@ -159,7 +168,7 @@ function customData(): Schema {
     personality: '',
     appearance: '',
   };
-  data.world = { current_date: '2013-05-22', current_location: '总武高中 · 二年F班教室' };
+  data.world = { current_date: '2013-05-22', current_location: '总武高中 · 二年F班教室', time_slot: null };
   data.player = { cash: 3000, carried_items: [] };
   data.characters = {
     由比滨结衣: makeCharacter({
@@ -181,6 +190,7 @@ function longData(): Schema {
   data.world = {
     current_date: '2015-03-14',
     current_location: '总武高中 · 特别大楼四楼西侧尽头的奉仕部活动室（毕业典礼前最后一天的黄昏）',
+    time_slot: null,
   };
   data.player = {
     cash: 123456,
@@ -195,6 +205,7 @@ function longData(): Schema {
     比企谷八幡: makeCharacter({
       display_name: '八幡',
       bond: 88,
+      romance: 88,
       commitment: '恋人',
       memory: '他在毕业纪念册的最后一页，只写了一句话：「这两年的委托，没有一件是亏本的。」',
       inner_thought: '真物这种东西，原来真的会一直留在手里。',
@@ -218,7 +229,7 @@ function emptyData(): Schema {
   data.mode = 'pov';
   data.current_pov = 'yukino';
   data.current_scene = 63;
-  data.world = { current_date: '2014-01-06', current_location: '雪之下家公寓 · 自己的房间' };
+  data.world = { current_date: '2014-01-06', current_location: '雪之下家公寓 · 自己的房间', time_slot: null };
   data.player = { cash: null, carried_items: [] };
   data.characters = {
     比企谷八幡: makeCharacter({ display_name: '八幡', present: false, bond: 60 }),

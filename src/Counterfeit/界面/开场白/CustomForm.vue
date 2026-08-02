@@ -149,6 +149,39 @@ async function testConnection() {
   }
 }
 
+const AI_MAX_TOKENS = 2000;
+const AI_MAX_CONTINUATIONS = 2;
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+interface ChatChoice {
+  message?: { content?: string };
+  finish_reason?: string;
+}
+
+async function requestChatCompletion(messages: ChatMessage[]): Promise<ChatChoice> {
+  const response = await fetch(`${normalizedBase()}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiConfig.value.api_key}`,
+    },
+    body: JSON.stringify({
+      model: apiConfig.value.model,
+      messages,
+      max_tokens: AI_MAX_TOKENS,
+    }),
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  const data = await response.json();
+  return data?.choices?.[0] ?? {};
+}
+
 async function aiFill(field: AiField) {
   if (!apiConfig.value.api_key) {
     aiPanelOpen.value = true;
@@ -166,28 +199,42 @@ async function aiFill(field: AiField) {
       `故事舞台是千叶市立总武高中，主角团为侍奉部成员（比企谷八幡、雪之下雪乃、由比滨结衣、转学生拉芙希妮·都柏林）。` +
       `请为玩家的原创角色撰写「${field.label}」，要求：简体中文、80-150 字、自然不做作、与原作氛围一致。` +
       `已填写的其他信息：${others}`;
-    const response = await fetch(`${normalizedBase()}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiConfig.value.api_key}`,
-      },
-      body: JSON.stringify({
-        model: apiConfig.value.model,
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 500,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+    const messages: ChatMessage[] = [{ role: 'user', content: prompt }];
+    let text = '';
+    let truncated = false;
+    for (let round = 0; round <= AI_MAX_CONTINUATIONS; round++) {
+      const choice = await requestChatCompletion(messages);
+      const part = choice.message?.content?.trim() ?? '';
+      if (!part) {
+        if (choice.finish_reason === 'length') {
+          throw new Error('输出额度被模型的思考过程占满，未产出正文；建议换用非思考模型');
+        }
+        if (round === 0) {
+          throw new Error('返回内容为空');
+        }
+        truncated = false;
+        break;
+      }
+      text += part;
+      if (choice.finish_reason !== 'length') {
+        truncated = false;
+        break;
+      }
+      truncated = true;
+      messages.push(
+        { role: 'assistant', content: part },
+        { role: 'user', content: '接着上一段继续写完，只输出续写部分，不要重复已有内容。' },
+      );
     }
-    const data = await response.json();
-    const text: string | undefined = data?.choices?.[0]?.message?.content?.trim();
     if (!text) {
       throw new Error('返回内容为空');
     }
     store.form[field.key] = text;
-    showToast(`「${field.label}」已生成，可继续编辑`, 'success');
+    if (truncated) {
+      showToast(`「${field.label}」已生成，但可能未写完，请检查结尾`, 'info', 4000);
+    } else {
+      showToast(`「${field.label}」已生成，可继续编辑`, 'success');
+    }
   } catch (error) {
     console.warn('[开场白] AI 生成失败', error);
     showToast(`生成失败：${error instanceof Error ? error.message : String(error)}`, 'error', 4000);

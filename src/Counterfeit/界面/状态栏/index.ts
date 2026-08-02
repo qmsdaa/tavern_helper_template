@@ -9,10 +9,13 @@ const jq = (window as any).$ as JQueryStatic | undefined;
 const ready = (fn: () => void) =>
   typeof jq === 'function' ? jq(fn) : document.addEventListener('DOMContentLoaded', fn);
 
-/** 本消息楼层的 MVU 快照是否已就绪（楼层尚无 stat_data 时安全返回 false） */
+/** 本消息楼层的 MVU 快照是否已就绪（楼层尚无 stat_data 时回退检查聊天级基线，安全返回 false） */
 function hasMessageStatData(): boolean {
   try {
-    return _.has(getVariables({ type: 'message', message_id: getCurrentMessageId() }), 'stat_data');
+    if (_.has(getVariables({ type: 'message', message_id: getCurrentMessageId() }), 'stat_data')) {
+      return true;
+    }
+    return _.has(getVariables({ type: 'chat' }), 'stat_data');
   } catch {
     return false;
   }

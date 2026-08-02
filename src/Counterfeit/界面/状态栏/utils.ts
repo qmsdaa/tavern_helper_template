@@ -1,4 +1,5 @@
 // Counterfeit · 状态栏纯函数工具：幕名映射 / 日期星期 / 关系阶段 / 在场角色视图模型
+import { ASSET_VERSION, PORTRAIT_BASE } from '../../config';
 import type { Schema } from '../../schema';
 
 /** 十幕区间（与 EJS 状态栏渲染及 WORKFLOW §大纲总览完全一致，不得自行改名） */
@@ -77,13 +78,48 @@ export function relationshipLabel(record: CharacterRecord): string {
 export const MEMORY_EMPTY_PLACEHOLDER = '还没有留下足以反复想起的片段';
 export const THOUGHT_EMPTY_PLACEHOLDER = '……';
 
+/** 规范全名（characters 记录键）→ 立绘文件名（assets/Counterfeit/状态栏/portraits/<name>.webp） */
+const PORTRAIT_KEYS: Record<string, string> = {
+  '比企谷八幡': 'hachiman',
+  '雪之下雪乃': 'yukino',
+  '由比滨结衣': 'yui',
+  '拉芙希妮·都柏林': 'laff',
+  '一色彩羽': 'iroha',
+  '三浦优美子': 'yumiko',
+  '叶山隼人': 'hayama',
+  '平冢静': 'shizuka',
+  '户冢彩加': 'saika',
+  '雪之下阳乃': 'haruno',
+  '爱布拉娜': 'eblana',
+  '爱布拉娜·都柏林': 'eblana',
+};
+
+/** 角色立绘 URL；无立绘素材的角色返回 null（UI 回退为名字首字占位） */
+export function portraitUrlOf(canonicalName: string): string | null {
+  const file = PORTRAIT_KEYS[canonicalName];
+  return file ? `${PORTRAIT_BASE}/${file}.webp?v=${ASSET_VERSION}` : null;
+}
+
 export interface PresentCharacterView {
   /** 世界书规范全名（characters 记录键） */
   key: string;
   displayName: string;
   label: string;
+  bond: number;
+  romance: number;
+  commitment: '未确认' | '仅朋友' | '恋人';
   memory: string;
   innerThought: string;
+  outfit: {
+    outerwear: string;
+    inner_layer: string;
+    bottoms: string;
+    socks: string;
+    underwear: string;
+    shoes: string;
+  };
+  /** 立绘 URL；无素材时为 null（UI 显示 displayName 首字占位） */
+  portraitUrl: string | null;
 }
 
 /** 仅保留"在场且已认识"的角色；known=false 的角色连规范姓名都不得出现在视图模型里 */
@@ -94,8 +130,20 @@ export function presentCharacters(data: Schema): PresentCharacterView[] {
       key: canonicalName,
       displayName: record.display_name || canonicalName,
       label: relationshipLabel(record),
+      bond: record.relationship.bond,
+      romance: record.relationship.romance,
+      commitment: record.relationship.commitment,
       memory: record.latest_user_memory?.memory || '',
       innerThought: record.latest_user_memory?.inner_thought || '',
+      outfit: {
+        outerwear: record.outfit?.outerwear || '未确认',
+        inner_layer: record.outfit?.inner_layer || '未确认',
+        bottoms: record.outfit?.bottoms || '未确认',
+        socks: record.outfit?.socks || '未确认',
+        underwear: record.outfit?.underwear || '未确认',
+        shoes: record.outfit?.shoes || '未确认',
+      },
+      portraitUrl: portraitUrlOf(canonicalName),
     }));
 }
 

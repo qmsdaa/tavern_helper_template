@@ -10,6 +10,7 @@
         <button v-for="thread in store.threads" :key="thread.id" class="thread-item" @click="openThread(thread.id)">
           <span class="avatar" :style="{ background: tintForName(thread.title) }">
             <i v-if="thread.type === 'group'" class="fa-solid fa-user-group"></i>
+            <img v-else-if="avatarUrlFor(thread.title)" :src="avatarUrlFor(thread.title)!" class="avatar-img" :alt="thread.title" loading="lazy" />
             <template v-else>{{ thread.title.slice(0, 1) }}</template>
           </span>
           <span class="thread-main">
@@ -98,7 +99,7 @@
 
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue';
-import { tintForName } from './vars';
+import { avatarUrlFor, tintForName } from './vars';
 import { usePhoneStore } from './store';
 
 const store = usePhoneStore();
@@ -258,12 +259,19 @@ function createGroup() {
   height: 46px;
   flex: none;
   border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   font-size: 17px;
   font-weight: 700;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .thread-main {

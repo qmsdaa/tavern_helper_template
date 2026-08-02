@@ -5,9 +5,13 @@
     <div class="status-scroll">
       <section class="card">
         <h3 class="card-title">当前世界</h3>
-        <div class="row"><span>幕</span><b>{{ actText }}</b></div>
-        <div class="row"><span>场景</span><b>{{ sceneText }}</b></div>
+        <div v-if="isFree" class="row"><span>模式</span><b>开放世界</b></div>
+        <template v-else>
+          <div class="row"><span>幕</span><b>{{ actText }}</b></div>
+          <div class="row"><span>场景</span><b>{{ sceneText }}</b></div>
+        </template>
         <div class="row"><span>日期</span><b>{{ dateText }}</b></div>
+        <div v-if="isFree" class="row"><span>时段</span><b>{{ timeSlotText }}</b></div>
         <div class="row"><span>主角</span><b>{{ heroText }}</b></div>
         <div class="row"><span>位置</span><b>{{ locationText }}</b></div>
       </section>
@@ -94,11 +98,15 @@ import { usePhoneStore } from './store';
 
 const store = usePhoneStore();
 
+const isFree = computed(() => store.snapshot.mode === 'free');
 const actText = computed(() => actNameOf(store.snapshot.scene) || '—');
 const sceneText = computed(() => (store.snapshot.scene != null ? `场景 ${store.snapshot.scene}` : '—'));
 const dateText = computed(() => (store.snapshot.date ? cnDate(store.snapshot.date) : '—'));
+const timeSlotText = computed(() => store.snapshot.timeSlot || '未确认');
 const heroText = computed(() => {
-  if (store.snapshot.mode === 'custom') return store.snapshot.customName || '自建角色';
+  if (store.snapshot.mode === 'custom' || (isFree.value && !store.snapshot.pov)) {
+    return store.snapshot.customName || '自建角色';
+  }
   return povDisplayName(store.snapshot.pov) || '—';
 });
 const locationText = computed(() => store.snapshot.location || '未确认');

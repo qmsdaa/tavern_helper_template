@@ -34,11 +34,11 @@ import {
 } from './phoneData';
 import { callPhoneTask } from './phoneLlm';
 import {
-  actNameOf,
   cnDate,
   loadPersonaMap,
   povDisplayName,
   readMvuSnapshot,
+  stageText,
   type MvuSnapshot,
 } from './vars';
 
@@ -609,7 +609,7 @@ export const usePhoneStore = defineStore('counterfeit-phone', () => {
           `“${contact.character}”准备主动给“${playerNameOf(snapshot.value)}”发手机消息。`,
           (personas.value[contact.character] ?? '').slice(0, 1600),
           historyBlock(thread),
-          `当前公开时间：${cnDate(snapshot.value.date)}；阶段：${actNameOf(snapshot.value.scene)}。`,
+          `当前公开时间：${cnDate(snapshot.value.date)}；阶段：${stageText(snapshot.value)}。`,
           contentDirectorPromptBlock(contentPrompt.value),
           '自然决定是否来信。输出 JSON：{"messages":["一条短消息"]}；若此刻没有合理来信，输出 {"messages":[]}。',
         ]
@@ -642,7 +642,7 @@ export const usePhoneStore = defineStore('counterfeit-phone', () => {
       'forum_batch',
       [
         '生成总武高及周边学生使用的正常匿名论坛新帖。论坛与主线完全独立，不得把论坛猜测当成事实，也不得改变关系、结局或主线。',
-        `公开时间：${cnDate(snapshot.value.date) || '未确认'}；学期阶段：${actNameOf(snapshot.value.scene) || '普通校园日常'}。只使用日期、季节、学期与公开校园常识，不引用私聊、群聊或主线隐私。`,
+        `公开时间：${cnDate(snapshot.value.date) || '未确认'}；学期阶段：${stageText(snapshot.value) || '普通校园日常'}。只使用日期、季节、学期与公开校园常识，不引用私聊、群聊或主线隐私。`,
         '帖子生态需要混合：夸张标题、高讨论度话题、求助、失物招领、学习、树洞、投票、交易、灌水、校园传闻。普通学生是主体，具名角色只允许留下有限公共痕迹。',
         contentDirectorPromptBlock(contentPrompt.value),
         '输出 JSON：{"posts":[{"board":"版块","type":"求助/讨论/失物/树洞/投票/交易/灌水/传闻","title":"标题","author":"匿名网名","body":"正文","heat":0,"status":"active"}]}。生成 4-6 条。',

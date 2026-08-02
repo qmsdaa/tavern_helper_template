@@ -1,10 +1,24 @@
 // MVU 变量读取（容错：无 MVU 环境时返回空快照）
 // 对齐 MVU-DESIGN v0.5.1：world / player / 动态 characters；phone 仍由手机 store 独占写入
-import { ASSET_BASE } from '../../config';
+import { ASSET_BASE, ASSET_VERSION, AVATAR_BASE } from '../../config';
 
 /** 素材完整 URL（文件位于 ASSET_BASE 下） */
 export function assetUrl(file: string): string {
   return `${ASSET_BASE}/${file}`;
+}
+
+/** 规范全名 → 好友头像文件名（assets/Counterfeit/手机/avatars/<name>.webp，仅 POV 四主角有素材） */
+const AVATAR_KEYS: Record<string, string> = {
+  '比企谷八幡': 'hachiman',
+  '雪之下雪乃': 'yukino',
+  '由比滨结衣': 'yui',
+  '拉芙希妮·都柏林': 'laff',
+};
+
+/** 好友头像 URL；无素材的联系人返回 null（UI 回退为渐变底 + 名字首字） */
+export function avatarUrlFor(canonicalName: string): string | null {
+  const file = AVATAR_KEYS[canonicalName];
+  return file ? `${AVATAR_BASE}/${file}.webp?v=${ASSET_VERSION}` : null;
 }
 
 /**
@@ -78,13 +92,15 @@ export interface CharacterSnapshot {
 }
 
 export interface MvuSnapshot {
-  mode: 'pov' | 'custom' | null;
+  mode: 'pov' | 'custom' | 'free' | null;
   pov: string | null;
   playerName: string;
   customName: string;
   scene: number | null;
   date: string;
   location: string;
+  /** 仅 free 模式使用（早晨|上午|午休|放课后|傍晚|晚间），其余模式恒 null */
+  timeSlot: string | null;
   cash: number | null;
   carriedItems: string[];
   characters: Record<string, CharacterSnapshot>;
@@ -121,6 +137,7 @@ export function emptySnapshot(): MvuSnapshot {
     scene: null,
     date: '',
     location: '',
+    timeSlot: null,
     cash: null,
     carriedItems: [],
     characters: {},
@@ -181,8 +198,14 @@ function readStatData(): Record<string, any> {
       return {};
     }
     // 世界/玩家/角色状态属于 MVU 消息楼层；手机本体 phone 容器才属于聊天级变量。
+    // 楼层快照缺失（AI 首轮未输出变量更新块）时回退读取聊天级基线，保证开局状态可见。
     const v = getVariables({ type: 'message', message_id: 'latest' }) ?? {};
-    return (v as Record<string, any>).stat_data ?? (v as Record<string, any>);
+    const sd = (v as Record<string, any>).stat_data ?? v;
+    if (sd && Object.keys(sd).length) {
+      return sd;
+    }
+    const c = getVariables({ type: 'chat' }) ?? {};
+    return (c as Record<string, any>).stat_data ?? c;
   } catch {
     return {};
   }
@@ -202,6 +225,7 @@ export function readMvuSnapshot(): MvuSnapshot {
   snap.scene = typeof sd.current_scene === 'number' ? sd.current_scene : null;
   snap.date = asText(sd.world?.current_date);
   snap.location = asText(sd.world?.current_location);
+  snap.timeSlot = snap.mode === 'free' ? asText(sd.world?.time_slot) || null : null;
   const cash = sd.player?.cash;
   snap.cash = cash === null || cash === undefined || !Number.isFinite(Number(cash)) ? null : Math.max(0, Number(cash));
   snap.carriedItems = Array.isArray(sd.player?.carried_items)
@@ -242,6 +266,14 @@ export function actNameOf(scene: number | null): string {
     if (scene <= end) return name;
   }
   return '';
+}
+
+/** 阶段/时段描述：free 模式场景号冻结为 1，幕表失真，改用开放世界+时段 */
+export function stageText(snap: Pick<MvuSnapshot, 'mode' | 'scene' | 'timeSlot'>): string {
+  if (snap.mode === 'free') {
+    return snap.timeSlot ? `开放世界 · ${snap.timeSlot}` : '开放世界';
+  }
+  return actNameOf(snap.scene);
 }
 
 /** ISO 日期 → "2013年5月20日" */
