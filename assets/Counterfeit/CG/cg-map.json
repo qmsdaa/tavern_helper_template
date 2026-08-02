@@ -1,7 +1,13 @@
 {
-  "version": "2026-08-01",
-  "images_base": "https://testingcf.jsdelivr.net/gh/qmsdaa/tavern_helper_template@3451fdaf49b0e1c82fb010ff5aac68edeb3a4888/assets/Counterfeit/CG",
+  "version": "2026-08-02",
+  "images_base": "https://testingcf.jsdelivr.net/gh/qmsdaa/tavern_helper_template@b858573b321c6efe020e8ae87addee8234725b76/assets/Counterfeit/CG",
   "scenes": {
+    "9": {
+      "file": "场景9.webp",
+      "cond": null,
+      "date": "2013-7-3",
+      "title": "以雷声为触发器揭示拉芙希妮的创伤"
+    },
     "11": {
       "file": "场景11.webp",
       "cond": null,
@@ -93,11 +99,10 @@
       "title": ": 拉芙希妮首次在爱布拉娜面前展"
     },
     "105": {
-      "file": null,
+      "file": "场景105.webp",
       "cond": null,
       "date": "2014-4-16",
-      "title": "真物宣言  ——八幡说出\"我想要",
-      "note": "待绘制"
+      "title": "真物宣言  ——八幡说出\"我想要"
     },
     "117": {
       "file": "场景117.webp",
@@ -131,21 +136,19 @@
       "title": "第一次全体审查"
     },
     "143": {
-      "file": null,
+      "file": "场景143.webp",
       "cond": null,
       "date": "2015-3-6",
-      "title": "八幡大学考试前夜——从\"自爆型\"",
-      "note": "待绘制"
+      "title": "八幡大学考试前夜——从\"自爆型\""
     },
     "148": {
-      "file": null,
+      "file": "场景148.webp",
       "cond": null,
       "date": "2015-3-15",
-      "title": "毕业典礼前一天——活动室清空",
-      "note": "待绘制"
+      "title": "毕业典礼前一天——活动室清空"
     },
     "150": {
-      "file": null,
+      "file": "场景150.webp",
       "cond": null,
       "date": "2015-3-24",
       "title": "公共路线终点",
