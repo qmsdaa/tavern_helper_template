@@ -2,6 +2,19 @@
   <div class="mode-select">
     <h2 class="screen-title">选择你的视角</h2>
 
+    <div class="game-mode-tabs">
+      <button
+        v-for="gm in GAME_MODES"
+        :key="gm"
+        class="gm-tab"
+        :class="{ active: store.gameMode === gm }"
+        @click="store.gameMode = gm"
+      >
+        <span class="gm-label">{{ MODE_COPY[gm].label }}</span>
+        <span class="gm-desc">{{ MODE_COPY[gm].desc }}</span>
+      </button>
+    </div>
+
     <div class="pov-grid">
       <button
         v-for="pov in POV_LIST"
@@ -47,11 +60,12 @@
 </template>
 
 <script setup lang="ts">
-import { POV_LIST } from './copy';
+import { MODE_COPY, POV_LIST } from './copy';
 import { portraitUrl } from './data';
-import { useOpeningStore } from './store';
+import { useOpeningStore, type GameMode } from './store';
 
 const store = useOpeningStore();
+const GAME_MODES: GameMode[] = ['story', 'open'];
 </script>
 
 <style lang="scss" scoped>
@@ -71,6 +85,53 @@ const store = useOpeningStore();
   letter-spacing: 4px;
   color: var(--c-text);
   margin-bottom: 24px;
+}
+
+.game-mode-tabs {
+  width: 100%;
+  max-width: 480px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.gm-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &.active {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 1px var(--c-primary);
+  }
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+}
+
+.gm-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--c-text);
+  letter-spacing: 2px;
+}
+
+.gm-desc {
+  font-size: 11px;
+  color: var(--c-text-muted);
+  text-align: center;
+  line-height: 1.5;
 }
 
 .pov-grid {

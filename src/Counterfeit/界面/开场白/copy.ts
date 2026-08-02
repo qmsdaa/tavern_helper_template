@@ -31,8 +31,15 @@ export interface GalleryCopyItem {
   image: string | null;
 }
 
+/** 玩法模式（剧本 / 开放世界）文案 */
+export interface GameModeCopy {
+  label: string;
+  desc: string;
+}
+
 interface CopyFile {
   title: TitleCopy;
+  modes: { story: GameModeCopy; open: GameModeCopy };
   povs: PovCopy[];
   openings: Record<PovCopy['key'], string> & { custom: string };
   gallery: { title: string; hint: string; items: GalleryCopyItem[] };
@@ -41,6 +48,7 @@ interface CopyFile {
 const COPY = copy as CopyFile;
 
 export const TITLE_COPY = COPY.title;
+export const MODE_COPY = COPY.modes;
 export const POV_LIST = COPY.povs;
 export const OPENING_TEXTS = COPY.openings;
 /** 画廊条目：优先用脚本生成的真实图片清单（assets/tools/build_gallery.py），空则回退 copy.yaml 占位项 */

@@ -45,7 +45,7 @@ const CharacterStateSchema = z.object({
 
 export const Schema = z.object({
   // ── 模式与主角组（双模式）──
-  mode: z.enum(['pov', 'custom']).nullable().prefault(null),
+  mode: z.enum(['pov', 'custom', 'free']).nullable().prefault(null),
   current_pov: z.enum(['hachiman', 'yukino', 'yui', 'laff']).nullable().prefault(null),
   custom_protagonist: z.object({
     name: z.string().prefault(''),
@@ -64,9 +64,11 @@ export const Schema = z.object({
   world: z.object({
     current_date: z.string().prefault('2013-05-20'),
     current_location: z.string().prefault('未确认'),
+    time_slot: z.enum(['早晨', '上午', '午休', '放课后', '傍晚', '晚间']).nullable().prefault(null),
   }).prefault({
     current_date: '2013-05-20',
     current_location: '未确认',
+    time_slot: null,
   }),
   player: z.object({
     cash: z.coerce.number().transform((v) => Math.max(0, v)).nullable().prefault(null),

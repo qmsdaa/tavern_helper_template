@@ -3,6 +3,58 @@ import { showToast } from './toast';
 
 export type Step = 'gate' | 'intro' | 'title' | 'mode' | 'pov' | 'custom' | 'opening' | 'gallery' | 'done';
 export type Mode = 'pov' | 'custom';
+/** 玩法模式：story=剧本模式（150场）·open=开放世界攻略模式（写入 stat.mode='free'） */
+export type GameMode = 'story' | 'open';
+
+/** POV 角色开局所在班级教室（MVU-DESIGN §2.1：world.current_location 在 POV 模式填对应 F/J 班教室） */
+const POV_CLASSROOM: Record<PovKey, string> = {
+  hachiman: '总武高中·2年F班教室',
+  yukino: '总武高中·2年J班教室',
+  yui: '总武高中·2年F班教室',
+  laff: '总武高中·2年J班教室',
+};
+
+/**
+ * POV 角色开局手头可支配现金（日元）
+ *
+ * 之所以要给初值而不是沿用 null：更新规则明令“不得自行估算”“余额未知时一笔收支仍保持 null”，
+ * 而春物这类日常校园叙事几乎不会出现“钱包里有 X 日元”的准确报数，
+ * 于是 cash 会永久停在 null，所有收支 delta 都无处落地、金钱变量形同虚设。
+ * 开局锚定一个确定余额后，后续 delta 才能真正生效。
+ *
+ * 数额本身也是人物设定的一部分（家境差异），不是随手填的占位数。
+ */
+const POV_INITIAL_CASH: Record<PovKey, number> = {
+  hachiman: 3000, // 普通家庭·零花钱与零工所得
+  yui: 5000, // 一般中产·由比滨家日常零用
+  yukino: 20000, // 雪之下家·独居生活费
+  laff: 50000, // 都柏林家族·月度汇款
+};
+
+/**
+ * 世界书条目命名规则（MVU-DESIGN §3 · galgame 系统设计 §3.1）：
+ * - 场景条目：/^场景\d+$/ · 1-150，pov 模式开、custom 模式关
+ * - 剧本日历：固定名 "剧本日历"，pov 模式开
+ * - 尾声条目：/^尾声/ ，pov 模式开、custom 模式关（150a-g 用绿灯特殊触发词，未注册前默认关；commit 仅切可见性不强行开未注册条目）
+ * - S1 家族暗线组（在 POV 模式下启用；自建模式禁用）：见下方常量
+ * - S2 真相附录（任何模式运行时都不直接启用）：见下方常量
+ *   注：条目内容层仍带 @@if EJS 过滤，enabled 仅是第一道门控
+ */
+const SCENE_NAME_RE = /^场景\d+$/;
+const SPOILER_S1 = [
+  '还火事件',
+  '伦敦与都柏林家族据点',
+  '都柏林家族势力',
+  '爱布拉娜_基础信息',
+  '爱布拉娜_性格调色盘',
+  '爱布拉娜_三面性',
+  '达洛维小姐',
+  '温斯顿先生',
+  '科尔马克·都柏林',
+  '多琳·都柏林',
+] as const;
+/** S2 真相附录：任何运行时模式都不直接启用（由其内容层 @@if current_pov===laff && current_scene>=123 自行门控） */
+const SPOILER_S2 = ['还火事件_封存真相'] as const;
 
 export interface CustomForm {
   /** 姓名 */
@@ -49,6 +101,8 @@ function initialStep(): Step {
 export const useOpeningStore = defineStore('counterfeit-opening', () => {
   const step = ref<Step>(initialStep());
   const mode = ref<Mode | null>(null);
+  /** 玩法模式：story=剧本 / open=开放世界（stat.mode 写 'free'）；自建角色在两种玩法下均可用 */
+  const gameMode = ref<GameMode>('story');
   const selectedPov = ref<PovKey | null>(null);
   const form = reactive<CustomForm>(emptyForm());
   const submitting = ref(false);
@@ -74,10 +128,11 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
 
   /** 结构化设定摘要块 */
   const summaryBlock = computed<string>(() => {
+    const statMode = gameMode.value === 'open' ? 'free' : mode.value;
     if (mode.value === 'pov' && selectedPov.value) {
       const info = povByKey(selectedPov.value);
       const lines = [
-        `<opening_setup mode="pov" pov="${info.key}" name="${escapeAttr(info.name)}">`,
+        `<opening_setup mode="${statMode}" pov="${info.key}" name="${escapeAttr(info.name)}">`,
         `定位: ${info.role}`,
         `简介: ${info.tagline}`,
       ];
@@ -89,7 +144,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     }
     if (mode.value === 'custom') {
       return [
-        `<opening_setup mode="custom" name="${escapeAttr(form.name.trim())}">`,
+        `<opening_setup mode="${statMode}" name="${escapeAttr(form.name.trim())}">`,
         `性别: ${form.gender || '未填写'}`,
         `所在班级: ${form.className || '未填写'}`,
         `身份: ${form.identity.trim() || '未填写'}`,
@@ -175,8 +230,8 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
       const text = openingText.value;
       const payload = `${summary}\n\n${text}`;
 
-      // MVU 写入：按 MVU-DESIGN §2.1 全量写入 24 变量（双模式各自的 commit 集）
-      // 变量全部写入，因此即使 stat_data 尚未初始化也能建立完整初始状态
+      // MVU 写入：按 MVU-DESIGN §2.1 全量写入初始状态（双模式各自的 commit 集）
+      // 字段路径必须与 schema.ts 对齐，否则 zod 默认 strip 会静默剥离
       try {
         if (typeof getVariables === 'function' && typeof updateVariablesWith === 'function') {
           const variables = getVariables({ type: 'message', message_id: 0 });
@@ -184,9 +239,25 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
             updateVariablesWith(
               vars => {
                 const stat = _.get(vars, 'stat_data') ?? {};
-                // 双模式公共项
+                const isPov = mode.value === 'pov';
+                const isOpen = gameMode.value === 'open';
+                // 三模式公共项（§2.1 通行口径，路径对齐 schema.ts）
+                // open（开放世界攻略）→ stat.mode='free'：current_scene 冻结占位不参与150场路由·time_slot 锚定放课后
+                stat.mode = isOpen ? 'free' : isPov ? 'pov' : 'custom';
                 stat.current_scene = 1;
-                stat.current_date = '2013-05-20';
+                stat.world = {
+                  current_date: '2013-05-20',
+                  current_location: isPov && selectedPov.value
+                    ? POV_CLASSROOM[selectedPov.value]
+                    : '未确认',
+                  time_slot: isOpen ? '放课后' : null,
+                };
+                // custom 模式主角家境未知，保持 null（“未确认”）由叙事后续锚定
+                stat.player = {
+                  cash: isPov && selectedPov.value ? POV_INITIAL_CASH[selectedPov.value] : null,
+                  carried_items: [],
+                };
+                stat.characters = {};
                 stat['Ω_resonance'] = 0;
                 for (const hammer of [
                   'hammer_thunder_1', 'hammer_tea_1', 'hammer_tea_2',
@@ -199,26 +270,12 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
                 stat.laff_reed_authorized_yukino = false;
                 stat.dalloway_pen_used = false;
                 stat.branch_choice = null;
-                if (mode.value === 'pov') {
-                  // §2.1 commit(pov)：mode/POV + 好感覆写 30/30/30/20/15
-                  stat.mode = 'pov';
+                if (isPov) {
                   stat.current_pov = selectedPov.value;
                   stat.custom_protagonist = null;
-                  stat.affection_hachiman = 30;
-                  stat.affection_yukino = 30;
-                  stat.affection_yui = 30;
-                  stat.affection_laff = 20;
-                  stat.affection_iroha = 15;
                 } else {
-                  // §2.1 commit(custom)：七字段 + 好感全 15
-                  stat.mode = 'custom';
                   stat.current_pov = null;
                   stat.custom_protagonist = { ...form };
-                  stat.affection_hachiman = 15;
-                  stat.affection_yukino = 15;
-                  stat.affection_yui = 15;
-                  stat.affection_laff = 15;
-                  stat.affection_iroha = 15;
                 }
                 _.set(vars, 'stat_data', stat);
                 return vars;
@@ -235,6 +292,58 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
       } catch (error) {
         console.error('[开场白] MVU 变量写入失败', error);
         showToast('变量写入失败，请检查 MVU 脚本是否启用', 'error', 4000);
+      }
+
+      // 世界书 enabled 批量切换（MVU-DESIGN §3 · 角色卡绑定世界书）
+      // 三阶门控：commit 翻条目 enabled → 场景条目内容层 @@if mode=="pov" && current_scene==N 进一步过滤 → MVU 变量驱动主AI按场景走
+      // 这里只切 enabled：场景/日历/尾声 = pov 开 · S1 暗线组 = pov 开 · S2 = 恒关。custom 模式全部关，仅留世界观/扮演准则/角色等 S0 公开条目
+      try {
+        if (typeof getCharWorldbookNames === 'function' && typeof getWorldbook === 'function' && typeof updateWorldbookWith === 'function') {
+          const names = getCharWorldbookNames('current');
+          const bookName = names?.primary;
+          if (bookName) {
+            const entries = await getWorldbook(bookName);
+            if (Array.isArray(entries)) {
+              const isOpen = gameMode.value === 'open';
+              const isStoryPov = mode.value === 'pov' && gameMode.value === 'story';
+              const next = entries.map(e => {
+                const n = e.name;
+                if (!n) return e;
+                const isScene = SCENE_NAME_RE.test(n);
+                const isCalendar = n === '剧本日历';
+                const isEpilogue = /^尾声/.test(n);
+                const isS1 = (SPOILER_S1 as readonly string[]).includes(n);
+                const isS2 = (SPOILER_S2 as readonly string[]).includes(n);
+                let nextEnabled: boolean;
+                if (isS2) {
+                  // S2 真相：任何模式都不直接启用（条目自带更严的 @@if 门控）
+                  nextEnabled = false;
+                } else if (isScene || isCalendar || isEpilogue) {
+                  // 场景/日历/尾声：仅剧本模式开；开放世界与自建关
+                  nextEnabled = isStoryPov;
+                } else if (isS1) {
+                  // S1 家族暗线组：剧本POV开；开放世界全开（爱布拉娜可攻略·家族线自由展开）；剧本自建关
+                  nextEnabled = isStoryPov || isOpen;
+                } else {
+                  // S0 公开/世界观/扮演准则/角色条目等保留原 enabled 状态
+                  nextEnabled = e.enabled;
+                }
+                return { ...e, enabled: nextEnabled };
+              });
+              await updateWorldbookWith(bookName, () => next);
+              console.info(`[开场白] 世界书 enabled 批量切换完成（mode=${isOpen ? 'free' : isStoryPov ? 'pov' : 'custom'}，共 ${entries.length} 条）`);
+            } else {
+              console.error('[开场白] getWorldbook 未返回条目数组，世界书切换跳过');
+            }
+          } else {
+            console.warn('[开场白] 当前角色卡未绑定主世界书，世界书切换跳过');
+          }
+        } else {
+          console.warn('[开场白] 无世界书 API（getCharWorldbookNames/getWorldbook/updateWorldbookWith 缺失），世界书 enabled 未切换');
+        }
+      } catch (error) {
+        console.error('[开场白] 世界书 enabled 切换失败', error);
+        showToast('世界书切换失败，可能需手动启用/禁用场景条目', 'error', 4000);
       }
 
       // 落盘开场：替换 0 楼的 <OpeningUI/> 占位符，占位符消失后界面随刷新卸载
@@ -271,6 +380,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
   return {
     step,
     mode,
+    gameMode,
     selectedPov,
     form,
     submitting,
