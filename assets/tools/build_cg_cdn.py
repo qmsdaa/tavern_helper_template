@@ -26,9 +26,9 @@ SCENE_DIR = os.path.join(CARD, "世界书", "事件")
 OUT = os.path.join(ROOT, "tavern_helper_template", "assets", "Counterfeit", "CG")
 MAP_PATH = os.path.join(OUT, "cg-map.json")
 
-ALL_SCENES = [11, 21, 24, 44, 57, 67, 68, 70, 76, 85, 88, 90, 96, 99, 100, 105, 117, 122, 124, 125, 132, 143, 148, 150]
+ALL_SCENES = [9, 11, 21, 24, 44, 57, 67, 68, 70, 76, 85, 88, 90, 96, 99, 100, 105, 117, 122, 124, 125, 132, 143, 148, 150]
 COND = {122: "laff"}
-NOTE = {150: "公共线终点·分支变体待做", 105: "待绘制", 143: "待绘制", 148: "待绘制"}
+NOTE = {150: "公共线终点·分支变体待做"}
 
 CN_NUM = {}
 def _cn(n):
