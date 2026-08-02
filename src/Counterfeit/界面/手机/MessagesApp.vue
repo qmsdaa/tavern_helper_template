@@ -1,167 +1,181 @@
 <template>
   <div class="app-screen">
-    <!-- 会话列表 -->
-    <template v-if="!activeFriend">
-      <AppHeader title="消息" />
+    <template v-if="!activeThread">
+      <AppHeader title="消息">
+        <button class="add-group-btn" title="新建群聊" @click="showGroupCreator = true">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+      </AppHeader>
       <div class="thread-list">
-        <button v-for="friend in friends" :key="friend.name" class="thread-item" @click="openThread(friend.name)">
-          <span class="avatar" :style="{ background: friend.tint }">{{ friend.name.slice(0, 1) }}</span>
-          <span class="thread-main">
-            <span class="thread-name">{{ friend.name }}</span>
-            <span class="thread-preview">{{ previewOf(friend.name) }}</span>
+        <button v-for="thread in store.threads" :key="thread.id" class="thread-item" @click="openThread(thread.id)">
+          <span class="avatar" :style="{ background: tintForName(thread.title) }">
+            <i v-if="thread.type === 'group'" class="fa-solid fa-user-group"></i>
+            <template v-else>{{ thread.title.slice(0, 1) }}</template>
           </span>
-          <span v-if="store.unread[friend.name]" class="unread-badge">{{ store.unread[friend.name] }}</span>
+          <span class="thread-main">
+            <span class="thread-name">
+              {{ thread.title }}
+              <small>{{ thread.type === 'group' ? `${thread.participants.length}人群聊` : '私聊' }}</small>
+            </span>
+            <span class="thread-preview">{{ previewOf(thread.id) }}</span>
+          </span>
+          <span v-if="thread.unread" class="unread-badge">{{ thread.unread }}</span>
           <i class="fa-solid fa-chevron-right thread-arrow"></i>
         </button>
-        <p v-if="!friends.length" class="empty-hint">进入游戏后，这里会出现可以聊天的人</p>
+        <p v-if="!store.threads.length" class="empty-hint">
+          还没有会话。可以从好友资料发起私聊，或点击右上角创建群聊。
+        </p>
       </div>
     </template>
 
-    <!-- 对话页 -->
     <template v-else>
       <div class="app-header">
-        <button class="back-btn" @click="activeFriend = ''"><i class="fa-solid fa-chevron-left"></i></button>
-        <h2 class="app-title">{{ activeFriend }}</h2>
+        <button class="back-btn" @click="activeThreadId = ''"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="title-block">
+          <h2 class="app-title">{{ activeThread.title }}</h2>
+          <span>{{ activeThread.type === 'group' ? activeThread.participants.join('、') : '私聊' }}</span>
+        </div>
+        <button class="clear-btn" title="清空聊天" @click="clearActiveThread">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
       </div>
 
       <div ref="scrollEl" class="bubble-scroll">
-        <div v-for="(msg, i) in messagesOf(activeFriend)" :key="i" class="bubble-row" :class="msg.from">
-          <span class="bubble">{{ msg.text }}</span>
+        <div
+          v-for="message in store.messagesOf(activeThread.id)"
+          :key="message.id"
+          class="bubble-row"
+          :class="{ me: message.sender === playerName, them: message.sender !== playerName }"
+        >
+          <span v-if="activeThread.type === 'group' && message.sender !== playerName" class="sender-label">
+            {{ message.sender }}
+          </span>
+          <span class="bubble">{{ message.text }}</span>
         </div>
         <div v-if="typing" class="bubble-row them">
           <span class="bubble typing"><i></i><i></i><i></i></span>
         </div>
       </div>
 
-      <Transition name="toast">
-        <div v-if="affectionToast" class="affection-toast">好感 +1 · 现在 {{ affectionToast }}</div>
-      </Transition>
-
+      <p v-if="blocked" class="blocked-hint">该联系人已被屏蔽，无法继续私聊。解除屏蔽不会恢复已清空的消息。</p>
       <div class="input-bar">
-        <input v-model="draft" type="text" placeholder="iMessage 信息" @keydown.enter="send()" />
-        <button class="send-btn" :disabled="!draft.trim()" @click="send()">
+        <input
+          v-model="draft"
+          type="text"
+          :disabled="typing || blocked"
+          :placeholder="blocked ? '已屏蔽联系人' : activeThread.type === 'group' ? '发送群消息' : 'iMessage 信息'"
+          @keydown.enter="send()"
+        />
+        <button class="send-btn" :disabled="typing || blocked || !draft.trim()" @click="send()">
           <i class="fa-solid fa-arrow-up"></i>
         </button>
       </div>
     </template>
+
+    <Transition name="sheet">
+      <div v-if="showGroupCreator" class="creator-mask" @click="showGroupCreator = false">
+        <div class="creator-sheet" @click.stop>
+          <h3>新建群聊</h3>
+          <label class="group-title-field">
+            <span>群名</span>
+            <input v-model.trim="groupTitle" maxlength="30" placeholder="例：奉仕部日常" />
+          </label>
+          <p class="creator-hint">创建群聊不会自动把成员添加为私聊联系人；以后删除联系人也不会退出群聊。</p>
+          <div class="member-list">
+            <label v-for="contact in store.contacts" :key="contact.character">
+              <input v-model="groupMembers" type="checkbox" :value="contact.character" />
+              <span>{{ contact.display_name }}</span>
+            </label>
+          </div>
+          <button class="create-btn" :disabled="!groupMembers.length" @click="createGroup">
+            创建群聊
+          </button>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue';
-import { buildGenerateExtra } from './settings';
-import { computeFriends } from './vars';
+import { tintForName } from './vars';
 import { usePhoneStore } from './store';
 
 const store = usePhoneStore();
-
-const friends = computed(() => computeFriends(store.snapshot));
-const messagesOf = (name: string) => store.sessions[name] ?? [];
-
-const activeFriend = ref('');
+const activeThreadId = ref('');
 const draft = ref('');
 const typing = ref(false);
-const affectionToast = ref('');
 const scrollEl = ref<HTMLElement | null>(null);
-let toastTimer = 0;
+const showGroupCreator = ref(false);
+const groupTitle = ref('');
+const groupMembers = ref<string[]>([]);
 
-// 好友 app「发消息」跳转
+const playerName = computed(() => store.snapshot.playerName || store.snapshot.customName || '玩家');
+const activeThread = computed(() => store.phone.threads[activeThreadId.value] ?? null);
+const blocked = computed(() => {
+  if (!activeThread.value || activeThread.value.type !== 'direct') return false;
+  const target = activeThread.value.participants.find(name => name !== playerName.value);
+  return Boolean(target && store.phone.contacts[target]?.status === 'blocked');
+});
+
 watch(
   () => store.pendingThread,
-  name => {
-    if (name) {
-      openThread(name);
-      store.pendingThread = '';
-    }
+  threadId => {
+    if (!threadId) return;
+    openThread(threadId);
+    store.pendingThread = '';
   },
   { immediate: true },
 );
 
-function previewOf(name: string): string {
-  const list = messagesOf(name);
-  return list.length ? list[list.length - 1].text : '开始聊天吧';
+function previewOf(threadId: string): string {
+  const list = store.messagesOf(threadId);
+  if (!list.length) return '开始聊天吧';
+  const last = list[list.length - 1];
+  return `${last.sender === playerName.value ? '你' : last.sender}：${last.text}`;
 }
 
-function openThread(name: string) {
-  if (!store.sessions[name]) {
-    store.sessions[name] = [];
-  }
-  store.clearUnread(name);
-  activeFriend.value = name;
-  nextTick(() => scrollToBottom());
+function openThread(threadId: string) {
+  if (!store.phone.threads[threadId]) return;
+  store.clearUnread(threadId);
+  activeThreadId.value = threadId;
+  nextTick(scrollToBottom);
 }
 
 function scrollToBottom() {
   const el = scrollEl.value;
-  if (el) {
-    el.scrollTop = el.scrollHeight;
-  }
+  if (el) el.scrollTop = el.scrollHeight;
 }
 
 async function send() {
   const text = draft.value.trim();
-  if (!text || !activeFriend.value) {
-    return;
-  }
-  const friend = activeFriend.value;
-  store.pushMessage(friend, { from: 'me', text, t: new Date().toISOString() });
+  if (!text || !activeThread.value || typing.value || blocked.value) return;
+  const threadId = activeThread.value.id;
   draft.value = '';
   typing.value = true;
-  nextTick(() => scrollToBottom());
-
+  nextTick(scrollToBottom);
   try {
-    const reply = await requestReply(friend, text);
-    for (const line of reply
-      .split('\n')
-      .map(s => s.trim())
-      .filter(Boolean)) {
-      store.pushMessage(friend, { from: 'them', text: line, t: new Date().toISOString() });
-    }
-    // 攻略主战场：完成一次对话，好感 +1（可在设置·NPC 互动里关闭）
-    if (store.npc.affectionGain) {
-      const next = store.bumpAffection(friend, 1);
-      if (next != null) {
-        affectionToast.value = String(next);
-        window.clearTimeout(toastTimer);
-        toastTimer = window.setTimeout(() => (affectionToast.value = ''), 1600);
-      }
-    }
+    await store.sendThreadMessage(threadId, text);
   } catch (error) {
-    console.info('[手机·消息] 预览模式无法生成回复', error);
-    store.pushMessage(friend, { from: 'them', text: '（预览模式：接入酒馆后这里会由对方亲自回复）' });
+    console.warn('[手机·消息] 发送或回复失败', error);
   } finally {
     typing.value = false;
-    store.persistMessages();
-    nextTick(() => scrollToBottom());
+    nextTick(scrollToBottom);
   }
 }
 
-async function requestReply(friend: string, text: string): Promise<string> {
-  if (typeof generateRaw !== 'function') {
-    throw new Error('no generateRaw');
-  }
-  const hero = store.snapshot.customName || '玩家';
-  const persona = (store.personas[friend] ?? '').slice(0, 1500);
-  const history = messagesOf(friend)
-    .slice(-store.npc.historyLength)
-    .map(m => `${m.from === 'me' ? hero : friend}：${m.text}`)
-    .join('\n');
-  const extra = store.npc.extraPrompt.trim();
-  const prompt = [
-    `你正在《我的青春恋爱物语果然有问题》的平行世界 AU 里扮演「${friend}」，用手机和「${hero}」发消息。`,
-    persona ? `「${friend}」的角色资料：\n${persona}` : '',
-    `要求：以「${friend}」的口吻与性格回复；用简体中文；1-3 条短消息，每条一行；不要解释、不要旁白、不要带角色名前缀。`,
-    extra ? `附加要求：${extra}` : '',
-    `对话记录：\n${history}`,
-  ]
-    .filter(Boolean)
-    .join('\n\n');
-  const raw = await generateRaw({
-    user_input: prompt,
-    should_silence: true,
-    ...buildGenerateExtra(store.llm),
-  } as Parameters<typeof generateRaw>[0]);
-  return typeof raw === 'string' ? raw : String(raw ?? '');
+function clearActiveThread() {
+  if (!activeThread.value) return;
+  if (!window.confirm(`只清空“${activeThread.value.title}”的聊天记录？联系人和群聊本身会保留。`)) return;
+  store.clearThread(activeThread.value.id);
+}
+
+function createGroup() {
+  const thread = store.createGroup(groupTitle.value, groupMembers.value);
+  showGroupCreator.value = false;
+  groupTitle.value = '';
+  groupMembers.value = [];
+  openThread(thread.id);
 }
 </script>
 
@@ -175,30 +189,48 @@ async function requestReply(friend: string, text: string): Promise<string> {
   position: relative;
 }
 
+.add-group-btn,
+.clear-btn {
+  width: 34px;
+  height: 34px;
+  color: var(--c-ios-blue);
+  font-size: 14px;
+}
+
 .app-header {
   flex: none;
-  height: 48px;
+  min-height: 48px;
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  background: rgba(255, 255, 255, 0.75);
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--c-separator);
+}
 
-  .back-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    color: var(--c-ios-blue);
+.back-btn {
+  width: 34px;
+  height: 34px;
+  color: var(--c-ios-blue);
+}
+
+.title-block {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+
+  h2 {
     font-size: 15px;
+    font-weight: 700;
   }
 
-  .app-title {
-    flex: 1;
-    text-align: center;
-    font-size: 16px;
-    font-weight: 700;
-    transform: translateX(-17px);
+  span {
+    display: block;
+    overflow: hidden;
+    color: var(--c-ios-gray);
+    font-size: 9px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -219,10 +251,6 @@ async function requestReply(friend: string, text: string): Promise<string> {
   & + .thread-item {
     border-top: 1px solid var(--c-separator);
   }
-
-  &:active {
-    background: #f2f2f7;
-  }
 }
 
 .avatar {
@@ -234,7 +262,7 @@ async function requestReply(friend: string, text: string): Promise<string> {
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
 }
 
@@ -243,25 +271,32 @@ async function requestReply(friend: string, text: string): Promise<string> {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .thread-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
+
+  small {
+    margin-left: 5px;
+    color: var(--c-ios-gray);
+    font-size: 9px;
+    font-weight: 400;
+  }
 }
 
 .thread-preview {
-  font-size: 13px;
-  color: var(--c-ios-gray);
   overflow: hidden;
+  color: var(--c-ios-gray);
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .thread-arrow {
   color: #c7c7cc;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .unread-badge {
@@ -272,7 +307,6 @@ async function requestReply(friend: string, text: string): Promise<string> {
   background: #ff3b30;
   color: #fff;
   font-size: 11px;
-  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -281,8 +315,9 @@ async function requestReply(friend: string, text: string): Promise<string> {
 .empty-hint {
   padding: 40px 24px;
   text-align: center;
-  font-size: 13px;
   color: var(--c-ios-gray);
+  font-size: 12px;
+  line-height: 1.8;
 }
 
 .bubble-scroll {
@@ -296,18 +331,25 @@ async function requestReply(friend: string, text: string): Promise<string> {
 
 .bubble-row {
   display: flex;
+  flex-direction: column;
 
   &.me {
-    justify-content: flex-end;
+    align-items: flex-end;
   }
 
   &.them {
-    justify-content: flex-start;
+    align-items: flex-start;
   }
 }
 
+.sender-label {
+  margin: 0 8px 2px;
+  color: var(--c-ios-gray);
+  font-size: 9px;
+}
+
 .bubble {
-  max-width: 74%;
+  max-width: 76%;
   padding: 8px 13px;
   border-radius: 18px;
   font-size: 14px;
@@ -337,13 +379,6 @@ async function requestReply(friend: string, text: string): Promise<string> {
       border-radius: 50%;
       background: #9c9ca1;
       animation: typing-blink 1.2s infinite;
-
-      &:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-      &:nth-child(3) {
-        animation-delay: 0.4s;
-      }
     }
   }
 }
@@ -359,31 +394,12 @@ async function requestReply(friend: string, text: string): Promise<string> {
   }
 }
 
-.affection-toast {
-  position: absolute;
-  left: 50%;
-  bottom: 64px;
-  transform: translateX(-50%);
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(28, 28, 30, 0.85);
-  color: #fff;
-  font-size: 12px;
-  letter-spacing: 1px;
-  z-index: 6;
-}
-
-.toast-enter-active,
-.toast-leave-active {
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-
-.toast-enter-from,
-.toast-leave-to {
-  opacity: 0;
-  transform: translate(-50%, 8px);
+.blocked-hint {
+  padding: 6px 12px;
+  background: rgba(255, 59, 48, 0.08);
+  color: var(--c-danger);
+  text-align: center;
+  font-size: 10px;
 }
 
 .input-bar {
@@ -393,7 +409,6 @@ async function requestReply(friend: string, text: string): Promise<string> {
   gap: 8px;
   padding: 8px 12px 10px;
   background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(14px);
   border-top: 1px solid var(--c-separator);
 
   input {
@@ -402,14 +417,9 @@ async function requestReply(friend: string, text: string): Promise<string> {
     padding: 0 14px;
     border: 1px solid var(--c-separator);
     border-radius: 18px;
-    font-size: 14px;
-    font-family: inherit;
-    outline: none;
     background: #fff;
-
-    &:focus {
-      border-color: var(--c-ios-blue);
-    }
+    font-size: 14px;
+    outline: none;
   }
 }
 
@@ -420,10 +430,85 @@ async function requestReply(friend: string, text: string): Promise<string> {
   border-radius: 50%;
   background: var(--c-ios-blue);
   color: #fff;
-  font-size: 14px;
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+.creator-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.creator-sheet {
+  width: 100%;
+  max-height: 78%;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 20px 20px 0 0;
+  background: var(--c-phone-screen);
+
+  h3 {
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 17px;
+  }
+}
+
+.group-title-field {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
+
+  span {
+    color: var(--c-ios-gray);
+    font-size: 12px;
+  }
+
+  input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid var(--c-separator);
+    border-radius: 9px;
+    background: #fff;
+  }
+}
+
+.creator-hint {
+  margin: 10px 0;
+  color: var(--c-ios-gray);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.member-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: #fff;
+    font-size: 12px;
+  }
+}
+
+.create-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--c-ios-blue);
+  color: #fff;
 
   &:disabled {
     opacity: 0.4;

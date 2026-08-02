@@ -37,6 +37,9 @@ console.info('[Counterfeit·手机助手] eval');
     if (hostWindow[LISTENER_KEY]) {
       hostWindow.removeEventListener('message', hostWindow[LISTENER_KEY]);
     }
+    if (hostWindow.__cpl_resize__) {
+      hostWindow.removeEventListener('resize', hostWindow.__cpl_resize__);
+    }
     if (!hostDocument.body) {
       return;
     }
@@ -80,7 +83,10 @@ console.info('[Counterfeit·手机助手] eval');
       'getChatMessages', 'setChatMessages', 'getLastMessageId',
       'generateRaw', 'generate', 'eventOn', 'eventMakeFirst', 'eventEmit', 'tavern_events',
       'getCharWorldbookNames', 'getWorldbook', 'updateWorldbookWith', 'createWorldbook',
-      'getOrCreateChatWorldbook', '_', '$', 'jQuery',
+      'getOrCreateChatWorldbook',
+      'getModelList', 'getProxyPresetNames', 'getPresetNames',
+      'stopGenerationById', 'stopAllGeneration',
+      '_', '$', 'jQuery',
     ];
     const injectApis = () => {
       const win = iframe.contentWindow;
@@ -139,12 +145,13 @@ console.info('[Counterfeit·手机助手] eval');
       const p = defaultPos();
       applyPos(p.x, p.y);
     }
-    hostWindow.addEventListener('resize', () => {
+    hostWindow.__cpl_resize__ = () => {
       if (!hasSavedPos) {
         const p = defaultPos();
         applyPos(p.x, p.y);
       }
-    });
+    };
+    hostWindow.addEventListener('resize', hostWindow.__cpl_resize__);
 
     let drag = null;
     btn.addEventListener('pointerdown', e => {

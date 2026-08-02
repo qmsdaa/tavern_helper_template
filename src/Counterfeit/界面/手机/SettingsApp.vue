@@ -53,7 +53,9 @@
           </label>
           <button class="mini-btn" :disabled="modelLoading" @click="pullModels">
             <i class="fa-solid fa-cloud-arrow-down"></i>
-            {{ modelLoading ? '拉取中…' : modelOptions.length ? `已拉取 ${modelOptions.length} 个模型` : '拉取模型列表' }}
+            {{
+              modelLoading ? '拉取中…' : modelOptions.length ? `已拉取 ${modelOptions.length} 个模型` : '拉取模型列表'
+            }}
           </button>
         </template>
 
@@ -90,17 +92,70 @@
           <span>{{ llmStatus }}</span>
           <button v-if="llmDraft.mode !== 'default'" class="link-btn" @click="resetLlm">恢复默认</button>
         </div>
-        <p class="field-hint">配置只保存在本机（localStorage），用于消息回复、NPC 来信与论坛生成；Key 不会写入聊天变量。</p>
+        <p class="field-hint">
+          配置只保存在本机（localStorage），用于消息回复、NPC 来信与论坛生成；Key 不会写入聊天变量。
+        </p>
+      </section>
+
+      <!-- 主动来信与论坛共用的内容导演提示词 -->
+      <section class="card">
+        <h3 class="card-title">内容导演</h3>
+        <label class="field field-block">
+          <span>自定义提示词</span>
+          <textarea
+            v-model="contentPromptDraft"
+            rows="5"
+            :maxlength="CONTENT_PROMPT_MAX_LENGTH"
+            placeholder="例：来信多聊考试周的日常；论坛增加求助帖和夸张标题，减少具名角色传闻"
+          ></textarea>
+        </label>
+        <div class="prompt-meta">
+          <span>{{ contentPromptDraft.length }}/{{ CONTENT_PROMPT_MAX_LENGTH }}</span>
+          <button v-if="contentPromptDraft" class="link-btn" @click="resetContentPrompt">清空</button>
+        </div>
+        <p class="field-hint">
+          同时作用于 NPC
+          主动来信、论坛发帖和回复链；不影响玩家主动私聊。角色资料、已发生事实、知情范围、论坛独立性和禁止剧透规则始终优先。
+        </p>
       </section>
 
       <!-- NPC 互动设置 -->
+      <section class="card">
+        <h3 class="card-title">主线同步</h3>
+        <div class="seg">
+          <button
+            v-for="option in SYNC_MODES"
+            :key="option.value"
+            class="seg-item"
+            :class="{ active: npcDraft.mainlineSyncMode === option.value }"
+            @click="npcDraft.mainlineSyncMode = option.value"
+          >
+            {{ option.label }}
+          </button>
+        </div>
+        <p class="field-hint">
+          自动：每次主线回复后只提取明确发生的联系方式、群聊和约定；手动：加入待解析队列；关闭：完全不解析。手机聊天不会自行触发主线生成。
+        </p>
+        <div v-if="npcDraft.mainlineSyncMode === 'manual'" class="manual-sync">
+          <span>待解析 {{ store.phone.context.manual_queue.length }} 条</span>
+          <button class="mini-btn" :disabled="manualParsing" @click="parseLatest">
+            {{ manualParsing ? '解析中…' : '解析最新主线回复' }}
+          </button>
+        </div>
+        <p v-if="manualParseHint" class="field-hint">{{ manualParseHint }}</p>
+      </section>
+
       <section class="card">
         <h3 class="card-title">NPC 互动</h3>
 
         <div class="setting-row toggle-row">
           <i class="fa-solid fa-envelope-open-text"></i>
           <span>NPC 主动来信</span>
-          <button class="switch" :class="{ on: npcDraft.proactiveEnabled }" @click="npcDraft.proactiveEnabled = !npcDraft.proactiveEnabled">
+          <button
+            class="switch"
+            :class="{ on: npcDraft.proactiveEnabled }"
+            @click="npcDraft.proactiveEnabled = !npcDraft.proactiveEnabled"
+          >
             <i></i>
           </button>
         </div>
@@ -111,55 +166,56 @@
             <input v-model.number="npcDraft.proactiveChance" type="range" min="0" max="100" step="5" />
             <b>{{ npcDraft.proactiveChance }}%</b>
           </div>
-          <div class="field-pair">
-            <label class="field">
-              <span>冷却（分钟）</span>
-              <input v-model.number="npcDraft.cooldownMinutes" type="number" min="1" max="60" />
-            </label>
-            <label class="field">
-              <span>好感门槛</span>
-              <select v-model.number="npcDraft.affectionGate">
-                <option :value="0">陌生（0+）</option>
-                <option :value="30">熟悉（30+）</option>
-                <option :value="60">信任（60+）</option>
-                <option :value="80">心动（80+）</option>
-              </select>
-            </label>
-          </div>
+          <label class="field">
+            <span>冷却（分钟）</span>
+            <input v-model.number="npcDraft.cooldownMinutes" type="number" min="1" max="60" />
+          </label>
         </template>
-
-        <div class="setting-row toggle-row">
-          <i class="fa-solid fa-heart-circle-plus"></i>
-          <span>对话完成 好感+1</span>
-          <button class="switch" :class="{ on: npcDraft.affectionGain }" @click="npcDraft.affectionGain = !npcDraft.affectionGain">
-            <i></i>
-          </button>
-        </div>
 
         <label class="field">
           <span>回复引用历史条数</span>
           <input v-model.number="npcDraft.historyLength" type="number" min="2" max="20" />
         </label>
 
-        <label class="field field-block">
-          <span>附加提示词（拼进回复/来信 prompt）</span>
-          <textarea
-            v-model="npcDraft.extraPrompt"
-            rows="3"
-            placeholder="例：多用语气词和颜文字；回复控制在一条以内"
-          ></textarea>
-        </label>
+        <button class="mini-btn" @click="resetNpc"><i class="fa-solid fa-rotate-left"></i> 恢复互动默认设置</button>
+        <p class="field-hint">添加好友、删除好友、创建群聊和聊天次数都不会机械修改关系变量。</p>
+      </section>
 
-        <button class="mini-btn" @click="resetNpc">
-          <i class="fa-solid fa-rotate-left"></i> 恢复互动默认设置
-        </button>
+      <section class="card">
+        <h3 class="card-title">论坛自动刷新</h3>
+        <div class="setting-row toggle-row">
+          <i class="fa-solid fa-comments"></i>
+          <span>主线回复后自动生成新帖</span>
+          <button
+            class="switch"
+            :class="{ on: npcDraft.forumAutoRefreshEnabled }"
+            @click="npcDraft.forumAutoRefreshEnabled = !npcDraft.forumAutoRefreshEnabled"
+          >
+            <i></i>
+          </button>
+        </div>
+        <template v-if="npcDraft.forumAutoRefreshEnabled">
+          <div class="setting-row range-row">
+            <span>触发概率</span>
+            <input v-model.number="npcDraft.forumAutoRefreshChance" type="range" min="0" max="100" step="5" />
+            <b>{{ npcDraft.forumAutoRefreshChance }}%</b>
+          </div>
+          <label class="field">
+            <span>冷却（分钟）</span>
+            <input v-model.number="npcDraft.forumAutoRefreshCooldownMinutes" type="number" min="1" max="1440" />
+          </label>
+        </template>
+        <p class="field-hint">
+          每次主线 AI 回复后按概率触发；冷却避免连续刷屏。也可在"论坛"里手动点"刷新论坛"立即生成。
+        </p>
       </section>
 
       <section class="card">
         <h3 class="card-title">关于</h3>
-        <div class="row"><span>版本</span><b>v4 · Counterfeit</b></div>
+        <div class="row"><span>版本</span><b>v5 · Counterfeit</b></div>
         <div class="row"><span>变量</span><b>stat_data.phone.*</b></div>
-        <div class="row"><span>好友资料</span><b>世界书 [手机] 条目</b></div>
+        <div class="row"><span>数据层</span><b>contacts / threads / messages</b></div>
+        <div class="row"><span>长期记忆</span><b>摘要 + 事实 + 待办</b></div>
       </section>
     </div>
   </div>
@@ -167,7 +223,14 @@
 
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue';
-import { fetchModelList, listProxyPresets, llmStatusText, type LlmConfig, type NpcSettings } from './settings';
+import {
+  CONTENT_PROMPT_MAX_LENGTH,
+  fetchModelList,
+  listProxyPresets,
+  llmStatusText,
+  type LlmConfig,
+  type NpcSettings,
+} from './settings';
 import { usePhoneStore } from './store';
 
 const store = usePhoneStore();
@@ -181,12 +244,20 @@ const LLM_MODES: { value: LlmConfig['mode']; label: string }[] = [
   { value: 'custom', label: '自定义 API' },
   { value: 'preset', label: '代理预设' },
 ];
+const SYNC_MODES: { value: NpcSettings['mainlineSyncMode']; label: string }[] = [
+  { value: 'auto', label: '自动' },
+  { value: 'manual', label: '手动' },
+  { value: 'off', label: '关闭' },
+];
 
 const llmDraft = reactive<LlmConfig>({ ...store.llm });
 const npcDraft = reactive<NpcSettings>({ ...store.npc });
+const contentPromptDraft = ref(store.contentPrompt);
 const modelOptions = ref<string[]>([]);
 const modelLoading = ref(false);
 const proxyPresets = ref<string[]>([]);
+const manualParsing = ref(false);
+const manualParseHint = ref('');
 
 const llmStatus = computed(() => llmStatusText(llmDraft));
 
@@ -208,9 +279,24 @@ const maxTokensText = computed({
 
 watch(llmDraft, () => store.updateLlmConfig({ ...llmDraft }), { deep: true });
 watch(npcDraft, () => store.updateNpcSettings({ ...npcDraft }), { deep: true });
+watch(contentPromptDraft, value => store.updateContentPrompt(value));
 // 重置后回同步草稿
-watch(() => store.llm, v => Object.assign(llmDraft, v));
-watch(() => store.npc, v => Object.assign(npcDraft, v));
+watch(
+  () => store.llm,
+  v => Object.assign(llmDraft, v),
+);
+watch(
+  () => store.npc,
+  v => Object.assign(npcDraft, v),
+);
+watch(
+  () => store.contentPrompt,
+  value => {
+    if (value !== contentPromptDraft.value) {
+      contentPromptDraft.value = value;
+    }
+  },
+);
 
 async function pullModels() {
   modelLoading.value = true;
@@ -225,6 +311,32 @@ function resetLlm() {
 
 function resetNpc() {
   store.resetNpcSettings();
+}
+
+function resetContentPrompt() {
+  store.resetContentPrompt();
+}
+
+async function parseLatest() {
+  if (manualParsing.value) return;
+  manualParsing.value = true;
+  manualParseHint.value = '';
+  try {
+    const outcome = await store.parseLatestMainline();
+    if (outcome.status === 'error') {
+      manualParseHint.value = `解析失败：${outcome.error || '请检查 LLM 配置'}`;
+    } else if (outcome.status === 'no-message') {
+      manualParseHint.value = '没有可解析的主线回复';
+    } else if (outcome.addedContacts.length) {
+      manualParseHint.value = `已添加 ${outcome.addedContacts.length} 位联系人`;
+    } else {
+      const extra =
+        outcome.addedGroups + outcome.addedFacts + outcome.addedAppointments;
+      manualParseHint.value = extra ? `已记录 ${extra} 项手机事实` : '本次没有可提取的手机事实';
+    }
+  } finally {
+    manualParsing.value = false;
+  }
 }
 
 onMounted(() => {
@@ -430,6 +542,29 @@ async function reloadData() {
   font-size: 11px;
   color: var(--c-ios-gray);
   line-height: 1.6;
+}
+
+.prompt-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 22px;
+  font-size: 11px;
+  color: var(--c-ios-gray);
+}
+
+.manual-sync {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+  color: var(--c-ios-gray);
+  font-size: 11px;
+
+  .mini-btn {
+    margin: 0;
+  }
 }
 
 .mini-btn {

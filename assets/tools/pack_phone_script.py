@@ -25,7 +25,7 @@ BRIDGE_SHIM = """<script>
 (function(){
 // Counterfeit API 桥：手机 iframe 的 parent 是宿主页面（没有酒馆 API），
 // 真正的 API 在酒馆助手脚本沙箱里——加载器已把它命名为 __counterfeit_sandbox__。
-var N=['getVariables','updateVariablesWith','insertOrAssignVariables','deleteVariable','getChatMessages','setChatMessages','getLastMessageId','generateRaw','generate','eventOn','eventMakeFirst','eventEmit','tavern_events','getCharWorldbookNames','getWorldbook','updateWorldbookWith','createWorldbook','getOrCreateChatWorldbook','_','$','jQuery'];
+var N=['getVariables','updateVariablesWith','insertOrAssignVariables','deleteVariable','getChatMessages','setChatMessages','getLastMessageId','generateRaw','generate','eventOn','eventMakeFirst','eventEmit','tavern_events','getCharWorldbookNames','getWorldbook','updateWorldbookWith','createWorldbook','getOrCreateChatWorldbook','getModelList','getProxyPresetNames','getPresetNames','stopGenerationById','stopAllGeneration','_','$','jQuery'];
 function pick(host){
   for(var i=0;i<N.length;i++){var k=N[i];
     try{if(typeof window[k]==='undefined'&&typeof host[k]!=='undefined'){window[k]=host[k];}}catch(e){}

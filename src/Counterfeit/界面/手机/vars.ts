@@ -1,5 +1,5 @@
 // MVU 变量读取（容错：无 MVU 环境时返回空快照）
-// 对齐 MVU-DESIGN v0.4.2：mode / current_pov / custom_protagonist / current_scene / current_date / affection_*
+// 对齐 MVU-DESIGN v0.5.1：world / player / 动态 characters；phone 仍由手机 store 独占写入
 import { ASSET_BASE } from '../../config';
 
 /** 素材完整 URL（文件位于 ASSET_BASE 下） */
@@ -7,13 +7,87 @@ export function assetUrl(file: string): string {
   return `${ASSET_BASE}/${file}`;
 }
 
+/**
+ * 剥离世界书条目里的 EJS：手机 iframe 没有 getvar，原样注入会在 generate 模板编译期炸掉
+ * （截断在 <% 块中间 → Unexpected token）。
+ * 规则：if/else 条件链整段删除（含内部文本——阶段/恋人叠加层只应出现在主线渲染结果里，
+ * 手机拿不到条件真值，与其泄漏全部叠加层，不如只保留基础层）；纯逻辑标签（getvar 等）
+ * 只删标签、保留标签之间的正文。
+ */
+function stripEjs(content: string): string {
+  const tagRe = /<%[-_=]?[\s\S]*?[-_]?%>/g;
+  let out = '';
+  let cursor = 0;
+  let depth = 0;
+  for (const match of content.matchAll(tagRe)) {
+    const index = match.index ?? 0;
+    const inner = match[0].replace(/^<%[-_=]?/, '').replace(/[-_]?%>$/, '').trim();
+    const isIfOpen = /^if\s*\(/.test(inner);
+    const isChainMiddle = /^\}\s*else\b/.test(inner);
+    const isClose = /^\}/.test(inner) && !isChainMiddle;
+    if (depth === 0) {
+      out += content.slice(cursor, index);
+      cursor = index + match[0].length;
+      if (isIfOpen) {
+        depth = 1;
+      }
+    } else {
+      if (isIfOpen) {
+        depth += 1;
+      } else if (isClose) {
+        depth -= 1;
+        if (depth === 0) {
+          cursor = index + match[0].length;
+        }
+      }
+    }
+  }
+  out += content.slice(cursor);
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+export type Commitment = '未确认' | '仅朋友' | '恋人';
+
+export interface RelationshipSnapshot {
+  bond: number;
+  romance: number;
+  commitment: Commitment;
+}
+
+export interface LatestUserMemorySnapshot {
+  memory: string;
+  inner_thought: string;
+}
+
+export interface OutfitSnapshot {
+  outerwear: string;
+  inner_layer: string;
+  bottoms: string;
+  socks: string;
+  underwear: string;
+  shoes: string;
+}
+
+export interface CharacterSnapshot {
+  display_name: string;
+  present: boolean;
+  known: boolean;
+  relationship: RelationshipSnapshot;
+  latest_user_memory: LatestUserMemorySnapshot;
+  outfit: OutfitSnapshot;
+}
+
 export interface MvuSnapshot {
   mode: 'pov' | 'custom' | null;
   pov: string | null;
+  playerName: string;
   customName: string;
   scene: number | null;
   date: string;
-  affection: Record<string, number>;
+  location: string;
+  cash: number | null;
+  carriedItems: string[];
+  characters: Record<string, CharacterSnapshot>;
   hasMvu: boolean;
 }
 
@@ -24,21 +98,13 @@ const POV_NAMES: Record<string, string> = {
   laff: '拉芙希妮·都柏林',
 };
 
-export const AFFECTION_LABELS: Record<string, string> = {
-  affection_hachiman: '八幡',
-  affection_yukino: '雪乃',
-  affection_yui: '结衣',
-  affection_laff: '拉芙希妮',
-  affection_iroha: '一色',
-};
-
 /** 十幕区间（与 WORKFLOW §大纲总览一致） */
 const ACT_TABLE: [number, string][] = [
-  [10, '第一幕 · 入部·磨合'],
-  [25, '第二幕 · 暑夏·林间学校'],
+  [10, '第一幕 · 入部磨合'],
+  [25, '第二幕 · 暑夏林间学校'],
   [61, '第三幕 · 二学期'],
-  [77, '第四幕 · 冬假→三学期'],
-  [92, '第五幕 · PTA→舞会·开战'],
+  [77, '第四幕 · 冬假三学期'],
+  [92, '第五幕 · PTA与舞会'],
   [98, '第六幕 · 春假战备'],
   [119, '第七幕 · 重新为奉仕部命名'],
   [126, '第八幕 · 归国与失语'],
@@ -47,17 +113,75 @@ const ACT_TABLE: [number, string][] = [
 ];
 
 export function emptySnapshot(): MvuSnapshot {
-  return { mode: null, pov: null, customName: '', scene: null, date: '', affection: {}, hasMvu: false };
+  return {
+    mode: null,
+    pov: null,
+    playerName: '',
+    customName: '',
+    scene: null,
+    date: '',
+    location: '',
+    cash: null,
+    carriedItems: [],
+    characters: {},
+    hasMvu: false,
+  };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function asText(value: unknown, fallback = ''): string {
+  return typeof value === 'string' ? value : fallback;
+}
+
+function boundedNumber(value: unknown): number {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.max(0, Math.min(100, number)) : 0;
+}
+
+function normalizeCharacter(canonicalName: string, value: unknown): CharacterSnapshot {
+  const source = isRecord(value) ? value : {};
+  const relationship = isRecord(source.relationship) ? source.relationship : {};
+  const memory = isRecord(source.latest_user_memory) ? source.latest_user_memory : {};
+  const outfit = isRecord(source.outfit) ? source.outfit : {};
+  const rawCommitment = asText(relationship.commitment);
+  const commitment: Commitment = ['未确认', '仅朋友', '恋人'].includes(rawCommitment)
+    ? (rawCommitment as Commitment)
+    : '未确认';
+
+  return {
+    display_name: asText(source.display_name, canonicalName) || canonicalName,
+    present: source.present === true,
+    known: source.known === true,
+    relationship: {
+      bond: boundedNumber(relationship.bond),
+      romance: boundedNumber(relationship.romance),
+      commitment,
+    },
+    latest_user_memory: {
+      memory: asText(memory.memory),
+      inner_thought: asText(memory.inner_thought),
+    },
+    outfit: {
+      outerwear: asText(outfit.outerwear, '未确认') || '未确认',
+      inner_layer: asText(outfit.inner_layer, '未确认') || '未确认',
+      bottoms: asText(outfit.bottoms, '未确认') || '未确认',
+      socks: asText(outfit.socks, '未确认') || '未确认',
+      underwear: asText(outfit.underwear, '未确认') || '未确认',
+      shoes: asText(outfit.shoes, '未确认') || '未确认',
+    },
+  };
+}
+
 function readStatData(): Record<string, any> {
   try {
     if (typeof getVariables !== 'function') {
       return {};
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const v = getVariables({ type: 'chat' } as any) ?? {};
+    // 世界/玩家/角色状态属于 MVU 消息楼层；手机本体 phone 容器才属于聊天级变量。
+    const v = getVariables({ type: 'message', message_id: 'latest' }) ?? {};
     return (v as Record<string, any>).stat_data ?? (v as Record<string, any>);
   } catch {
     return {};
@@ -74,12 +198,22 @@ export function readMvuSnapshot(): MvuSnapshot {
   snap.mode = (sd.mode as MvuSnapshot['mode']) ?? null;
   snap.pov = (sd.current_pov as string) ?? null;
   snap.customName = String(sd.custom_protagonist?.name ?? '');
+  snap.playerName = snap.customName || povDisplayName(snap.pov) || '';
   snap.scene = typeof sd.current_scene === 'number' ? sd.current_scene : null;
-  snap.date = String(sd.current_date ?? '');
-  for (const key of Object.keys(AFFECTION_LABELS)) {
-    if (typeof sd[key] === 'number') {
-      snap.affection[key] = sd[key] as number;
-    }
+  snap.date = asText(sd.world?.current_date);
+  snap.location = asText(sd.world?.current_location);
+  const cash = sd.player?.cash;
+  snap.cash = cash === null || cash === undefined || !Number.isFinite(Number(cash)) ? null : Math.max(0, Number(cash));
+  snap.carriedItems = Array.isArray(sd.player?.carried_items)
+    ? sd.player.carried_items.filter((item: unknown): item is string => typeof item === 'string' && item.trim() !== '')
+    : [];
+  if (isRecord(sd.characters)) {
+    snap.characters = Object.fromEntries(
+      Object.entries(sd.characters).map(([canonicalName, value]) => [
+        canonicalName,
+        normalizeCharacter(canonicalName, value),
+      ]),
+    );
   }
   return snap;
 }
@@ -88,12 +222,18 @@ export function povDisplayName(key: string | null): string {
   return (key && POV_NAMES[key]) || '';
 }
 
-/** 好感档位（galgame 系统设计 §6.4：陌生 <30 / 熟悉 30-59 / 信任 60-79 / 心动 ≥80） */
-export function affectionTier(value: number): string {
-  if (value < 30) return '陌生';
-  if (value < 60) return '熟悉';
-  if (value < 80) return '信任';
-  return '心动';
+/** 关系档位与外部状态栏一致；romance 只参与叙事判断，不直接暴露为 UI 标签。 */
+export function relationshipTier(relationship: RelationshipSnapshot): string {
+  if (relationship.commitment === '恋人') return '恋人';
+  if (relationship.commitment === '仅朋友') return '朋友';
+  if (relationship.bond >= 80) return '亲近';
+  if (relationship.bond >= 60) return '信赖';
+  if (relationship.bond >= 30) return '熟悉';
+  return '初识';
+}
+
+export function formatCash(value: number | null): string {
+  return value == null ? '未确认' : `¥${value.toLocaleString('ja-JP')}`;
 }
 
 export function actNameOf(scene: number | null): string {
@@ -111,29 +251,7 @@ export function cnDate(iso: string): string {
   return `${m[1]}年${Number(m[2])}月${Number(m[3])}日`;
 }
 
-/* —— v2：世界书 / 好友 / 章节 —— */
-
-/** 好友名 → 好感变量字段 */
-export const AFFECTION_FIELD_BY_NAME: Record<string, string> = {
-  比企谷八幡: 'affection_hachiman',
-  雪之下雪乃: 'affection_yukino',
-  由比滨结衣: 'affection_yui',
-  拉芙希妮: 'affection_laff',
-  一色彩羽: 'affection_iroha',
-};
-
-const MAIN_FOUR = ['比企谷八幡', '雪之下雪乃', '由比滨结衣', '拉芙希妮'];
-const POV_EXCLUDE: Record<string, string> = {
-  hachiman: '比企谷八幡',
-  yukino: '雪之下雪乃',
-  yui: '由比滨结衣',
-  laff: '拉芙希妮',
-};
-
-export interface FriendMeta {
-  name: string;
-  tint: string;
-}
+/* —— 世界书 / 角色资料 / 章节 —— */
 
 const FRIEND_TINTS = [
   'linear-gradient(145deg, #64b5f6, #3b82d6)',
@@ -143,13 +261,10 @@ const FRIEND_TINTS = [
   'linear-gradient(145deg, #5ee08a, #28c76f)',
 ];
 
-/** 按当前 MVU 快照算好友列表（排除玩家角色；八幡玩家与自建含一色） */
-export function computeFriends(snap: MvuSnapshot): FriendMeta[] {
-  const names = MAIN_FOUR.filter(n => n !== (POV_EXCLUDE[snap.pov ?? ''] ?? ''));
-  if (!snap.hasMvu || snap.mode === 'custom' || snap.pov === 'hachiman') {
-    names.push('一色彩羽');
-  }
-  return names.map((name, i) => ({ name, tint: FRIEND_TINTS[i % FRIEND_TINTS.length] }));
+export function tintForName(name: string): string {
+  let hash = 0;
+  for (const char of name) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return FRIEND_TINTS[hash % FRIEND_TINTS.length];
 }
 
 /** 解析角色卡绑定的世界书名（容错） */
@@ -167,7 +282,7 @@ export async function resolveWorldbookName(): Promise<string | null> {
   return null;
 }
 
-/** 读取世界书 [手机]xxx 条目 → 好友名→persona 文本 */
+/** 读取世界书角色/NPC条目；兼容旧 [手机]xxx 条目。 */
 export async function loadPersonaMap(): Promise<Record<string, string>> {
   const map: Record<string, string> = {};
   try {
@@ -177,9 +292,21 @@ export async function loadPersonaMap(): Promise<Record<string, string>> {
     }
     const entries = await getWorldbook(book);
     for (const e of entries) {
-      const m = /^\[手机\](.+)$/.exec(e.name ?? '');
-      if (m) {
-        map[m[1].trim()] = String(e.content ?? '');
+      const entryName = String(e.name ?? '').trim();
+      const phoneMatch = /^\[手机\](.+)$/.exec(entryName);
+      const roleMatch = /^(.+)_(?:基础信息|性格调色盘|三面性)$/.exec(entryName);
+      const canonical = phoneMatch?.[1]?.trim() || roleMatch?.[1]?.trim();
+      if (canonical) {
+        map[canonical] = [map[canonical], stripEjs(String(e.content ?? ''))].filter(Boolean).join('\n\n');
+        continue;
+      }
+      if (
+        e.position?.type === 'after_character_definition' &&
+        entryName &&
+        !entryName.includes('_') &&
+        !/^其他/.test(entryName)
+      ) {
+        map[entryName] = [map[entryName], stripEjs(String(e.content ?? ''))].filter(Boolean).join('\n\n');
       }
     }
   } catch {

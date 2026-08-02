@@ -1,33 +1,89 @@
 <template>
   <div class="app-screen">
-    <AppHeader title="好友" />
+    <AppHeader title="好友">
+      <button class="manage-btn" @click="showManaged = !showManaged">{{ showManaged ? '完成' : '管理' }}</button>
+    </AppHeader>
+
     <div class="friends-scroll">
-      <button v-for="friend in friends" :key="friend.name" class="friend-card" @click="openProfile(friend)">
-        <span class="avatar" :style="{ background: friend.tint }">{{ friend.name.slice(0, 1) }}</span>
-        <span class="friend-main">
-          <span class="friend-name">{{ friend.name }}</span>
-          <span class="affection-bar"><i :style="{ width: `${affectionOf(friend.name)}%` }"></i></span>
-          <span class="friend-persona">{{ personaSnippet(friend.name) }}</span>
-        </span>
-        <span class="friend-tier">{{ tierOf(friend.name) }}</span>
-      </button>
-      <p v-if="!friends.length" class="empty-hint">进入游戏后，这里会出现好友</p>
+      <template v-if="!showManaged">
+        <button
+          v-for="contact in store.contacts"
+          :key="contact.character"
+          class="friend-card"
+          @click="profile = contact"
+        >
+          <span class="avatar" :style="{ background: tintForName(contact.character) }">
+            {{ contact.display_name.slice(0, 1) }}
+          </span>
+          <span class="friend-main">
+            <span class="friend-name">{{ contact.display_name }}</span>
+            <span class="friend-basis">{{ contact.basis || '已拥有联系方式' }}</span>
+          </span>
+          <i class="fa-solid fa-chevron-right friend-arrow"></i>
+        </button>
+        <p v-if="!store.contacts.length" class="empty-hint">
+          通讯录还是空的。只有主线中明确交换号码、被拉入群聊后保存、第三方转交或身份预设，才会添加联系人。
+        </p>
+
+        <div class="scan-zone">
+          <button class="scan-btn" :disabled="scanning" @click="scanLatest">
+            <i class="fa-solid" :class="scanning ? 'fa-spinner fa-spin' : 'fa-magnifying-glass'"></i>
+            {{ scanning ? '正在检索…' : '从最近剧情检索联系人' }}
+          </button>
+          <p v-if="scanResult" class="scan-result" :class="scanResult.tone">{{ scanResult.text }}</p>
+        </div>
+      </template>
+
+      <template v-else>
+        <h3 class="section-title">已移除与已屏蔽</h3>
+        <button
+          v-for="contact in inactiveContacts"
+          :key="contact.character"
+          class="friend-card muted"
+          @click="profile = contact"
+        >
+          <span class="avatar" :style="{ background: tintForName(contact.character) }">
+            {{ contact.display_name.slice(0, 1) }}
+          </span>
+          <span class="friend-main">
+            <span class="friend-name">{{ contact.display_name }}</span>
+            <span class="friend-basis">{{ contact.status === 'blocked' ? '已屏蔽' : '已从通讯录移除' }}</span>
+          </span>
+          <i class="fa-solid fa-chevron-right friend-arrow"></i>
+        </button>
+        <p v-if="!inactiveContacts.length" class="empty-hint">没有已移除或已屏蔽的联系人</p>
+      </template>
     </div>
 
-    <!-- 资料卡弹层 -->
     <Transition name="sheet">
       <div v-if="profile" class="profile-mask" @click="profile = null">
         <div class="profile-sheet" @click.stop>
-          <span class="profile-avatar" :style="{ background: profile.tint }">{{ profile.name.slice(0, 1) }}</span>
-          <h3 class="profile-name">{{ profile.name }}</h3>
-          <div class="profile-affection">
-            <span class="affection-bar"><i :style="{ width: `${affectionOf(profile.name)}%` }"></i></span>
-            <span class="profile-tier">{{ tierOf(profile.name) }}</span>
+          <span class="profile-avatar" :style="{ background: tintForName(profile.character) }">
+            {{ profile.display_name.slice(0, 1) }}
+          </span>
+          <h3 class="profile-name">{{ profile.display_name }}</h3>
+          <span class="status-pill" :class="profile.status">{{ statusLabel(profile.status) }}</span>
+          <p class="profile-basis">联系方式依据：{{ profile.basis || '未记录' }}</p>
+          <p class="profile-persona">{{ personaSnippet(profile.character, 320) || '还没有角色资料' }}</p>
+
+          <div class="profile-actions">
+            <button v-if="profile.status !== 'blocked'" class="primary-btn" @click="chatWith(profile.character)">
+              <i class="fa-solid fa-message"></i> 发消息
+            </button>
+            <button v-if="profile.status === 'active'" class="secondary-btn" @click="setStatus('removed')">
+              删除联系人
+            </button>
+            <button v-if="profile.status === 'removed'" class="secondary-btn" @click="setStatus('active')">
+              恢复联系人
+            </button>
+            <button
+              class="danger-btn"
+              @click="setStatus(profile.status === 'blocked' ? 'active' : 'blocked')"
+            >
+              {{ profile.status === 'blocked' ? '解除屏蔽' : '屏蔽联系人' }}
+            </button>
           </div>
-          <p class="profile-persona">{{ personaSnippet(profile.name, 240) || '还没有角色资料' }}</p>
-          <button class="profile-chat-btn" @click="chatWith(profile.name)">
-            <i class="fa-solid fa-message"></i> 发消息
-          </button>
+          <p class="boundary-hint">删除联系人不会清空聊天或退出群聊；只有屏蔽会禁止私聊联系。</p>
         </div>
       </div>
     </Transition>
@@ -36,41 +92,85 @@
 
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue';
-import { affectionTier, computeFriends, type FriendMeta } from './vars';
-import { usePhoneStore } from './store';
+import type { ContactStatus, PhoneContact } from './phoneData';
+import { tintForName } from './vars';
+import { usePhoneStore, type IngestOutcome } from './store';
 
 const store = usePhoneStore();
-const friends = computed(() => computeFriends(store.snapshot));
-const profile = ref<FriendMeta | null>(null);
+const profile = ref<PhoneContact | null>(null);
+const showManaged = ref(false);
 
-function affectionOf(name: string): number {
-  const field = Object.entries({
-    比企谷八幡: 'affection_hachiman',
-    雪之下雪乃: 'affection_yukino',
-    由比滨结衣: 'affection_yui',
-    拉芙希妮: 'affection_laff',
-    一色彩羽: 'affection_iroha',
-  }).find(([n]) => n === name)?.[1];
-  return field ? (store.snapshot.affection[field] ?? 0) : 0;
-}
-
-function tierOf(name: string): string {
-  return affectionTier(affectionOf(name));
-}
+const inactiveContacts = computed(() => store.allContacts.filter(contact => contact.status !== 'active'));
 
 function personaSnippet(name: string, limit = 80): string {
   const text = (store.personas[name] ?? '').replace(/\s+/g, ' ').trim();
   return text.length > limit ? `${text.slice(0, limit)}…` : text;
 }
 
-function openProfile(friend: FriendMeta) {
-  profile.value = friend;
+function statusLabel(status: ContactStatus): string {
+  return status === 'active' ? '联系人' : status === 'removed' ? '已移除' : '已屏蔽';
 }
 
 function chatWith(name: string) {
-  store.pendingThread = name;
+  const thread = store.openDirectThread(name);
+  store.pendingThread = thread.id;
   profile.value = null;
   store.openApp('messages');
+}
+
+function setStatus(status: ContactStatus) {
+  if (!profile.value) return;
+  const name = profile.value.character;
+  store.updateContactStatus(name, status);
+  profile.value = store.phone.contacts[name] ?? null;
+}
+
+/* —— 主线检索：把原本只在设置页、且成功失败无从区分的解析搬到好友页 —— */
+
+const scanning = ref(false);
+const scanResult = ref<{ text: string; tone: 'ok' | 'none' | 'error' } | null>(null);
+
+async function scanLatest() {
+  if (scanning.value) return;
+  scanning.value = true;
+  scanResult.value = null;
+  try {
+    const outcome = await store.parseLatestMainline();
+    scanResult.value = describeOutcome(outcome);
+  } catch (error) {
+    scanResult.value = {
+      text: `检索失败：${error instanceof Error ? error.message : String(error)}`,
+      tone: 'error',
+    };
+  } finally {
+    scanning.value = false;
+  }
+}
+
+function describeOutcome(outcome: IngestOutcome): { text: string; tone: 'ok' | 'none' | 'error' } {
+  if (outcome.status === 'error') {
+    return { text: `检索失败：${outcome.error || '解析未能完成，请检查设置中的 LLM 配置'}`, tone: 'error' };
+  }
+  if (outcome.status === 'no-message') {
+    return { text: '还没有可供检索的主线回复', tone: 'none' };
+  }
+  if (outcome.status === 'busy') {
+    return { text: '正在解析中，请稍候', tone: 'none' };
+  }
+  if (outcome.addedContacts.length) {
+    const names = outcome.addedContacts
+      .map(name => store.phone.contacts[name]?.display_name || name)
+      .join('、');
+    return { text: `已添加 ${outcome.addedContacts.length} 位联系人：${names}`, tone: 'ok' };
+  }
+  const extra: string[] = [];
+  if (outcome.addedGroups) extra.push(`${outcome.addedGroups} 个群聊`);
+  if (outcome.addedFacts) extra.push(`${outcome.addedFacts} 条事实`);
+  if (outcome.addedAppointments) extra.push(`${outcome.addedAppointments} 项约定`);
+  if (extra.length) {
+    return { text: `没有新联系人，但记录了${extra.join('、')}`, tone: 'ok' };
+  }
+  return { text: '最近剧情里没有明确交换联系方式', tone: 'none' };
 }
 </script>
 
@@ -83,6 +183,11 @@ function chatWith(name: string) {
   min-height: 0;
 }
 
+.manage-btn {
+  color: var(--c-ios-blue);
+  font-size: 13px;
+}
+
 .friends-scroll {
   flex: 1;
   overflow-y: auto;
@@ -90,6 +195,56 @@ function chatWith(name: string) {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.section-title {
+  padding: 2px 2px 4px;
+  color: var(--c-ios-gray);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+/* 主线检索区：贴在列表末尾，空态与有联系人时都可用 */
+.scan-zone {
+  margin-top: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scan-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  border: 1px dashed var(--c-ios-gray);
+  color: var(--c-ios-blue);
+  font-size: 13px;
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.scan-result {
+  padding: 0 4px;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+
+  &.ok {
+    color: var(--c-ios-blue);
+  }
+
+  &.none {
+    color: var(--c-ios-gray);
+  }
+
+  &.error {
+    color: #d9534f;
+  }
 }
 
 .friend-card {
@@ -101,6 +256,10 @@ function chatWith(name: string) {
   border-radius: 16px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   text-align: left;
+
+  &.muted {
+    opacity: 0.72;
+  }
 }
 
 .avatar {
@@ -129,21 +288,7 @@ function chatWith(name: string) {
   font-weight: 700;
 }
 
-.affection-bar {
-  height: 5px;
-  border-radius: 3px;
-  background: #ececf1;
-  overflow: hidden;
-
-  i {
-    display: block;
-    height: 100%;
-    border-radius: 3px;
-    background: linear-gradient(90deg, var(--c-primary), var(--c-accent));
-  }
-}
-
-.friend-persona {
+.friend-basis {
   font-size: 11px;
   color: var(--c-ios-gray);
   overflow: hidden;
@@ -151,16 +296,16 @@ function chatWith(name: string) {
   white-space: nowrap;
 }
 
-.friend-tier {
-  flex: none;
+.friend-arrow {
+  color: #c7c7cc;
   font-size: 12px;
-  color: var(--c-primary-strong);
 }
 
 .empty-hint {
-  padding: 40px 24px;
+  padding: 40px 20px;
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.8;
   color: var(--c-ios-gray);
 }
 
@@ -175,13 +320,15 @@ function chatWith(name: string) {
 
 .profile-sheet {
   width: 100%;
+  max-height: 88%;
+  overflow-y: auto;
   background: var(--c-phone-screen);
   border-radius: 20px 20px 0 0;
-  padding: 20px 20px 26px;
+  padding: 20px 20px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
 }
 
 .profile-avatar {
@@ -203,41 +350,64 @@ function chatWith(name: string) {
   font-weight: 700;
 }
 
-.profile-affection {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.status-pill {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(10, 132, 255, 0.1);
+  color: var(--c-ios-blue);
+  font-size: 11px;
 
-  .affection-bar {
-    flex: 1;
+  &.removed {
+    background: rgba(142, 142, 147, 0.12);
+    color: var(--c-ios-gray);
+  }
+
+  &.blocked {
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--c-danger);
   }
 }
 
-.profile-tier {
-  font-size: 12px;
-  color: var(--c-primary-strong);
+.profile-basis,
+.profile-persona,
+.boundary-hint {
+  width: 100%;
+  font-size: 11px;
+  color: var(--c-ios-gray);
+  line-height: 1.7;
 }
 
 .profile-persona {
-  font-size: 12px;
-  color: var(--c-ios-gray);
-  line-height: 1.8;
-  max-height: 140px;
+  max-height: 110px;
   overflow-y: auto;
 }
 
-.profile-chat-btn {
-  margin-top: 4px;
-  padding: 10px 28px;
-  border-radius: 999px;
+.profile-actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+
+  button {
+    padding: 9px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+}
+
+.primary-btn {
   background: var(--c-ios-blue);
   color: #fff;
-  font-size: 14px;
+}
 
-  i {
-    margin-right: 6px;
-  }
+.secondary-btn {
+  background: #fff;
+  color: var(--c-ios-blue);
+}
+
+.danger-btn {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--c-danger);
 }
 
 .sheet-enter-active,

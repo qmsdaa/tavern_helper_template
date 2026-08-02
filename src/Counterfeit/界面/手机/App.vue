@@ -45,6 +45,11 @@ const store = usePhoneStore();
 /** 嵌入模式：被酒馆加载器以 srcdoc iframe 挂载 */
 const embedded = window.parent !== window;
 
+onMounted(() => {
+  store.armMainlineBridge();
+  void store.refreshPersonas();
+});
+
 function postVisibility(open: boolean) {
   if (embedded) {
     window.parent.postMessage({ source: 'counterfeit-phone', open }, '*');

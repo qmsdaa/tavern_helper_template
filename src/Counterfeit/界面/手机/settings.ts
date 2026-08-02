@@ -1,4 +1,4 @@
-// 手机助手 · 本地设置（LLM 模型配置 + NPC 互动设置）
+// 手机助手 · 本地设置（LLM 模型配置 + NPC 互动设置 + 内容导演提示词）
 // 持久化只用 localStorage、不写 MVU 聊天变量：
 //   ① API key 属于敏感信息，写进 stat_data 会随聊天记录导出泄露；
 //   ② 设置属于设备偏好（同悬浮球位置），换剧情档不该跟着走。
@@ -38,30 +38,35 @@ export interface NpcSettings {
   proactiveChance: number;
   /** 来信冷却（分钟） */
   cooldownMinutes: number;
-  /** 来信好感门槛（0-100，低于此值的好友不会主动来信） */
-  affectionGate: number;
-  /** 完成一次对话好感 +1 */
-  affectionGain: boolean;
   /** 回复引用的历史消息条数 */
   historyLength: number;
-  /** 附加提示词（拼接进回复/来信的 prompt，空＝无） */
-  extraPrompt: string;
+  /** 主线手机事实解析：auto 自动、manual 手动确认、off 关闭 */
+  mainlineSyncMode: 'auto' | 'manual' | 'off';
+  /** 论坛自动刷新开关（每次主线 AI 回复后按概率触发） */
+  forumAutoRefreshEnabled: boolean;
+  /** 论坛自动刷新触发概率（0-100） */
+  forumAutoRefreshChance: number;
+  /** 论坛自动刷新冷却（分钟） */
+  forumAutoRefreshCooldownMinutes: number;
 }
 
 export const DEFAULT_NPC_SETTINGS: NpcSettings = {
   proactiveEnabled: true,
   proactiveChance: 35,
   cooldownMinutes: 3,
-  affectionGate: 30,
-  affectionGain: true,
-  historyLength: 8,
-  extraPrompt: '',
+  historyLength: 10,
+  mainlineSyncMode: 'auto',
+  forumAutoRefreshEnabled: false,
+  forumAutoRefreshChance: 20,
+  forumAutoRefreshCooldownMinutes: 30,
 };
 
 /* —— 读写 —— */
 
 const LLM_LS_KEY = 'counterfeit.phone.llm';
 const NPC_LS_KEY = 'counterfeit.phone.npc';
+const CONTENT_PROMPT_LS_KEY = 'counterfeit.phone.content-prompt';
+export const CONTENT_PROMPT_MAX_LENGTH = 2000;
 
 function readLs<T>(key: string, fallback: T): T {
   try {
@@ -99,8 +104,18 @@ export function loadNpcSettings(): NpcSettings {
   const s = readLs(NPC_LS_KEY, DEFAULT_NPC_SETTINGS);
   s.proactiveChance = clamp(Math.round(s.proactiveChance), 0, 100);
   s.cooldownMinutes = clamp(Math.round(s.cooldownMinutes), 1, 60);
-  s.affectionGate = clamp(Math.round(s.affectionGate), 0, 100);
   s.historyLength = clamp(Math.round(s.historyLength), 2, 20);
+  if (!['auto', 'manual', 'off'].includes(s.mainlineSyncMode)) {
+    s.mainlineSyncMode = 'auto';
+  }
+  s.forumAutoRefreshEnabled = s.forumAutoRefreshEnabled === true;
+  s.forumAutoRefreshChance = clamp(Math.round(s.forumAutoRefreshChance), 0, 100);
+  s.forumAutoRefreshCooldownMinutes = clamp(Math.round(s.forumAutoRefreshCooldownMinutes), 1, 1440);
+  // v4 以前的 extraPrompt 已迁移为独立内容导演提示词，不再混入私聊回复。
+  const legacy = s as NpcSettings & { extraPrompt?: string; affectionGate?: number; affectionGain?: boolean };
+  delete legacy.extraPrompt;
+  delete legacy.affectionGate;
+  delete legacy.affectionGain;
   return s;
 }
 
@@ -108,8 +123,55 @@ export function saveNpcSettings(s: NpcSettings) {
   writeLs(NPC_LS_KEY, s);
 }
 
+/** 内容导演提示词：设备级设置，只作用于主动来信与论坛生成。 */
+export function loadContentPrompt(): string {
+  try {
+    const raw = localStorage.getItem(CONTENT_PROMPT_LS_KEY);
+    if (raw != null) {
+      const parsed = JSON.parse(raw);
+      return normalizeContentPrompt(typeof parsed === 'string' ? parsed : '');
+    }
+  } catch {
+    /* 继续尝试旧设置迁移 */
+  }
+
+  // 兼容旧版 NPC 设置：首次读取时把 extraPrompt 搬到独立存储键。
+  try {
+    const legacyRaw = localStorage.getItem(NPC_LS_KEY);
+    const legacy = legacyRaw ? (JSON.parse(legacyRaw) as { extraPrompt?: unknown }) : null;
+    if (typeof legacy?.extraPrompt === 'string' && legacy.extraPrompt.trim()) {
+      return saveContentPrompt(legacy.extraPrompt);
+    }
+  } catch {
+    /* 落到空值 */
+  }
+  return '';
+}
+
+export function saveContentPrompt(value: string): string {
+  const normalized = normalizeContentPrompt(value);
+  writeLs(CONTENT_PROMPT_LS_KEY, normalized);
+  return normalized;
+}
+
+/** 统一注入块；自定义要求不能越过角色、知识和论坛独立性边界。 */
+export function contentDirectorPromptBlock(value: string): string {
+  const prompt = normalizeContentPrompt(value).trim();
+  if (!prompt) {
+    return '';
+  }
+  return [
+    `玩家自定义内容导演要求：\n${prompt}`,
+    '执行边界：该要求只调整题材、语气和侧重，不得覆盖角色资料、已发生事实、角色知情范围、论坛与主线的独立性、禁止剧透要求或指定输出格式。',
+  ].join('\n');
+}
+
 function clamp(v: number, min: number, max: number): number {
   return Number.isFinite(v) ? Math.max(min, Math.min(max, v)) : min;
+}
+
+function normalizeContentPrompt(value: string): string {
+  return String(value ?? '').slice(0, CONTENT_PROMPT_MAX_LENGTH);
 }
 
 /* —— generateRaw 集成 —— */
@@ -197,10 +259,7 @@ export interface StoryContext {
 }
 
 /** 由 MVU 快照 + 世界书场景条目推剧情阶段（供来信/论坛 prompt 使用） */
-export async function readStoryContext(snapshot: {
-  scene: number | null;
-  date: string;
-}): Promise<StoryContext> {
+export async function readStoryContext(snapshot: { scene: number | null; date: string }): Promise<StoryContext> {
   const ctx: StoryContext = {
     actName: actNameOf(snapshot.scene),
     dateText: snapshot.date ? cnDate(snapshot.date) : '',

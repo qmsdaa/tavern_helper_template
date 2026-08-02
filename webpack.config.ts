@@ -441,6 +441,21 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
         { apply: schema_dump },
         { apply: tavern_sync },
         new VueLoaderPlugin(),
+        // unplugin-auto-import 在 webpack 的多配置并行构建中偶发漏掉某个入口；
+        // ProvidePlugin 只为仍是自由标识符的 Vue/Pinia API 补注入，已经被
+        // auto-import 转换过的入口不会重复导入。避免产出运行时
+        // `ReferenceError: defineStore/ref/... is not defined` 的单文件 HTML。
+        new webpack.ProvidePlugin({
+          createPinia: ['pinia', 'createPinia'],
+          defineStore: ['pinia', 'defineStore'],
+          computed: ['vue', 'computed'],
+          nextTick: ['vue', 'nextTick'],
+          onMounted: ['vue', 'onMounted'],
+          onUnmounted: ['vue', 'onUnmounted'],
+          reactive: ['vue', 'reactive'],
+          ref: ['vue', 'ref'],
+          watch: ['vue', 'watch'],
+        }),
         unpluginAutoImport({
           dts: true,
           dtsMode: 'overwrite',
