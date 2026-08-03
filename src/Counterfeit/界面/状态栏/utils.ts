@@ -92,6 +92,7 @@ const PORTRAIT_KEYS: Record<string, string> = {
   '雪之下阳乃': 'haruno',
   '爱布拉娜': 'eblana',
   '爱布拉娜·都柏林': 'eblana',
+  '比企谷小町': 'komachi',
 };
 
 /** 角色立绘 URL；无立绘素材的角色返回 null（UI 回退为名字首字占位） */

@@ -453,16 +453,16 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
         committedText.value = text;
         // 正常随楼层刷新卸载；若未卸载则兜底展示完成态
         step.value = 'done';
-        // 首条 user 消息 + 自动触发主 AI 回复（更新规则 §开场白commit·首条消息）；
-        // 失败不阻断——玩家仍可手动发送第一条消息
+        // 首条回复改由挂载脚本（脚本库沙箱，持久上下文）编排：
+        // commit 后本 iframe 会随占位符消失被卸载，iframe 内直接 generate 会与楼层刷新/卸载竞态
+        // （回复被挂成 0 楼 swipe 或直接丢失），改为 postMessage 通知沙箱：
+        // 插入 user 消息 → 复制 0 楼变量基线 → 触发生成。失败不阻断——玩家仍可手动发送
         try {
-          if (typeof generate === 'function') {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ source: 'counterfeit-opening', type: 'commit-done', summary }, '*');
             showToast('开局完成，正在生成第一段剧情…', 'info', 4000);
-            void generate({ user_input: summary, should_stream: true }).catch(error => {
-              console.error('[开场白] 自动触发首条回复失败', error);
-            });
           } else {
-            console.warn('[开场白] 无 generate API，跳过自动触发首条回复');
+            console.warn('[开场白] 无宿主页面，跳过自动触发首条回复');
           }
         } catch (error) {
           console.error('[开场白] 自动触发首条回复失败', error);
