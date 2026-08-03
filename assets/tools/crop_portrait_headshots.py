@@ -1,47 +1,128 @@
 # -*- coding: utf-8 -*-
-"""四主角立绘头像裁切（2026-07-25）：全身立绘 → 头+肩 4:5 头像，替换 POV 卡用 webp。
+"""Counterfeit 状态栏头像构建：12 张全角色新立绘 → 512×512 WebP 头肩头像。
 
-裁切框：y 从 0 起（保住呆毛/头顶），高 = h_rel × 图高，宽 = 高 × 0.8，水平以 cx_rel 为中心。
-结衣原图四边有深色边框，先裁 4% 边缘（沿用 compress_opening_assets.py 的处理）。
+只读取 ``图片素材/角色立绘/全角色立绘``，不会覆盖源 PNG。默认输出到
+``tavern_helper_template/assets/Counterfeit/状态栏/avatars``。裁切参数是相对坐标，
+在不同分辨率（3328×4864 / 1408×2048）上保持一致。
 """
-import os
 
-from PIL import Image
+from __future__ import annotations
 
-ROOT = r"D:/由我们所书/我的青春恋爱物语果然有问题 Counterfeit"
-SRC = os.path.join(ROOT, "图片素材", "角色立绘")
-OUT = os.path.join(ROOT, "tavern_helper_template", "assets", "Counterfeit", "开场白")
+import argparse
+from dataclasses import dataclass
+from pathlib import Path
 
-ASPECT = 0.8  # 宽/高 = 4:5
-MAX_W = 640
-
-# (源相对路径, 输出名, 头中心x比例, 裁切高度比例, 是否先裁4%边框)
-JOBS = [
-    ("比企谷八幡/比企谷八幡立绘.png", "hachiman.webp", 0.52, 0.33, False),
-    ("雪之下雪乃/雪之下雪乃立绘.png", "yukino.webp", 0.50, 0.32, False),
-    ("由比滨结衣/由比滨结衣立绘.png", "yui.webp", 0.50, 0.34, True),
-    ("拉芙希妮/拉芙希妮立绘.png", "laff.webp", 0.50, 0.32, False),
-    ("拉芙希妮/拉芙希妮微笑.png", "laff_smile.webp", 0.50, 0.32, False),
-]
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
-def crop_border(img, ratio=0.04):
-    w, h = img.size
-    dx, dy = round(w * ratio), round(h * ratio)
-    return img.crop((dx, dy, w - dx, h - dy))
+SCRIPT_PROJECT_ROOT = Path(__file__).resolve().parents[3]
+OUTPUT_SIZE = 512
 
 
-for src_rel, out_name, cx_rel, h_rel, border in JOBS:
-    img = Image.open(os.path.join(SRC, src_rel)).convert("RGBA")
-    if border:
-        img = crop_border(img)
-    w, h = img.size
-    ch = round(h * h_rel)
-    cw = round(ch * ASPECT)
-    x0 = max(0, min(round(cx_rel * w) - cw // 2, w - cw))
-    head = img.crop((x0, 0, x0 + cw, ch))
-    if head.width > MAX_W:
-        head = head.resize((MAX_W, round(head.height * MAX_W / head.width)), Image.LANCZOS)
-    dst = os.path.join(OUT, out_name)
-    head.save(dst, "WEBP", quality=82)
-    print(f"{out_name}: 裁切框=({x0},0,{x0 + cw},{ch}) 输出={head.size} {os.path.getsize(dst) // 1024}KB")
+@dataclass(frozen=True)
+class PortraitJob:
+    source: str
+    output: str
+    center_x: float = 0.50
+    center_y: float = 0.18
+    span: float = 0.34
+
+
+JOBS = (
+    PortraitJob("一色彩羽立绘.png", "iroha.webp"),
+    PortraitJob("三浦优美子.png", "yumiko.webp"),
+    PortraitJob("叶山隼人.png", "hayama.webp"),
+    PortraitJob("平冢静.png", "shizuka.webp"),
+    PortraitJob("户冢彩加.png", "saika.webp"),
+    PortraitJob("拉芙希妮.png", "laff.webp"),
+    PortraitJob("比企谷八幡立绘.png", "hachiman.webp"),
+    PortraitJob("比企谷小町.png", "komachi.webp"),
+    PortraitJob("爱布拉娜立绘 .png", "eblana.webp"),
+    PortraitJob("由比滨结衣新立绘.png", "yui.webp"),
+    PortraitJob("雪之下阳乃.png", "haruno.webp"),
+    PortraitJob("雪之下雪乃.png", "yukino.webp"),
+)
+
+
+def crop_square(image: Image.Image, job: PortraitJob) -> tuple[Image.Image, tuple[int, int, int, int]]:
+    width, height = image.size
+    side = min(width, height, round(height * job.span))
+    center_x = round(width * job.center_x)
+    center_y = round(height * job.center_y)
+    left = max(0, min(center_x - side // 2, width - side))
+    top = max(0, min(center_y - side // 2, height - side))
+    box = (left, top, left + side, top + side)
+    cropped = image.crop(box).resize((OUTPUT_SIZE, OUTPUT_SIZE), Image.Resampling.LANCZOS)
+    return cropped, box
+
+
+def build_avatar(source_root: Path, output_root: Path, job: PortraitJob) -> tuple[Path, tuple[int, int, int, int]]:
+    source_path = source_root / job.source
+    if not source_path.is_file():
+        raise FileNotFoundError(f"缺少源立绘：{source_path}")
+    with Image.open(source_path) as opened:
+        image = ImageOps.exif_transpose(opened).convert("RGBA")
+    avatar, box = crop_square(image, job)
+    output_root.mkdir(parents=True, exist_ok=True)
+    output_path = output_root / job.output
+    avatar.save(output_path, "WEBP", quality=88, method=6)
+    with Image.open(output_path) as check:
+        check.load()
+        if check.size != (OUTPUT_SIZE, OUTPUT_SIZE):
+            raise RuntimeError(f"头像尺寸错误：{output_path} -> {check.size}")
+    return output_path, box
+
+
+def build_contact_sheet(output_root: Path, output_paths: list[Path]) -> Path:
+    cell = 256
+    label_height = 34
+    columns = 4
+    rows = (len(output_paths) + columns - 1) // columns
+    sheet = Image.new("RGB", (columns * cell, rows * (cell + label_height)), "#f7f2f5")
+    draw = ImageDraw.Draw(sheet)
+    font = ImageFont.load_default()
+    for index, path in enumerate(output_paths):
+        x = (index % columns) * cell
+        y = (index // columns) * (cell + label_height)
+        with Image.open(path) as opened:
+            tile = opened.convert("RGB").resize((cell, cell), Image.Resampling.LANCZOS)
+        sheet.paste(tile, (x, y))
+        draw.text((x + 8, y + cell + 8), path.stem, fill="#4a3b42", font=font)
+    contact_path = output_root / "_contact-sheet.jpg"
+    sheet.save(contact_path, "JPEG", quality=90, optimize=True)
+    return contact_path
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--source-root",
+        type=Path,
+        default=SCRIPT_PROJECT_ROOT / "图片素材" / "角色立绘" / "全角色立绘",
+        help="新立绘源目录",
+    )
+    parser.add_argument(
+        "--output-root",
+        type=Path,
+        default=SCRIPT_PROJECT_ROOT / "tavern_helper_template" / "assets" / "Counterfeit" / "状态栏" / "avatars",
+        help="WebP 头像输出目录",
+    )
+    parser.add_argument("--contact-sheet", action="store_true", help="额外生成 _contact-sheet.jpg 供人工审查")
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    outputs: list[Path] = []
+    for job in JOBS:
+        output_path, box = build_avatar(args.source_root, args.output_root, job)
+        outputs.append(output_path)
+        print(f"{job.source} -> {output_path.name} crop={box} bytes={output_path.stat().st_size}")
+    if len(outputs) != 12:
+        raise RuntimeError(f"应生成 12 个头像，实际 {len(outputs)} 个")
+    if args.contact_sheet:
+        print(f"contact_sheet={build_contact_sheet(args.output_root, outputs)}")
+
+
+if __name__ == "__main__":
+    main()
