@@ -1,64 +1,73 @@
 <template>
   <div class="char-detail">
-    <!-- 顶部角色概览 -->
-    <div class="cm-overview">
-      <div class="cm-portrait">
-        <img v-if="character.portraitUrl" :src="character.portraitUrl" :alt="character.displayName" loading="lazy" />
+    <div class="cm-layout">
+      <div class="cm-portrait" :class="{ 'is-placeholder': !character.portraitUrl }">
+        <img
+          v-if="character.portraitUrl"
+          :src="character.portraitUrl"
+          :alt="`${character.displayName} 高清立绘`"
+          width="1408"
+          height="2048"
+          decoding="async"
+        />
         <span v-else class="cm-initial">{{ character.displayName.slice(0, 1) }}</span>
       </div>
-      <div class="cm-head">
-        <div class="cm-title">
-          <b class="cm-name">{{ character.displayName }}</b>
-          <span v-if="character.commitment === '恋人'" class="cm-badge lover">恋人</span>
-          <span v-else-if="character.commitment === '仅朋友'" class="cm-badge friend">仅朋友</span>
+
+      <div class="cm-content">
+        <div class="cm-head">
+          <div class="cm-title">
+            <b class="cm-name">{{ character.displayName }}</b>
+            <span v-if="character.commitment === '恋人'" class="cm-badge lover">恋人</span>
+            <span v-else-if="character.commitment === '仅朋友'" class="cm-badge friend">仅朋友</span>
+          </div>
+          <div class="cm-line">
+            <span class="field-name">与玩家关系</span><span class="field-value">{{ character.label }}</span>
+          </div>
+          <div class="cm-line">
+            <span class="field-name">当前状态</span><span class="field-value status">{{ oneLineStatus }}</span>
+          </div>
         </div>
-        <div class="cm-line">
-          <span class="field-name">与玩家关系</span><span class="field-value">{{ character.label }}</span>
-        </div>
-        <div class="cm-line">
-          <span class="field-name">当前状态</span><span class="field-value status">{{ oneLineStatus }}</span>
-        </div>
+
+        <!-- 关系数值 -->
+        <section class="cm-section">
+          <h3 class="sec-title">关系数值</h3>
+          <div class="meter-row">
+            <span class="meter-key">羁绊</span>
+            <span class="meter-track"><span class="meter-fill bond" :style="{ width: `${character.bond}%` }"></span></span>
+            <span class="meter-num">{{ character.bond }}</span>
+          </div>
+          <div class="meter-row">
+            <span class="meter-key">恋爱</span>
+            <span class="meter-track"><span class="meter-fill romance" :style="{ width: `${character.romance}%` }"></span></span>
+            <span class="meter-num">{{ character.romance }}</span>
+          </div>
+        </section>
+
+        <!-- 当前穿着：逐项换行 -->
+        <section class="cm-section">
+          <h3 class="sec-title">当前穿着</h3>
+          <div v-for="item in outfitItems" :key="item.label" class="cm-line">
+            <span class="field-name">{{ item.label }}</span>
+            <span class="field-value" :class="{ unknown: item.value === '未确认' }">{{ item.value }}</span>
+          </div>
+        </section>
+
+        <!-- 近况 -->
+        <section class="cm-section">
+          <h3 class="sec-title">近况</h3>
+          <div class="cm-line">
+            <span class="field-name">最近记得</span>
+            <span class="field-value" :class="{ unknown: !character.memory }">{{ character.memory || '未确认' }}</span>
+          </div>
+          <div class="cm-line">
+            <span class="field-name">没有说出口</span>
+            <span class="field-value status" :class="{ unknown: !character.innerThought }">
+              {{ character.innerThought ? `“${character.innerThought}”` : '未确认' }}
+            </span>
+          </div>
+        </section>
       </div>
     </div>
-
-    <!-- 关系数值 -->
-    <section class="cm-section">
-      <h3 class="sec-title">关系数值</h3>
-      <div class="meter-row">
-        <span class="meter-key">羁绊</span>
-        <span class="meter-track"><span class="meter-fill bond" :style="{ width: `${character.bond}%` }"></span></span>
-        <span class="meter-num">{{ character.bond }}</span>
-      </div>
-      <div class="meter-row">
-        <span class="meter-key">恋爱</span>
-        <span class="meter-track"><span class="meter-fill romance" :style="{ width: `${character.romance}%` }"></span></span>
-        <span class="meter-num">{{ character.romance }}</span>
-      </div>
-    </section>
-
-    <!-- 当前穿着：逐项换行 -->
-    <section class="cm-section">
-      <h3 class="sec-title">当前穿着</h3>
-      <div v-for="item in outfitItems" :key="item.label" class="cm-line">
-        <span class="field-name">{{ item.label }}</span>
-        <span class="field-value" :class="{ unknown: item.value === '未确认' }">{{ item.value }}</span>
-      </div>
-    </section>
-
-    <!-- 近况 -->
-    <section class="cm-section">
-      <h3 class="sec-title">近况</h3>
-      <div class="cm-line">
-        <span class="field-name">最近记得</span>
-        <span class="field-value" :class="{ unknown: !character.memory }">{{ character.memory || '未确认' }}</span>
-      </div>
-      <div class="cm-line">
-        <span class="field-name">没有说出口</span>
-        <span class="field-value status" :class="{ unknown: !character.innerThought }">
-          {{ character.innerThought ? `“${character.innerThought}”` : '未确认' }}
-        </span>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -88,24 +97,29 @@ const outfitItems = computed(() => OUTFIT_LABELS.map(([key, label]) => ({ label,
 
 <style scoped>
 .char-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
+  min-width: 0;
 }
 
-/* 顶部概览：双栏（窄屏自动单栏） */
-.cm-overview {
-  display: flex;
-  gap: 18px;
-  align-items: flex-start;
+/* 独立窗口主布局：高清立绘在左，状态档案在右；窄屏自动单栏 */
+.cm-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.82fr) minmax(0, 1.55fr);
+  gap: clamp(18px, 3vw, 34px);
+  align-items: start;
 }
 
 .cm-portrait {
-  width: 128px;
-  height: 168px;
-  flex: none;
-  border-radius: 10px;
+  width: 100%;
+  max-width: 430px;
+  justify-self: center;
+  border-radius: 12px;
   overflow: hidden;
+  background: transparent;
+  line-height: 0;
+}
+
+.cm-portrait.is-placeholder {
+  min-height: 420px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -113,21 +127,29 @@ const outfitItems = computed(() => OUTFIT_LABELS.map(([key, label]) => ({ label,
   color: #fff;
   font-size: 42px;
   font-weight: 700;
+  line-height: normal;
 }
 
 .cm-portrait img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
+  height: auto;
+  object-fit: contain;
+  object-position: center top;
 }
 
-.cm-head {
-  flex: 1;
+.cm-content {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 18px;
+}
+
+.cm-head {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+  padding: 2px 2px 4px;
 }
 
 .cm-title {
@@ -251,15 +273,29 @@ const outfitItems = computed(() => OUTFIT_LABELS.map(([key, label]) => ({ label,
   color: var(--c-text-strong);
 }
 
-/* 窄屏：概览双栏变单栏，立绘居中 */
-@media (max-width: 480px) {
-  .cm-overview {
-    flex-direction: column;
-    align-items: center;
+/* 窄屏：独立窗口单栏，立绘限制在半屏高度以内（完整等比显示、不裁切），档案继续由外层 modal-body 滚动 */
+@media (max-width: 720px) {
+  .cm-layout {
+    grid-template-columns: 1fr;
   }
 
-  .cm-head {
+  /* 容器收缩贴合图片实际显示尺寸；img 用 auto 尺寸 + max 约束保持原比例，
+     vh 在前作回退、 dvh 覆盖——兼容不支持动态视口单位的老内核 */
+  .cm-portrait {
+    width: auto;
+    max-width: min(100%, 340px);
+  }
+
+  .cm-portrait img {
+    width: auto;
+    max-width: 100%;
+    max-height: 46vh;
+    max-height: 46dvh;
+  }
+
+  .cm-portrait.is-placeholder {
     width: 100%;
+    min-height: 300px;
   }
 }
 </style>

@@ -586,7 +586,7 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
       return callback(
         null,
         'module-import ' +
-          (cdn[request as keyof typeof cdn] ?? `https://testingcf.jsdelivr.net/npm/${versioned_request}/+esm`),
+          (cdn[request as keyof typeof cdn] ?? `https://cdn.jsdelivr.net/npm/${versioned_request}/+esm`),
       );
     },
   });

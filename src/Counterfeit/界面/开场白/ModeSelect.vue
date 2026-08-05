@@ -15,6 +15,11 @@
       </button>
     </div>
 
+    <p v-if="store.gameMode === 'story'" class="plugin-warning" role="note">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      剧情模式必须安装并启用“提示词模板”插件；否则 <code>@@if</code> 场景门控不会执行，请勿开始生成。
+    </p>
+
     <div class="pov-grid">
       <button
         v-for="pov in POV_LIST"
@@ -94,6 +99,29 @@ const GAME_MODES: GameMode[] = ['story', 'open'];
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   margin-bottom: 20px;
+}
+
+.plugin-warning {
+  width: 100%;
+  max-width: 480px;
+  margin: -8px 0 16px;
+  padding: 9px 12px;
+  border: 1px solid color-mix(in srgb, var(--c-warning) 42%, transparent);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--c-warning) 10%, var(--c-surface));
+  color: var(--c-text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.plugin-warning i {
+  margin-right: 5px;
+  color: var(--c-warning);
+}
+
+.plugin-warning code {
+  color: var(--c-primary-strong);
 }
 
 .gm-tab {

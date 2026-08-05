@@ -11,13 +11,16 @@
         </span>
         <span class="head-date">{{ formatDateLabel(data.world.current_date) }}</span>
       </div>
-      <!-- 第二行：位置 / 扮演角色 -->
+      <!-- 第二行：位置 / 扮演角色 / 时段（free 模式） -->
       <div class="panel-sub">
         <span class="sub-field">
           <span class="field-name">位置</span><span class="field-value">{{ data.world.current_location }}</span>
         </span>
         <span class="sub-field">
           <span class="field-name">扮演</span><span class="field-value">{{ playerLabel(data) }}</span>
+        </span>
+        <span v-if="data.mode === 'free' && data.world.time_slot" class="sub-field">
+          <span class="field-name">时段</span><span class="field-value">{{ data.world.time_slot }}</span>
         </span>
       </div>
       <!-- 第三行：在场角色头像标签（点击 → postMessage → 宿主顶层角色详情弹窗） -->
@@ -31,7 +34,13 @@
           @click="openChar(character.key)"
         >
           <span class="chip-avatar">
-            <img v-if="character.portraitUrl" :src="character.portraitUrl" :alt="character.displayName" loading="lazy" />
+            <img
+              v-if="character.avatarUrl"
+              :src="character.avatarUrl"
+              :alt="character.displayName"
+              loading="lazy"
+              decoding="async"
+            />
             <span v-else class="chip-initial">{{ character.displayName.slice(0, 1) }}</span>
           </span>
           <span class="chip-main">
@@ -78,14 +87,21 @@ const data = computed(() => store.data);
 
 const characters = computed(() => presentCharacters(data.value));
 
-const barTitle = computed(() =>
-  data.value.mode === 'pov' ? actNameOf(data.value.current_scene) : 'Counterfeit · 自建开放世界',
-);
+const barTitle = computed(() => {
+  if (data.value.mode === 'pov') return actNameOf(data.value.current_scene);
+  return data.value.current_pov ? 'Counterfeit · 开放世界' : 'Counterfeit · 自建开放世界';
+});
 
 // 角色弹窗标记：挂载器开顶层弹窗 iframe 时置 __counterfeitModalChar 为角色规范名
 const hostChar = ((window as any).__counterfeitModalChar as string | null | undefined) ?? null;
 // mock 预览降级：没有宿主弹窗管理器时，在页面内联展开
 const localChar = ref<string | null>(null);
+
+// 宿主顶层弹窗（fill）模式：整链改用百分比高度（global.css · html.cf-modal-fill），
+// 不依赖 iframe 内的 100vh/100dvh——部分移动端内核对 srcdoc iframe 的视口单位计算不可靠
+if (hostChar !== null) {
+  document.documentElement.classList.add('cf-modal-fill');
+}
 
 const view = computed<'panel' | 'char'>(() => (hostChar || localChar.value ? 'char' : 'panel'));
 const inlineOverlay = computed(() => !hostChar && localChar.value !== null);
@@ -108,7 +124,8 @@ function postToHost(payload: Record<string, unknown>): boolean {
 
 function openChar(charKey: string) {
   if (hostChar) return;
-  if (postToHost({ type: 'open-char', floor: getCurrentMessageId(), key: charKey })) return;
+  const floor = typeof getCurrentMessageId === 'function' ? getCurrentMessageId() : null;
+  if (postToHost({ type: 'open-char', floor, key: charKey })) return;
   localChar.value = charKey;
 }
 
@@ -294,16 +311,18 @@ window.addEventListener('keydown', onKeydown);
   min-height: 0;
 }
 
-/* 宿主顶层弹窗模式：窗口尺寸由挂载脚本遮罩给定（90vw×86dvh·max 1150px），本 iframe 填满 */
+/* 宿主顶层弹窗模式：窗口尺寸由挂载脚本遮罩给定（90vw×86dvh·max 1150px），本 iframe 填满；
+   高度整链走百分比（html.cf-modal-fill → body → #app → 本元素 → 卡片），不依赖 iframe 内视口单位 */
 .modal-root.fill {
   min-height: 100vh;
+  height: 100%;
   padding: 0;
   display: block;
 }
 
 .modal-root.fill .modal-card {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   max-height: none;
   border: none;
   border-top: 3px solid var(--c-primary-soft);
@@ -360,8 +379,11 @@ window.addEventListener('keydown', onKeydown);
   color: var(--c-text-strong);
 }
 
-/* 弹窗唯一滚动区域：视口高度不足时由这里滚动 */
+/* 弹窗唯一滚动区域：视口高度不足时由这里滚动；
+   flex:1 + min-height:0 显式声明收缩，防止部分移动端内核 flex 布局把内容裁掉而不是滚动 */
 .modal-body {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 18px 20px 20px;
 }

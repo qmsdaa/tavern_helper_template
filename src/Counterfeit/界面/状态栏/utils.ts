@@ -1,5 +1,5 @@
 // Counterfeit · 状态栏纯函数工具：幕名映射 / 日期星期 / 关系阶段 / 在场角色视图模型
-import { ASSET_VERSION, PORTRAIT_BASE } from '../../config';
+import { ASSET_VERSION, PORTRAIT_BASE, STATUS_AVATAR_BASE } from '../../config';
 import type { Schema } from '../../schema';
 
 /** 十幕区间（与 EJS 状态栏渲染及 WORKFLOW §大纲总览完全一致，不得自行改名） */
@@ -44,8 +44,9 @@ const POV_NAMES: Record<string, string> = {
 };
 
 export function playerLabel(data: Schema): string {
-  if (data.mode === 'pov') {
-    return (data.current_pov && POV_NAMES[data.current_pov]) || '未选择';
+  // pov 与 free 四选一都由 current_pov 给出扮演角色；free+自建/custom 走自建名
+  if ((data.mode === 'pov' || data.mode === 'free') && data.current_pov) {
+    return POV_NAMES[data.current_pov] || '未选择';
   }
   const customName = data.custom_protagonist?.name;
   return customName ? `${customName}（自建）` : '未选择';
@@ -101,6 +102,12 @@ export function portraitUrlOf(canonicalName: string): string | null {
   return file ? `${PORTRAIT_BASE}/${file}.webp?v=${ASSET_VERSION}` : null;
 }
 
+/** 列表头像 URL；512×512 小图与 4K 详情立绘分离，避免状态栏常驻解码整张大图 */
+export function avatarUrlOf(canonicalName: string): string | null {
+  const file = PORTRAIT_KEYS[canonicalName];
+  return file ? `${STATUS_AVATAR_BASE}/${file}.webp?v=${ASSET_VERSION}` : null;
+}
+
 export interface PresentCharacterView {
   /** 世界书规范全名（characters 记录键） */
   key: string;
@@ -119,7 +126,9 @@ export interface PresentCharacterView {
     underwear: string;
     shoes: string;
   };
-  /** 立绘 URL；无素材时为 null（UI 显示 displayName 首字占位） */
+  /** 512×512 列表头像；无素材时为 null */
+  avatarUrl: string | null;
+  /** 4K/2K 详情立绘；仅角色弹窗打开后加载 */
   portraitUrl: string | null;
 }
 
@@ -144,6 +153,7 @@ export function presentCharacters(data: Schema): PresentCharacterView[] {
         underwear: record.outfit?.underwear || '未确认',
         shoes: record.outfit?.shoes || '未确认',
       },
+      avatarUrl: avatarUrlOf(canonicalName),
       portraitUrl: portraitUrlOf(canonicalName),
     }));
 }

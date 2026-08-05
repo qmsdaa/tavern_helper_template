@@ -289,7 +289,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     step.value = 'opening';
   }
 
-  /** 提交：组装设定摘要 → 写 MVU 变量（容错）→ 替换 0 楼 <OpeningUI/> 占位符 */
+  /** 提交：组装设定摘要 → 原子写入并验证 MVU 变量 → 替换 0 楼 <OpeningUI/> 占位符 */
   async function commit() {
     if (submitting.value) {
       return;
@@ -352,13 +352,10 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
           // MVU 可能尚未完成楼层变量初始化（桶不存在时 getVariables 返回空）——
           // 若此时跳过楼层写入，AI 变量更新链会从 initvar 空壳起步（开局数值全 0），
           // 因此先等框架就绪，再对 0 楼桶做有界重试；聊天级基线无论如何都写。
-          try {
-            if (typeof waitGlobalInitialized === 'function') {
-              await waitGlobalInitialized('Mvu');
-            }
-          } catch {
-            // 框架未加载时按原路径容错
+          if (typeof waitGlobalInitialized !== 'function') {
+            throw new Error('waitGlobalInitialized API 缺失，无法确认 MVU 已就绪');
           }
+          await waitGlobalInitialized('Mvu');
           let floor0Variables: Record<string, any> | null = null;
           for (let attempt = 0; attempt < 20 && !floor0Variables; attempt++) {
             floor0Variables = getVariables({ type: 'message', message_id: 0 }) ?? null;
@@ -366,24 +363,37 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
               await new Promise(resolve => setTimeout(resolve, 500));
             }
           }
-          if (floor0Variables) {
-            updateVariablesWith(buildStat, { type: 'message', message_id: 0 });
-          } else {
-            console.error('[开场白] 等待 10 秒后 0 楼变量桶仍为空，跳过楼层写入（聊天级写入不受影响）');
-            showToast('楼层变量初始化超时，若开局数值异常请刷新后重新开局', 'error', 5000);
+          if (!floor0Variables) {
+            throw new Error('等待 10 秒后 0 楼变量桶仍为空');
           }
+          await updateVariablesWith(buildStat, { type: 'message', message_id: 0 });
           // 聊天级基线：状态栏/手机在 AI 首轮楼层快照缺失时回退读取 chat 级，
           // 保证开局初始状态（现金/角色记录等）不依赖主 AI 首轮是否输出变量更新块
-          updateVariablesWith(buildStat, { type: 'chat' });
+          await updateVariablesWith(buildStat, { type: 'chat' });
+          const expected = buildStat({}).stat_data;
+          const committedFloor0 = (getVariables({ type: 'message', message_id: 0 }) ?? {}).stat_data;
+          const committedChat = (getVariables({ type: 'chat' }) ?? {}).stat_data;
+          const assertCommitted = (label: string, stat: Record<string, any> | undefined) => {
+            if (!stat) throw new Error(`${label}缺少 stat_data`);
+            if (stat.mode !== expected.mode || stat.current_pov !== expected.current_pov) {
+              throw new Error(`${label}模式/视角校验失败`);
+            }
+            if (JSON.stringify(stat.characters ?? {}) !== JSON.stringify(expected.characters ?? {})) {
+              throw new Error(`${label}初始关系校验失败`);
+            }
+          };
+          assertCommitted('楼层0', committedFloor0);
+          assertCommitted('聊天级', committedChat);
           console.info(
-            `[开场白] 已写入 MVU 变量（楼层0${floor0Variables ? '' : '·跳过'} + 聊天级全量 commit，预建角色 ${Object.keys(buildStat({}).characters as object).length} 人）`,
+            `[开场白] 已写入并验证 MVU 变量（楼层0 + 聊天级全量 commit，预建角色 ${Object.keys(expected.characters ?? {}).length} 人）`,
           );
         } else {
-          console.error('[开场白] 无 MVU API（getVariables/updateVariablesWith 缺失），变量未能写入');
+          throw new Error('无 MVU API（getVariables/updateVariablesWith 缺失）');
         }
       } catch (error) {
         console.error('[开场白] MVU 变量写入失败', error);
         showToast('变量写入失败，请检查 MVU 脚本是否启用', 'error', 4000);
+        throw error;
       }
 
       // 世界书 enabled 批量切换（MVU-DESIGN §3 · 角色卡绑定世界书）
@@ -454,9 +464,9 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
         // 正常随楼层刷新卸载；若未卸载则兜底展示完成态
         step.value = 'done';
         // 首条回复改由挂载脚本（脚本库沙箱，持久上下文）编排：
-        // commit 后本 iframe 会随占位符消失被卸载，iframe 内直接 generate 会与楼层刷新/卸载竞态
+        // commit 后本 iframe 会随占位符消失被卸载，iframe 内直接生成会与楼层刷新/卸载竞态
         // （回复被挂成 0 楼 swipe 或直接丢失），改为 postMessage 通知沙箱：
-        // 插入 user 消息 → 复制 0 楼变量基线 → 触发生成。失败不阻断——玩家仍可手动发送
+        // 插入可见 user 消息 → 复制 0 楼变量基线 → /trigger 创建 assistant 楼层
         try {
           if (window.parent && window.parent !== window) {
             window.parent.postMessage({ source: 'counterfeit-opening', type: 'commit-done', summary }, '*');

@@ -45,6 +45,15 @@ body {
   background: transparent;
 }
 
+/* 宿主顶层角色弹窗模式（App.vue 在 fill 视图时给 <html> 加 cf-modal-fill）：
+   html → body → #app 整链百分比高度，弹窗卡片据此填满 iframe，
+   替代 iframe 内不可靠的 100vh/100dvh（部分移动端内核 srcdoc iframe 视口单位计算异常） */
+html.cf-modal-fill,
+html.cf-modal-fill body,
+html.cf-modal-fill #app {
+  height: 100%;
+}
+
 body {
   font-family: var(--font-main);
   color: var(--c-text);
