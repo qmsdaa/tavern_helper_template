@@ -313,11 +313,15 @@ window.addEventListener('keydown', onKeydown);
 
 /* 宿主顶层弹窗模式：窗口尺寸由挂载脚本遮罩给定（90vw×86dvh·max 1150px），本 iframe 填满；
    高度整链走百分比（html.cf-modal-fill → body → #app → 本元素 → 卡片），不依赖 iframe 内视口单位 */
+/* fill 模式绝不能出现 vh：部分移动端内核把 srcdoc iframe 内的 100vh 算成外层视口高度，
+   于是卡片被撑到比 iframe 本身还高，超出部分被桥接注入的 overflow:hidden 直接裁掉（且无法滚动）——
+   表现就是标题栏与立绘上半身被切在视口外。高度整链只走百分比（html.cf-modal-fill → body → #app → 本元素）。 */
 .modal-root.fill {
-  min-height: 100vh;
+  min-height: 0;
   height: 100%;
   padding: 0;
   display: block;
+  overflow: hidden;
 }
 
 .modal-root.fill .modal-card {
