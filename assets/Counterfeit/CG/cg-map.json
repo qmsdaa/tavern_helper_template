@@ -1,6 +1,6 @@
 {
   "version": "2026-08-06",
-  "images_base": "https://testingcf.jsdelivr.net/gh/qmsdaa/tavern_helper_template@b858573b321c6efe020e8ae87addee8234725b76/assets/Counterfeit/CG",
+  "images_base": "https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template@0e601ca2dbb529a160e5b18bae8709c674895134/assets/Counterfeit/CG",
   "scenes": {
     "9": {
       "file": "场景9.webp",
