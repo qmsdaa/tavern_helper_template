@@ -22,6 +22,8 @@ interface CharacterSeed {
   commitment?: '未确认' | '仅朋友' | '恋人';
   memory?: string;
   inner_thought?: string;
+  intimate_memory?: string;
+  intimate_sexual_memory?: string;
   outfit?: Partial<CharacterRecord['outfit']>;
 }
 
@@ -34,6 +36,8 @@ function makeCharacter(seed: CharacterSeed): CharacterRecord {
       bond: seed.bond ?? 0,
       romance: seed.romance ?? 0,
       commitment: seed.commitment ?? '未确认',
+      intimate_memory: seed.intimate_memory ?? '',
+      intimate_sexual_memory: seed.intimate_sexual_memory ?? '',
     },
     latest_user_memory: {
       memory: seed.memory ?? '',
@@ -110,6 +114,7 @@ function povData(): Schema {
       romance: 12,
       memory: '部活结束后，他没有多说，只是把她忘在活动室的文库本整齐地放在了桌角。',
       inner_thought: '……谢谢。这种话，还是说不出口。',
+      intimate_memory: '雨停之前的空教室里，她第一次承认自己并不想一个人待着。',
       outfit: {
         outerwear: '总武高中制服西装外套',
         inner_layer: '白色衬衫',
@@ -209,6 +214,8 @@ function longData(): Schema {
       commitment: '恋人',
       memory: '他在毕业纪念册的最后一页，只写了一句话：「这两年的委托，没有一件是亏本的。」',
       inner_thought: '真物这种东西，原来真的会一直留在手里。',
+      intimate_memory: '走廊尽头没有别人的那一分钟，他先伸的手，两个人一直牵到楼梯口才松开。',
+      intimate_sexual_memory: '毕业典礼前一晚的酒店房间，她第一次没有推开他伸过来的手。',
     }),
     由比滨结衣: makeCharacter({ display_name: '结衣', bond: 78 }),
     拉芙希妮·都柏林: makeCharacter({

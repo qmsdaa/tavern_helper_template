@@ -118,6 +118,10 @@ export interface PresentCharacterView {
   commitment: '未确认' | '仅朋友' | '恋人';
   memory: string;
   innerThought: string;
+  /** 私密档案·亲密记忆；空字符串表示尚未留下 */
+  intimateMemory: string;
+  /** 私密档案·性爱回忆；空字符串表示尚未留下 */
+  intimateSexualMemory: string;
   outfit: {
     outerwear: string;
     inner_layer: string;
@@ -145,6 +149,8 @@ export function presentCharacters(data: Schema): PresentCharacterView[] {
       commitment: record.relationship.commitment,
       memory: record.latest_user_memory?.memory || '',
       innerThought: record.latest_user_memory?.inner_thought || '',
+      intimateMemory: record.relationship?.intimate_memory || '',
+      intimateSexualMemory: record.relationship?.intimate_sexual_memory || '',
       outfit: {
         outerwear: record.outfit?.outerwear || '未确认',
         inner_layer: record.outfit?.inner_layer || '未确认',

@@ -4,6 +4,8 @@ const RelationshipSchema = z.object({
   bond: z.coerce.number().transform((v) => _.clamp(v, 0, 100)).prefault(0),
   romance: z.coerce.number().transform((v) => _.clamp(v, 0, 100)).prefault(0),
   commitment: z.enum(['未确认', '仅朋友', '恋人']).prefault('未确认'),
+  intimate_memory: z.string().prefault(''),
+  intimate_sexual_memory: z.string().prefault(''),
 });
 
 const OutfitSchema = z.object({
@@ -28,6 +30,8 @@ const CharacterStateSchema = z.object({
     bond: 0,
     romance: 0,
     commitment: '未确认',
+    intimate_memory: '',
+    intimate_sexual_memory: '',
   }),
   latest_user_memory: LatestUserMemorySchema.prefault({
     memory: '',
@@ -56,6 +60,9 @@ export const Schema = z.object({
     personality: z.string().prefault(''),
     appearance: z.string().prefault(''),
   }).nullable().prefault(null),
+
+  // ── 恋爱难度（开场白 commit 写入·仅开局可定）──
+  difficulty: z.enum(['简单', '普通', '困难']).nullable().prefault(null),
 
   // ── 剧本进度 ──
   current_scene: z.coerce.number().int().transform((v) => _.clamp(v, 1, 150)).prefault(1),
@@ -95,6 +102,82 @@ export const Schema = z.object({
   laff_knows_fire_truth: z.boolean().prefault(false),
   laff_reed_authorized_yukino: z.boolean().prefault(false),
   dalloway_pen_used: z.boolean().prefault(false),
+
+  // ── 成长里程碑组（2026-08-05 新增·事件旗标制·一旦true不可逆）──
+  // 人格阶段由旗标数驱动；current_scene 只决定事件可用性，bond 只决定亲密
+  arc_milestones: z.object({
+    hachiman: z.object({
+      asked_before_self_sacrifice: z.boolean().prefault(false),
+      accepted_shared_cost: z.boolean().prefault(false),
+      stated_personal_desire: z.boolean().prefault(false),
+    }).prefault({
+      asked_before_self_sacrifice: false,
+      accepted_shared_cost: false,
+      stated_personal_desire: false,
+    }),
+    yukino: z.object({
+      offered_resources_without_deciding: z.boolean().prefault(false),
+      admitted_personal_wish: z.boolean().prefault(false),
+      separated_self_from_family_standard: z.boolean().prefault(false),
+    }).prefault({
+      offered_resources_without_deciding: false,
+      admitted_personal_wish: false,
+      separated_self_from_family_standard: false,
+    }),
+    yui: z.object({
+      voiced_disagreement_publicly: z.boolean().prefault(false),
+      did_not_retract_after_conflict: z.boolean().prefault(false),
+      admitted_selfish_wish: z.boolean().prefault(false),
+    }).prefault({
+      voiced_disagreement_publicly: false,
+      did_not_retract_after_conflict: false,
+      admitted_selfish_wish: false,
+    }),
+    laff: z.object({
+      expressed_preference: z.boolean().prefault(false),
+      refused_without_explanation: z.boolean().prefault(false),
+      chose_against_group_expectation: z.boolean().prefault(false),
+      accepted_consequence_without_withdrawing_choice: z.boolean().prefault(false),
+    }).prefault({
+      expressed_preference: false,
+      refused_without_explanation: false,
+      chose_against_group_expectation: false,
+      accepted_consequence_without_withdrawing_choice: false,
+    }),
+  }).prefault({
+    hachiman: {
+      asked_before_self_sacrifice: false,
+      accepted_shared_cost: false,
+      stated_personal_desire: false,
+    },
+    yukino: {
+      offered_resources_without_deciding: false,
+      admitted_personal_wish: false,
+      separated_self_from_family_standard: false,
+    },
+    yui: {
+      voiced_disagreement_publicly: false,
+      did_not_retract_after_conflict: false,
+      admitted_selfish_wish: false,
+    },
+    laff: {
+      expressed_preference: false,
+      refused_without_explanation: false,
+      chose_against_group_expectation: false,
+      accepted_consequence_without_withdrawing_choice: false,
+    },
+  }),
+
+  // ── 一色成长旗标组（2026-08-05 新增·第五可攻略角色·非第五POV·外部证据制）──
+  iroha_milestones: z.object({
+    rejected_profitable_solution: z.boolean().prefault(false),
+    made_uncalculated_request: z.boolean().prefault(false),
+    stated_desire_without_performance: z.boolean().prefault(false),
+  }).prefault({
+    rejected_profitable_solution: false,
+    made_uncalculated_request: false,
+    stated_desire_without_performance: false,
+  }),
 
   // ── 结局组 ──
   branch_choice: z.enum(['共同线', '八幡×雪乃', '八幡×拉芙希妮', '八幡×结衣', '雪乃×拉芙希妮', '雪乃×结衣', '拉芙希妮×结衣', '姐妹和解']).nullable().prefault(null),

@@ -1,7 +1,11 @@
 /* 状态栏全局样式：樱白/淡粉/低饱和浅紫的轻文学感。
    CSS 变量一律使用功能语义命名（--c-primary / --c-surface / --c-text …），与开场白界面同源。
    状态栏运行在酒馆消息楼层 iframe 内：body 透明、自然文档流高度，
-   由楼层 iframe 的自动高度方案测量，禁止固定视口高度与内部滚动条。 */
+   由楼层 iframe 的自动高度方案测量，禁止固定视口高度与内部滚动条。
+
+   多主题（theme.ts）：<html data-cf-theme="sakura|dark|eyecare"> 只覆盖下面这组语义变量，
+   绝不改任何盒模型属性（宽高/内外边距/flex/grid），因此与 2026-08-05 移动端高度链修复正交——
+   换主题不可能引起显示不全。新增主题只需补一组 [data-cf-theme="..."] 覆盖。 */
 
 :root {
   /* 色彩 */
@@ -21,6 +25,41 @@
   --c-border: #f3d9de;
   --c-border-strong: #e3b9c9;
 
+  /* 主色之上的文字色（按钮 hover、立绘占位首字） */
+  --c-on-primary: #fff;
+
+  /* CG 按钮文字：底色是 --c-primary-soft(#f7c9d8)，原来用 --c-primary-strong
+     只有 2.31:1，远不到 AA。加深到 #8f2f52 后在该底色上实测 5.3:1。 */
+  --c-on-primary-soft: #8f2f52;
+
+  /* 关系态语义色：恋人 / 仅朋友。原先散在 CharacterModal 里写死，
+     收敛成变量后各主题才能各自调整（尤其暗色下要提亮才够对比度）。
+     --c-lover-text 用于 12–13px 小字（区块标题/徽章/折叠标签），必须在全部四种
+     合成底色上都过 AA 4.5:1：卡面 #fffdfb、区块恋人染色底、徽章底、折叠标签底。
+     #d64d7f 实测仅 3.27–3.96:1；#bd3566 在折叠标签底（合成 251,222,230）上仍只有
+     4.32:1；#b02e5c 实测 4.92(标签)/5.03(徽章)/5.82(区块)/6.10(卡面)，全部过线。 */
+  --c-lover-text: #b02e5c;
+  --c-lover-badge-bg: rgba(236, 95, 146, 0.14);
+  --c-lover-tag-bg: rgba(236, 95, 146, 0.16);
+  --c-lover-border: rgba(236, 95, 146, 0.32);
+  --c-lover-tint: rgba(236, 95, 146, 0.045);
+  --c-lover-outline: rgba(236, 95, 146, 0.5);
+  --c-lover-rule: rgba(236, 95, 146, 0.22);
+
+  /* 「仅朋友」徽章同样是 13px 小字：#0a84ff 在浅底上约 3.1:1，加深到 #0b62c4 过 AA */
+  --c-friend-text: #0b62c4;
+  --c-friend-badge-bg: rgba(10, 132, 255, 0.12);
+
+  /* 关系数值条渐变 */
+  --c-bond-from: #7fb3f0;
+  --c-bond-to: #4a86d8;
+  --c-romance-from: #f6a8c5;
+  --c-romance-to: #ec5f92;
+
+  /* 弹窗遮罩与卡片投影（App.vue 用） */
+  --c-scrim: rgba(60, 40, 52, 0.45);
+  --shadow-modal: 0 8px 32px rgba(90, 60, 75, 0.25);
+
   /* 阴影 */
   --shadow-card: 0 1px 6px rgba(213, 138, 165, 0.1);
 
@@ -32,6 +71,98 @@
   --font-main:
     'Zen Maru Gothic', 'Source Han Sans SC', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue',
     Arial, sans-serif;
+}
+
+/* —— 暗色主题 —— 深底低亮，正文与底色对比度 ≥ AA；粉色降饱和避免深底上刺眼。
+   注意 --c-primary-strong 在暗色下是浅粉，故 --c-on-primary 反过来用深色。 */
+[data-cf-theme='dark'] {
+  --c-primary: #e08aa8;
+  --c-primary-strong: #f0a3bd;
+  --c-primary-soft: #4a2f3c;
+  --c-accent: #b9a2fb;
+  --c-accent-soft: #3b3350;
+
+  --c-surface: #241d24;
+  --c-surface-muted: #2c2430;
+
+  --c-text: #e3dae1;
+  --c-text-strong: #f6eff4;
+  --c-text-muted: #b3a2ad;
+
+  --c-border: #453a46;
+  --c-border-strong: #5e4d5c;
+
+  --c-on-primary: #2a1f26;
+
+  /* 暗色下 --c-primary-soft 是深色 #4a2f3c，按钮文字反过来用浅粉：实测 6.06:1 */
+  --c-on-primary-soft: #f0a3bd;
+
+  /* 恋人态：深底上整体提亮，否则 #d64d7f 在 #241d24 上对比度不足 */
+  /* 深底上 #ffa7c6 实测 7.7:1（区块底）/5.4:1（徽章底），已过 AA，保持提亮不再加深 */
+  --c-lover-text: #ffa7c6;
+  --c-lover-badge-bg: rgba(255, 167, 198, 0.16);
+  --c-lover-tag-bg: rgba(255, 167, 198, 0.2);
+  --c-lover-border: rgba(255, 167, 198, 0.34);
+  --c-lover-tint: rgba(255, 167, 198, 0.08);
+  --c-lover-outline: rgba(255, 167, 198, 0.5);
+  --c-lover-rule: rgba(255, 167, 198, 0.26);
+
+  --c-friend-text: #6cb6ff;
+  --c-friend-badge-bg: rgba(108, 182, 255, 0.16);
+
+  --c-bond-from: #8fc0f5;
+  --c-bond-to: #5b93de;
+  --c-romance-from: #f3a2c2;
+  --c-romance-to: #e0648f;
+
+  --c-scrim: rgba(12, 8, 12, 0.62);
+  --shadow-modal: 0 8px 32px rgba(0, 0, 0, 0.55);
+  --shadow-card: 0 1px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* —— 护眼主题 —— 暖米底 + 低蓝光：蓝色一律换成同明度的橄榄/砖色，长时间阅读用 */
+[data-cf-theme='eyecare'] {
+  --c-primary: #c98f6a;
+  --c-primary-strong: #a86b46;
+  --c-primary-soft: #e6d3ba;
+  --c-accent: #8f9a6b;
+  --c-accent-soft: #dbe0c6;
+
+  --c-surface: #f7f2e6;
+  --c-surface-muted: #f2ece0;
+
+  --c-text: #4f4738;
+  --c-text-strong: #3b3427;
+  --c-text-muted: #736850;
+
+  --c-border: #e0d6bf;
+  --c-border-strong: #cbbb9c;
+
+  --c-on-primary: #fff;
+
+  /* 暖底 #e6d3ba 上 --c-primary-strong 只有 ~2.6:1，改用实测 5.07:1 的深棕 */
+  --c-on-primary-soft: #7a4a28;
+
+  /* #b25f7d 实测仅 3.6:1，加深到 #8d4459：区块底 5.65:1 / 徽章底 4.88:1，过 AA */
+  --c-lover-text: #8d4459;
+  --c-lover-badge-bg: rgba(178, 95, 125, 0.13);
+  --c-lover-tag-bg: rgba(178, 95, 125, 0.16);
+  --c-lover-border: rgba(178, 95, 125, 0.3);
+  --c-lover-tint: rgba(178, 95, 125, 0.06);
+  --c-lover-outline: rgba(178, 95, 125, 0.45);
+  --c-lover-rule: rgba(178, 95, 125, 0.24);
+
+  --c-friend-text: #5f7d52;
+  --c-friend-badge-bg: rgba(95, 125, 82, 0.14);
+
+  --c-bond-from: #a8b58a;
+  --c-bond-to: #7d8f5f;
+  --c-romance-from: #d9a0b0;
+  --c-romance-to: #b2657d;
+
+  --c-scrim: rgba(70, 58, 38, 0.42);
+  --shadow-modal: 0 8px 32px rgba(120, 100, 60, 0.25);
+  --shadow-card: 0 1px 6px rgba(120, 100, 60, 0.12);
 }
 
 * {

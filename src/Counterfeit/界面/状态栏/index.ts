@@ -2,6 +2,12 @@ import { waitUntil } from 'async-wait-until';
 import App from './App.vue';
 import './global.css';
 import { isMockMode } from './mock';
+import { initTheme } from './theme';
+
+// 主题上色：在模块求值阶段就执行（早于 DOMContentLoaded 与 MVU 等待），
+// 否则暗色主题下会先按浅色渲染一帧再变暗。paint() 内部自带 try/catch，
+// 拿不到 documentElement 也只是退回默认配色，不影响后续挂载。
+initTheme();
 
 // 酒馆环境有 jQuery（$），纯浏览器 mock 预览没有——按约定做降级（与开场白界面同款处理）
 const jq = (window as any).$ as JQueryStatic | undefined;

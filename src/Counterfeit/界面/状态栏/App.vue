@@ -62,6 +62,28 @@
     <div class="modal-card">
       <header class="modal-titlebar">
         <span class="modal-title">{{ modalCharacter ? modalCharacter.displayName : '角色详情' }}</span>
+        <!-- 主题切换：原生 details 承载下拉，无 JS 定位、无固定高度；
+             选择落 localStorage，实时同步到所有楼层与弹窗（theme.ts） -->
+        <details ref="themeMenu" class="theme-menu">
+          <summary class="theme-trigger" :title="`主题：${themeLabel}`">
+            <span class="theme-icon" aria-hidden="true">◐</span>
+            <span class="theme-current">{{ themeLabel }}</span>
+          </summary>
+          <div class="theme-list">
+            <button
+              v-for="option in THEMES"
+              :key="option.name"
+              type="button"
+              class="theme-item"
+              :class="{ active: option.name === theme }"
+              @click="pickTheme(option.name)"
+            >
+              <span class="theme-item-label">{{ option.label }}</span>
+              <span class="theme-item-hint">{{ option.hint }}</span>
+              <span v-if="option.name === theme" class="theme-item-check" aria-hidden="true">✓</span>
+            </button>
+          </div>
+        </details>
         <button type="button" class="modal-close" title="关闭" @click="closeModal">✕</button>
       </header>
       <div class="modal-body">
@@ -75,6 +97,7 @@
 <script setup lang="ts">
 import CharacterModal from './components/CharacterModal.vue';
 import { useDataStore } from './store';
+import { THEMES, currentTheme, onThemeChange, setTheme, type ThemeName } from './theme';
 import {
   actNameOf,
   formatDateLabel,
@@ -137,10 +160,45 @@ function closeModal() {
   localChar.value = null;
 }
 
+// —— 主题切换（弹窗标题栏）——
+// 选择记在 localStorage：srcdoc iframe 与宿主同源共享，故楼层摘要与弹窗看到同一份；
+// 其它 iframe 通过 storage 事件实时同步（theme.ts），不需要刷新。
+const themeMenu = ref<HTMLDetailsElement | null>(null);
+const theme = ref<ThemeName>(currentTheme());
+const themeLabel = computed(() => THEMES.find(option => option.name === theme.value)?.label ?? '樱白');
+
+// 其它楼层/弹窗改了主题 → 同步本组件的选中态显示
+onThemeChange(name => {
+  theme.value = name;
+});
+
+function closeThemeMenu() {
+  if (themeMenu.value) themeMenu.value.open = false;
+}
+
+function pickTheme(name: ThemeName) {
+  setTheme(name);
+  theme.value = name;
+  closeThemeMenu();
+}
+
+/** 点菜单外部收起下拉（不用遮罩层，避免多一层盒子影响弹窗高度链） */
+function onDocPointerDown(event: Event) {
+  const menu = themeMenu.value;
+  if (!menu || !menu.open) return;
+  const target = event.target as Node | null;
+  if (target && !menu.contains(target)) closeThemeMenu();
+}
+document.addEventListener('pointerdown', onDocPointerDown, true);
+
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
-    closeModal();
+  if (event.key !== 'Escape') return;
+  // Esc 先收主题下拉，再次按下才关弹窗
+  if (themeMenu.value && themeMenu.value.open) {
+    closeThemeMenu();
+    return;
   }
+  closeModal();
 }
 window.addEventListener('keydown', onKeydown);
 </script>
@@ -261,7 +319,7 @@ window.addEventListener('keydown', onKeydown);
   align-items: center;
   justify-content: center;
   background: var(--c-primary-soft);
-  color: #fff;
+  color: var(--c-on-primary);
   font-size: 17px;
   font-weight: 700;
 }
@@ -307,7 +365,7 @@ window.addEventListener('keydown', onKeydown);
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(60, 40, 52, 0.45);
+  background: var(--c-scrim);
   min-height: 0;
 }
 
@@ -344,7 +402,7 @@ window.addEventListener('keydown', onKeydown);
   border: 1px solid var(--c-border);
   border-top: 3px solid var(--c-primary-soft);
   border-radius: var(--radius-card);
-  box-shadow: 0 8px 32px rgba(90, 60, 75, 0.25);
+  box-shadow: var(--shadow-modal);
   font-size: 15px;
   line-height: 1.7;
   overflow: hidden;
@@ -367,7 +425,7 @@ window.addEventListener('keydown', onKeydown);
 }
 
 .modal-close {
-  margin-left: auto;
+  flex: none;
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -381,6 +439,108 @@ window.addEventListener('keydown', onKeydown);
 .modal-close:hover {
   background: var(--c-surface);
   color: var(--c-text-strong);
+}
+
+/* —— 主题切换下拉 ——
+   原生 <details>：触发钮在标题栏内（flex:none，不改标题栏高度），
+   列表 position:absolute 脱离文档流向下浮出，因此展开与否都不影响
+   标题栏/卡片/modal-body 的高度链——2026-08-05 的移动端修复不受影响。
+   列表向下展开进卡片内部（卡片 overflow:hidden 只裁越出卡片外的部分），
+   最小可见高 450px 档下实测未越界。 */
+.theme-menu {
+  position: relative;
+  flex: none;
+  margin-left: auto;
+}
+
+.theme-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.theme-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.theme-trigger:hover {
+  border-color: var(--c-primary-soft);
+  color: var(--c-text-strong);
+}
+
+.theme-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.theme-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  min-width: 168px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  background: var(--c-surface);
+  box-shadow: var(--shadow-modal);
+}
+
+/* 触控目标 44px；选中项用主色底 + ✓ 双重标识（不只靠颜色） */
+.theme-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 7px;
+  color: var(--c-text);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.theme-item:hover {
+  background: var(--c-surface-muted);
+}
+
+.theme-item.active {
+  background: var(--c-primary-soft);
+  color: var(--c-primary-strong);
+  font-weight: 600;
+}
+
+.theme-item-label {
+  flex: none;
+}
+
+.theme-item-hint {
+  flex: 1;
+  min-width: 0;
+  color: var(--c-text-muted);
+  font-size: 12px;
+}
+
+.theme-item.active .theme-item-hint {
+  color: var(--c-primary-strong);
+}
+
+.theme-item-check {
+  flex: none;
+  font-size: 13px;
 }
 
 /* 弹窗唯一滚动区域：视口高度不足时由这里滚动；
