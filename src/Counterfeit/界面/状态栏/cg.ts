@@ -32,6 +32,15 @@ const FILES = {
     '5fmhyh', 'g4y4gz', 'xxvqjz', '55iays', 'ogctbr', 'q0lt8c', 'wsuj7l', '7dk7qw',
     'zv486w',
   ],
+  // 2026-08-07 追加：小町（10 张 · catbox.moe/c/wtkwcn）、平冢静（10 张 · catbox.moe/c/cpqwpu）
+  '比企谷小町': [
+    'a6wrco', 'ul9s9g', '7vjqnt', 'wclq4r', 'bvopvy', 'vzyqmn', '324pam', 're5j27',
+    '1xwosi', 'q6qrhy',
+  ],
+  '平冢静': [
+    'jkh78i', '3hur36', 'yqh7cy', 't1czhk', 'uwy9d0', 'vjnvye', 'ciro08', 'g1ggko',
+    'k8iqns', '7h4yim',
+  ],
 };
 
 const BASE = 'https://files.catbox.moe';
