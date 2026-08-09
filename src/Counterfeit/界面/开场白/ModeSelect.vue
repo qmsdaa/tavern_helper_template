@@ -20,6 +20,20 @@
       剧情模式必须安装并启用“提示词模板”插件；否则 <code>@@if</code> 场景门控不会执行，请勿开始生成。
     </p>
 
+    <div class="difficulty-row">
+      <span class="diff-title">恋爱难度</span>
+      <button
+        v-for="d in DIFFICULTY_KEYS"
+        :key="d"
+        class="diff-tab"
+        :class="{ active: store.difficulty === d }"
+        @click="store.difficulty = d"
+      >
+        <span class="diff-label">{{ DIFFICULTY_COPY[d].label }}</span>
+        <span class="diff-desc">{{ DIFFICULTY_COPY[d].desc }}</span>
+      </button>
+    </div>
+
     <div class="pov-grid">
       <button
         v-for="pov in POV_LIST"
@@ -65,12 +79,13 @@
 </template>
 
 <script setup lang="ts">
-import { MODE_COPY, POV_LIST } from './copy';
+import { DIFFICULTY_COPY, MODE_COPY, POV_LIST, type DifficultyKey } from './copy';
 import { portraitUrl } from './data';
 import { useOpeningStore, type GameMode } from './store';
 
 const store = useOpeningStore();
 const GAME_MODES: GameMode[] = ['story', 'open'];
+const DIFFICULTY_KEYS: DifficultyKey[] = ['简单', '普通', '困难'];
 </script>
 
 <style lang="scss" scoped>
@@ -122,6 +137,61 @@ const GAME_MODES: GameMode[] = ['story', 'open'];
 
 .plugin-warning code {
   color: var(--c-primary-strong);
+}
+
+.difficulty-row {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.diff-title {
+  font-size: 13px;
+  color: var(--c-text-muted);
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+
+.diff-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 6px 8px;
+  border-radius: 9px;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &.active {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 1px var(--c-primary);
+  }
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+}
+
+.diff-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text);
+  letter-spacing: 1px;
+}
+
+.diff-desc {
+  font-size: 10px;
+  color: var(--c-text-muted);
+  line-height: 1.4;
+  text-align: center;
 }
 
 .gm-tab {

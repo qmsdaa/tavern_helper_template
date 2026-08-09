@@ -1,10 +1,12 @@
-import { OPENING_TEXTS, povByKey, renderCustomOpening, type PovKey } from './copy';
+import { OPENING_TEXTS, povByKey, renderCustomOpening, type DifficultyKey, type PovKey } from './copy';
 import { showToast } from './toast';
 
 export type Step = 'gate' | 'intro' | 'title' | 'mode' | 'pov' | 'custom' | 'opening' | 'gallery' | 'done';
 export type Mode = 'pov' | 'custom';
 /** 玩法模式：story=剧本模式（150场）·open=开放世界攻略模式（写入 stat.mode='free'） */
 export type GameMode = 'story' | 'open';
+/** 恋爱难度：开局一次定档，写入 stat_data.difficulty（键名与 schema.ts 枚举对齐） */
+export type Difficulty = DifficultyKey;
 
 /** POV 角色开局所在班级教室（MVU-DESIGN §2.1：world.current_location 在 POV 模式填对应 F/J 班教室） */
 const POV_CLASSROOM: Record<PovKey, string> = {
@@ -174,6 +176,8 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
   /** 玩法模式：story=剧本 / open=开放世界（stat.mode 写 'free'）；自建角色在两种玩法下均可用 */
   const gameMode = ref<GameMode>('story');
   const selectedPov = ref<PovKey | null>(null);
+  /** 恋爱难度：开局一次定档（默认普通），commit 写入 stat.difficulty */
+  const difficulty = ref<Difficulty>('普通');
   const form = reactive<CustomForm>(emptyForm());
   const submitting = ref(false);
   /** 已提交的设定摘要块（done 屏展示） */
@@ -202,7 +206,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     if (mode.value === 'pov' && selectedPov.value) {
       const info = povByKey(selectedPov.value);
       const lines = [
-        `<opening_setup mode="${statMode}" pov="${info.key}" name="${escapeAttr(info.name)}">`,
+        `<opening_setup mode="${statMode}" pov="${info.key}" diff="${difficulty.value}" name="${escapeAttr(info.name)}">`,
         `定位: ${info.role}`,
         `简介: ${info.tagline}`,
       ];
@@ -214,7 +218,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     }
     if (mode.value === 'custom') {
       return [
-        `<opening_setup mode="${statMode}" name="${escapeAttr(form.name.trim())}">`,
+        `<opening_setup mode="${statMode}" diff="${difficulty.value}" name="${escapeAttr(form.name.trim())}">`,
         `性别: ${form.gender || '未填写'}`,
         `所在班级: ${form.className || '未填写'}`,
         `身份: ${form.identity.trim() || '未填写'}`,
@@ -311,6 +315,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
             // 三模式公共项（§2.1 通行口径，路径对齐 schema.ts）
             // open（开放世界攻略）→ stat.mode='free'：current_scene 冻结占位不参与150场路由·time_slot 锚定放课后
             stat.mode = isOpen ? 'free' : isPov ? 'pov' : 'custom';
+            stat.difficulty = difficulty.value;
             stat.current_scene = 1;
             stat.world = {
               current_date: '2013-05-20',
@@ -498,6 +503,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     mode,
     gameMode,
     selectedPov,
+    difficulty,
     form,
     submitting,
     committedSummary,
