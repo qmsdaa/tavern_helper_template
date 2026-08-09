@@ -41,12 +41,26 @@ const FILES = {
     'jkh78i', '3hur36', 'yqh7cy', 't1czhk', 'uwy9d0', 'vjnvye', 'ciro08', 'g1ggko',
     'k8iqns', '7h4yim',
   ],
+  // 2026-08-07 追加：川崎沙希（10 张 · pixhost.to 合集 9958 · img2.pixhost.to 直链）
+  '川崎沙希': [
+    'https://img2.pixhost.to/images/9958/757030106_2ff95716-216c-4f67-a299-123c7e517032.png',
+    'https://img2.pixhost.to/images/9958/757030110_3a29a7c0-d82d-4d08-84a6-6bcc5dda067b.png',
+    'https://img2.pixhost.to/images/9958/757030115_70ec0c7d-d226-4e5f-91c5-7f9407ee85a6.png',
+    'https://img2.pixhost.to/images/9958/757030118_524a326e-4c59-407a-80b4-157b60e086fd.png',
+    'https://img2.pixhost.to/images/9958/757030122_716acca6-d76c-4e22-92f0-bcfaceb4e8ae.png',
+    'https://img2.pixhost.to/images/9958/757030126_8406b6e7-bc0b-4da3-b9fa-82003c15821c.png',
+    'https://img2.pixhost.to/images/9958/757030128_3313947d-66e4-4e86-83e0-5d218d12136b.png',
+    'https://img2.pixhost.to/images/9958/757030133_a9f51fd8-1ea7-4bbf-80f9-ac8c1744b97e.png',
+    'https://img2.pixhost.to/images/9958/757030138_c519cc76-c2fe-427e-bde4-5b10992c8306.png',
+    'https://img2.pixhost.to/images/9958/757030142_d9ea1c9c-0f86-4679-8780-2ba479644939.png',
+  ],
 };
 
 const BASE = 'https://files.catbox.moe';
 
-/** 规范全名 → 私密档案 CG 直链数组；无图角色返回空数组（按钮占位） */
+/** 规范全名 → 私密档案 CG 直链数组；无图角色返回空数组（按钮占位）。完整 URL 原样返回，catbox 简写拼 BASE */
 export function cgUrlsOf(canonicalName: string): string[] {
   const files = FILES[canonicalName];
-  return files ? files.map(file => `${BASE}/${file}.png`) : [];
+  if (!files) return [];
+  return files.map(file => (file.startsWith('http') ? file : `${BASE}/${file}.png`));
 }
