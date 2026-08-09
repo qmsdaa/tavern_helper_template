@@ -9,16 +9,57 @@ export type PhoneLlmTask =
   | 'proactive_message'
   | 'forum_batch';
 
-function parseJson<T>(text: string): T {
-  const stripped = String(text ?? '')
-    .trim()
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/\s*```$/, '');
-  try {
-    return JSON.parse(jsonrepair(stripped)) as T;
-  } catch (error) {
-    throw new Error(`手机助手 JSON 解析失败${stripped ? `（前 200 字符：${stripped.slice(0, 200)}）` : ''}：${error instanceof Error ? error.message : String(error)}`);
+/** 字符串感知的括号平衡：从 text 中截取第一个完整 {...} 顶层对象，找不到返回 null */
+function extractFirstJsonObject(text: string): string | null {
+  let depth = 0;
+  let start = -1;
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
+    if (ch === '{') {
+      if (depth === 0) start = i;
+      depth++;
+    } else if (ch === '}') {
+      depth--;
+      if (depth === 0 && start >= 0) return text.slice(start, i + 1);
+    }
   }
+  return null;
+}
+
+function parseJson<T>(text: string): T {
+  const cleaned = String(text ?? '')
+    .trim()
+    // 预设注入的思考块：<!-- begin_of_Subtext_think -->…<!-- end_of_Subtext_think -->、<thinking>…</thinking>
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<thinking>[\s\S]*?<\/thinking>/gi, '')
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/, '')
+    .trim();
+  // 先整体解析；失败则截取第一个顶层 JSON 对象再修（模型在 JSON 前后输出思考/寒暄的兜底）
+  const candidates = [cleaned];
+  const extracted = extractFirstJsonObject(cleaned);
+  if (extracted && extracted !== cleaned) candidates.push(extracted);
+  let lastError: unknown = null;
+  for (const candidate of candidates) {
+    try {
+      return JSON.parse(jsonrepair(candidate)) as T;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw new Error(`手机助手 JSON 解析失败${cleaned ? `（前 200 字符：${cleaned.slice(0, 200)}）` : ''}：${lastError instanceof Error ? lastError.message : String(lastError)}`);
 }
 
 function sleep(ms: number): Promise<never> {
