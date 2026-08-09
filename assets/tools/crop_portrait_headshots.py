@@ -41,6 +41,7 @@ JOBS = (
     PortraitJob("由比滨结衣新立绘.png", "yui.webp"),
     PortraitJob("雪之下阳乃.png", "haruno.webp"),
     PortraitJob("雪之下雪乃.png", "yukino.webp"),
+    PortraitJob("川崎沙希立绘.png", "saki.webp"),
 )
 
 
