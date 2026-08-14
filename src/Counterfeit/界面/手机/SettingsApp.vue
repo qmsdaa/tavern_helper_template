@@ -356,8 +356,11 @@
         </div>
         <button class="mini-btn" @click="saveNow"><i class="fa-solid fa-floppy-disk"></i> 立即保存</button>
         <div class="data-actions">
+          <button class="data-btn" @click="exportPortable">
+            <i class="fa-solid fa-box-archive"></i> 导出完整游戏存档（.counterfeit-save.json）
+          </button>
           <button class="data-btn" @click="exportAll">
-            <i class="fa-solid fa-file-arrow-down"></i> 导出全部数据（JSON）
+            <i class="fa-solid fa-file-arrow-down"></i> 导出手机数据备份（JSON）
           </button>
           <label class="data-btn file-btn">
             <i class="fa-solid fa-file-arrow-up"></i> 导入备份（JSON）
@@ -395,6 +398,7 @@
 
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue';
+import { buildPortableSave, sanitizeResumeTail } from '../../存档/portableSave';
 import {
   CONTENT_PROMPT_MAX_LENGTH,
   fetchModelList,
@@ -471,6 +475,26 @@ async function saveNow() {
 function exportAll() {
   store.exportAllPhoneJson();
   importMessage.value = '';
+}
+
+async function exportPortable() {
+  try {
+    const lastId = typeof getLastMessageId === 'function' ? getLastMessageId() : 0;
+    const stat = (getVariables({ type: 'message', message_id: lastId }) || getVariables({ type: 'chat' }) || {}).stat_data;
+    if (!stat) throw new Error('当前聊天没有可导出的 stat_data');
+    const messages = typeof getChatMessages === 'function' ? getChatMessages(`0-${lastId}`) : [];
+    const tail = sanitizeResumeTail((Array.isArray(messages) ? messages : []).slice(-8).flatMap((m:any) => {
+      const role = m.role === 'user' || m.is_user === true ? 'user' : m.role === 'assistant' || m.is_user === false ? 'assistant' : null;
+      return role ? [{ role, text: String(m.message ?? m.mes ?? '') }] : [];
+    }));
+    const save = await buildPortableSave(stat, tail, Array.isArray(messages) ? messages.length : 0);
+    const blob = new Blob([JSON.stringify(save, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob); const link = document.createElement('a');
+    link.href = url; link.download = `Counterfeit-${save.campaign_id}-${new Date().toISOString().slice(0,10)}.counterfeit-save.json`; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (error) {
+    console.error('[手机] 完整游戏存档导出失败', error);
+  }
 }
 
 function onPickImportFile(event: Event) {

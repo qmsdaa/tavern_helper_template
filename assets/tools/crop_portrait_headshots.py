@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Counterfeit 状态栏头像构建：12 张全角色新立绘 → 512×512 WebP 头肩头像。
+"""Counterfeit 状态栏头像构建：全角色新立绘 → 512×512 WebP 头肩头像。
 
 只读取 ``图片素材/角色立绘/全角色立绘``，不会覆盖源 PNG。默认输出到
 ``tavern_helper_template/assets/Counterfeit/状态栏/avatars``。裁切参数是相对坐标，
@@ -42,6 +42,8 @@ JOBS = (
     PortraitJob("雪之下阳乃.png", "haruno.webp"),
     PortraitJob("雪之下雪乃.png", "yukino.webp"),
     PortraitJob("川崎沙希立绘.png", "saki.webp"),
+    PortraitJob("性转比企谷八幡.png", "genderbend_hachiman.webp", center_y=0.16),
+    PortraitJob("雪之下夫人.png", "mrs_yukinoshita.webp", center_y=0.17),
 )
 
 
@@ -119,8 +121,8 @@ def main() -> None:
         output_path, box = build_avatar(args.source_root, args.output_root, job)
         outputs.append(output_path)
         print(f"{job.source} -> {output_path.name} crop={box} bytes={output_path.stat().st_size}")
-    if len(outputs) != 12:
-        raise RuntimeError(f"应生成 12 个头像，实际 {len(outputs)} 个")
+    if len(outputs) != len(JOBS):
+        raise RuntimeError(f"应生成 {len(JOBS)} 个头像，实际 {len(outputs)} 个")
     if args.contact_sheet:
         print(f"contact_sheet={build_contact_sheet(args.output_root, outputs)}")
 

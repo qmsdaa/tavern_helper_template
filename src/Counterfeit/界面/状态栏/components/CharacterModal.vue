@@ -53,33 +53,33 @@
           </div>
         </section>
 
-        <!-- 攻略指南（D14）：只读展示世界书既有判定文本，默认收起 -->
+        <!-- 角色攻略：只读展示世界书既有攻略提示，默认收起 -->
         <section class="cm-section">
           <details class="cm-details">
             <summary class="cm-summary">
-              <span class="sec-title">攻略指南</span>
-              <span class="cm-summary-tag">{{ isLover ? '已翻转' : '未翻转' }}</span>
+              <span class="sec-title">角色攻略</span>
+              <span class="cm-summary-tag">{{ guideRouteLabel }}</span>
             </summary>
             <div class="cm-details-body">
               <template v-if="guide">
-                <div v-if="guide.note" class="cm-line">
-                  <span class="field-name">接近说明</span>
-                  <span class="field-value">{{ guide.note }}</span>
+                <div class="cm-line">
+                  <span class="field-name">路线基调</span>
+                  <span class="field-value">{{ guide.routeTone }}</span>
                 </div>
                 <div class="cm-line">
-                  <span class="field-name">有效证据</span>
-                  <span class="field-value">{{ guide.positive }}</span>
+                  <span class="field-name">心动瞬间</span>
+                  <span class="field-value">{{ guide.heartMoments }}</span>
                 </div>
                 <div class="cm-line">
-                  <span class="field-name">负面证据</span>
-                  <span class="field-value">{{ guide.negative }}</span>
+                  <span class="field-name">退避雷区</span>
+                  <span class="field-value">{{ guide.distanceTriggers }}</span>
                 </div>
                 <div class="cm-line">
-                  <span class="field-name">关系翻转</span>
-                  <span class="field-value">{{ guide.commitment }}</span>
+                  <span class="field-name">确认信号</span>
+                  <span class="field-value">{{ guide.confirmationSignal }}</span>
                 </div>
               </template>
-              <p v-else class="cm-note">该角色暂无公开的关系判定资料</p>
+              <p v-else class="cm-note">该角色暂无公开攻略提示</p>
             </div>
           </details>
         </section>
@@ -155,6 +155,11 @@ const oneLineStatus = computed(() => {
 });
 
 const isLover = computed(() => props.character.commitment === '恋人');
+const guideRouteLabel = computed(() => {
+  if (isLover.value) return '关系已确认';
+  if (props.character.commitment === '仅朋友') return '朋友路线';
+  return '路线进行中';
+});
 
 const baseInfo = computed(() => baseInfoOf(props.character.key));
 const guide = computed(() => guideOf(props.character.key));

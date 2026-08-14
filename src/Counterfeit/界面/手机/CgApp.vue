@@ -3,9 +3,10 @@
     <AppHeader title="CG" />
     <div class="cg-scroll">
       <div v-if="items.length" class="cg-grid">
-        <button v-for="(item, i) in items" :key="i" class="cg-item" @click="active = item">
-          <img :src="assetUrl(item.image)" :alt="item.title" loading="lazy" draggable="false" />
-          <span class="cg-title">{{ item.title }}</span>
+        <button v-for="item in items" :key="item.id" class="cg-item" :class="{ locked: !item.unlocked }" @click="item.unlocked && (active = item)">
+          <img v-if="item.unlocked" :src="item.image" :alt="item.alt" loading="lazy" draggable="false" />
+          <span v-else class="cg-lock"><i class="fa-solid fa-lock"></i></span>
+          <span class="cg-title">{{ item.unlocked ? item.title : `第${item.act}幕 · 未解锁` }}</span>
         </button>
       </div>
       <div v-else class="cg-empty">
@@ -21,7 +22,7 @@
     <Teleport to="body">
       <div v-if="active" class="lightbox" @click="active = null">
         <figure class="lightbox-inner" @click.stop>
-          <img :src="assetUrl(active.image)" :alt="active.title" draggable="false" />
+          <img :src="active.image" :alt="active.alt" draggable="false" />
           <figcaption class="lightbox-info">
             <span class="lightbox-title">{{ active.title }}</span>
             <span v-if="active.caption" class="lightbox-caption">{{ active.caption }}</span>
@@ -37,16 +38,23 @@
 
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue';
-import { assetUrl } from './vars';
-import { GENERATED_GALLERY_ITEMS } from '../开场白/gallery.generated';
+import { CG_MANIFEST } from '../../generated/cg-manifest.generated';
+import { isCgUnlocked } from '../../generated/cg-unlock.generated';
+import { usePhoneStore } from './store';
 
 interface CgItem {
+  id: string;
   image: string;
   title: string;
+  alt: string;
   caption: string;
+  act: number;
+  unlocked: boolean;
 }
 
-const items = GENERATED_GALLERY_ITEMS as CgItem[];
+const store = usePhoneStore();
+const stat = computed(() => ({ campaign_id: store.snapshot.campaignId, current_scene: store.snapshot.scene ?? 1, campaign_completed: store.snapshot.campaignCompleted, collection: store.snapshot.collection }));
+const items = computed<CgItem[]>(() => CG_MANIFEST.items.map(item => ({ id: item.id, image: `${CG_MANIFEST.images_base}/${encodeURIComponent(item.file)}`, title: item.title, alt: item.alt, caption: `${item.date} · 场景 ${item.scene}`, act: item.act, unlocked: isCgUnlocked(item, stat.value) })));
 const active = ref<CgItem | null>(null);
 </script>
 
@@ -84,6 +92,16 @@ const active = ref<CgItem | null>(null);
     border-radius: 12px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
   }
+}
+
+.cg-lock {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #ece9ee, #d9d4dc);
+  color: #8b8590;
 }
 
 .cg-title {

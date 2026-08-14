@@ -1399,7 +1399,11 @@ export const usePhoneStore = defineStore('counterfeit-phone', () => {
   /** 合并导入：逐条并入，ID 冲突跳过并记录（绝不静默覆盖）；返回报告并持久化 */
   async function importPhoneBackup(backup: PhoneBackup, mode: 'merge' | 'overwrite'): Promise<ImportReport> {
     const report = mode === 'merge' ? mergePhoneBackup(phone, backup) : overwritePhoneBackup(phone, backup);
-    replacePhone(report.data);
+    // 导入数据必须与正常加载路径一样过清洗层：备份/分享文件可能缺渲染必需字段
+    // （display_name/title/created_at/participants 等），直接进响应式会在渲染期抛错导致黑屏（2026-08-10 修复）。
+    replacePhone(
+      normalizePhoneData(clone(report.data), {}, playerNameOf(snapshot.value), storyTimeOf(snapshot.value)),
+    );
     refreshPendingSnapshot(null);
     await persistPhone();
     return report;

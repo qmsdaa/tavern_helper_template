@@ -1,5 +1,7 @@
 import { GALLERY_COPY } from './copy';
 import { portraitUrl } from './data';
+import { CG_MANIFEST } from '../../generated/cg-manifest.generated';
+import { isCgUnlocked, type CgStatLike } from '../../generated/cg-unlock.generated';
 
 /**
  * 画廊后台管理（纯前端，无服务器）：
@@ -16,6 +18,11 @@ export interface GalleryViewItem {
   /** null = 占位帧（copy.yaml 兜底文案，无图） */
   src: string | null;
   builtin: boolean;
+  unlocked?: boolean;
+  campaign?: string;
+  act?: number;
+  tags?: readonly string[];
+  alt?: string;
 }
 
 interface CustomRecord {
@@ -34,6 +41,17 @@ const tombstones = ref<string[]>(loadTombstones());
 const customs = ref<CustomRecord[]>([]);
 const objectUrls = new Map<string, string>();
 let loaded = false;
+export const galleryProgress = ref<CgStatLike | null>(null);
+
+export function refreshGalleryProgress(): void {
+  try {
+    const chat = typeof getVariables === 'function' ? getVariables({ type: 'chat' })?.stat_data : null;
+    const floor = typeof getVariables === 'function' ? getVariables({ type: 'message', message_id: 0 })?.stat_data : null;
+    galleryProgress.value = chat ?? floor ?? null;
+  } catch {
+    galleryProgress.value = null;
+  }
+}
 
 function loadTombstones(): string[] {
   try {
@@ -80,7 +98,25 @@ export async function initGalleryAdmin(): Promise<void> {
 
 /** 合并清单：内置（滤掉墓碑）+ 自定义（Blob → ObjectURL） */
 export const galleryItems = computed<GalleryViewItem[]>(() => {
-  const builtins = GALLERY_COPY.items
+  const storyBuiltins = CG_MANIFEST.items
+    .filter(item => !tombstones.value.includes(item.file))
+    .map(item => {
+      const unlocked = isCgUnlocked(item, galleryProgress.value);
+      return {
+        key: `b:${item.file}`,
+        title: unlocked ? item.title : `主线 · 第${item.act}幕 · 未解锁`,
+        caption: unlocked ? `${item.date} · 场景 ${item.scene}` : '继续推进对应剧情后解锁',
+        src: unlocked ? `${CG_MANIFEST.images_base}/${encodeURIComponent(item.file)}` : null,
+        builtin: true,
+        unlocked,
+        campaign: item.campaign_id,
+        act: item.act,
+        tags: item.tags,
+        alt: unlocked ? item.alt : '未解锁剧情插图',
+      };
+    });
+  const decorativeBuiltins = GALLERY_COPY.items
+    .filter(item => !item.image || !/场景\d+\.webp$/.test(item.image))
     .filter(item => !item.image || !tombstones.value.includes(item.image))
     .map(item => ({
       key: `b:${item.image ?? item.title}`,
@@ -88,6 +124,8 @@ export const galleryItems = computed<GalleryViewItem[]>(() => {
       caption: item.caption,
       src: item.image ? portraitUrl(item.image) : null,
       builtin: true,
+      unlocked: true,
+      campaign: 'extra',
     }));
   const customItems = customs.value.map(rec => {
     let url = objectUrls.get(rec.id);
@@ -97,7 +135,7 @@ export const galleryItems = computed<GalleryViewItem[]>(() => {
     }
     return { key: `c:${rec.id}`, title: rec.title, caption: rec.caption, src: url, builtin: false };
   });
-  return [...builtins, ...customItems];
+  return [...storyBuiltins, ...decorativeBuiltins, ...customItems];
 });
 
 /** 内置 CG 被删数量（管理栏「恢复内置」按钮显隐用） */

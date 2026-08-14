@@ -61,12 +61,12 @@
 
       <!-- 操作按钮 -->
       <div class="actions">
-        <button class="btn-primary action-1" @click="store.toMode()">
+        <button class="btn-primary action-1" @click="store.toCampaign()">
           新的游戏 <i class="fa-solid fa-arrow-right"></i>
         </button>
         <button class="btn-ghost action-2" @click="store.toGallery()"><i class="fa-solid fa-images"></i> 画廊</button>
-        <button class="btn-load action-3" disabled title="后续版本开放">
-          <i class="fa-solid fa-folder-open"></i> 读取存档
+        <button class="btn-load action-3" @click="store.toSaveImport()">
+          <i class="fa-solid fa-folder-open"></i> 迁移旧档
         </button>
       </div>
     </div>
@@ -477,7 +477,7 @@ async function toggleBgm() {
   border: 1px solid var(--c-border);
   color: var(--c-text-muted);
   font-size: 15px;
-  cursor: not-allowed;
+  cursor: pointer;
   opacity: 0.75;
 }
 </style>

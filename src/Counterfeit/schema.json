@@ -98,6 +98,10 @@
       "minimum": -9007199254740991,
       "maximum": 9007199254740991
     },
+    "mainline_completed": {
+      "default": false,
+      "type": "boolean"
+    },
     "world": {
       "default": {
         "current_date": "2013-05-20",
@@ -188,7 +192,8 @@
               "bond": 0,
               "romance": 0,
               "commitment": "未确认",
-              "intimate_memory": ""
+              "intimate_memory": "",
+              "intimate_sexual_memory": ""
             },
             "type": "object",
             "properties": {
@@ -210,6 +215,10 @@
                 ]
               },
               "intimate_memory": {
+                "default": "",
+                "type": "string"
+              },
+              "intimate_sexual_memory": {
                 "default": "",
                 "type": "string"
               }

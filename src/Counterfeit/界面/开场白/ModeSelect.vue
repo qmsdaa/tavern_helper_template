@@ -1,6 +1,6 @@
 <template>
   <div class="mode-select">
-    <h2 class="screen-title">选择你的视角</h2>
+    <h2 class="screen-title">选择扮演角色</h2>
 
     <div class="game-mode-tabs">
       <button
@@ -68,8 +68,8 @@
     </div>
 
     <div class="footer">
-      <button class="btn-ghost" @click="store.backToTitle()">
-        <i class="fa-solid fa-arrow-left"></i> 返回标题
+      <button class="btn-ghost" @click="store.toCampaign()">
+        <i class="fa-solid fa-arrow-left"></i> 返回故事选择
       </button>
       <button class="btn-primary next-btn" :disabled="!store.selectedPov" @click="store.confirmPov()">
         下一步 <i class="fa-solid fa-arrow-right"></i>

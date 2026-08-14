@@ -47,10 +47,46 @@ const CharacterStateSchema = z.object({
   }),
 });
 
+const IdentityStateSchema = z.union([
+  z.object({
+    kind: z.literal('transformation'),
+    current_body: z.literal('hachiman').prefault('hachiman'),
+    presentation: z.literal('female').prefault('female'),
+    legal_identity: z.literal('比企谷八幡').prefault('比企谷八幡'),
+    self_naming: z.literal('八幡').prefault('八幡'),
+    cause_status: z.enum(['unknown', 'investigating', 'explained', 'resolved']).prefault('unknown'),
+    disclosure: z.record(z.string(), z.any()).prefault({}),
+  }),
+  z.object({
+    kind: z.literal('body_swap'),
+    occupants: z.object({
+      body_hachiman: z.enum(['hachiman', 'mrs_yukinoshita']),
+      body_mrs_yukinoshita: z.enum(['hachiman', 'mrs_yukinoshita']),
+    }),
+    body_locations: z.object({
+      body_hachiman: z.string().prefault('比企谷家·八幡房间'),
+      body_mrs_yukinoshita: z.string().prefault('雪之下家本邸·夫人卧室'),
+    }).prefault({ body_hachiman: '比企谷家·八幡房间', body_mrs_yukinoshita: '雪之下家本邸·夫人卧室' }),
+    swap_phase: z.enum(['self', 'swapped']).prefault('swapped'),
+    last_swap_date: z.string().prefault('2014-07-12'),
+    disclosure: z.record(z.string(), z.any()).prefault({}),
+    verification_evidence: z.array(z.string()).prefault([]),
+    shared_notes: z.array(z.string()).prefault([]),
+  }),
+]).nullable().prefault(null);
+
+const CollectionSchema = z.object({
+  version: z.literal(1).prefault(1),
+  cg_unlocks: z.record(z.string(), z.boolean()).prefault({}),
+  ending_unlocks: z.record(z.string(), z.boolean()).prefault({}),
+}).prefault({ version: 1, cg_unlocks: {}, ending_unlocks: {} });
+
 export const Schema = z.object({
-  // ── 模式与主角组（双模式）──
+  // ── 战役、模式与玩家视点 ──
+  campaign_id: z.enum(['main', 'dlc_genderbend_hachiman', 'dlc_body_swap_mrs_yukinoshita']).prefault('main'),
+  campaign_revision: z.coerce.number().int().min(1).prefault(1),
   mode: z.enum(['pov', 'custom', 'free']).nullable().prefault(null),
-  current_pov: z.enum(['hachiman', 'yukino', 'yui', 'laff']).nullable().prefault(null),
+  current_pov: z.enum(['hachiman', 'yukino', 'yui', 'laff', 'mrs_yukinoshita']).nullable().prefault(null),
   custom_protagonist: z.object({
     name: z.string().prefault(''),
     gender: z.string().prefault(''),
@@ -66,6 +102,10 @@ export const Schema = z.object({
 
   // ── 剧本进度 ──
   current_scene: z.coerce.number().int().transform((v) => _.clamp(v, 1, 150)).prefault(1),
+  campaign_completed: z.boolean().prefault(false),
+  mainline_completed: z.boolean().prefault(false),
+  identity_state: IdentityStateSchema,
+  collection: CollectionSchema,
 
   // ── 世界与玩家状态 ──
   world: z.object({
@@ -179,7 +219,7 @@ export const Schema = z.object({
     stated_desire_without_performance: false,
   }),
 
-  // ── 结局组 ──
+  // ── 结局选择（仅 mainline_completed 后写入）──
   branch_choice: z.enum(['共同线', '八幡×雪乃', '八幡×拉芙希妮', '八幡×结衣', '雪乃×拉芙希妮', '雪乃×结衣', '拉芙希妮×结衣', '姐妹和解']).nullable().prefault(null),
 
   // ── 手机助手容器（聊天存档级·仅手机前端写入，主AI禁止更新）──
@@ -219,5 +259,21 @@ export const Schema = z.object({
       appointments: [],
     },
   }),
+}).superRefine((stat, ctx) => {
+  const issue = (path, message) => ctx.addIssue({ code: 'custom', path, message });
+  if (stat.campaign_id === 'main') {
+    if (stat.current_pov === 'mrs_yukinoshita') issue(['current_pov'], '雪之下夫人不是主线可选玩家视点');
+    if (stat.identity_state !== null) issue(['identity_state'], 'main 战役不得携带 DLC 身份状态');
+    if (stat.mainline_completed !== stat.campaign_completed) issue(['mainline_completed'], 'mainline_completed 必须镜像 main 的 campaign_completed');
+  } else {
+    if (stat.mode !== 'free') issue(['mode'], '开放世界 DLC 必须使用 mode=free');
+    if (stat.current_scene !== 1) issue(['current_scene'], '开放世界 DLC 的 current_scene 只能是兼容占位 1');
+    if (stat.mainline_completed) issue(['mainline_completed'], 'DLC 不得写入主线完成态');
+  }
+  if (stat.campaign_id === 'dlc_genderbend_hachiman' && (stat.current_pov !== 'hachiman' || stat.identity_state?.kind !== 'transformation')) issue(['identity_state'], '《错位的日常》身份组合非法');
+  if (stat.campaign_id === 'dlc_body_swap_mrs_yukinoshita') {
+    if (!['hachiman', 'mrs_yukinoshita'].includes(stat.current_pov ?? '') || stat.identity_state?.kind !== 'body_swap') issue(['identity_state'], '《借来的名字》身份组合非法');
+    else if (stat.identity_state.occupants.body_hachiman === stat.identity_state.occupants.body_mrs_yukinoshita) issue(['identity_state', 'occupants'], '两具身体必须由两个不同意识占据');
+  }
 });
 export type Schema = z.output<typeof Schema>;

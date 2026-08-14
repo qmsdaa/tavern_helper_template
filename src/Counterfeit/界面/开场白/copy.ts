@@ -43,12 +43,25 @@ export interface DifficultyCopy {
   desc: string;
 }
 
+export interface CampaignCopy {
+  title: string;
+  badge: string;
+  premise: string;
+  warning: string;
+}
+
 interface CopyFile {
   title: TitleCopy;
   modes: { story: GameModeCopy; open: GameModeCopy };
   difficulty: Record<string, DifficultyCopy>;
+  campaigns: Record<'main' | 'dlc_genderbend_hachiman' | 'dlc_body_swap_mrs_yukinoshita', CampaignCopy>;
   povs: PovCopy[];
-  openings: Record<PovCopy['key'], string> & { custom: string };
+  openings: Record<PovCopy['key'], string> & {
+    custom: string;
+    dlc_genderbend_hachiman: string;
+    dlc_body_swap_hachiman: string;
+    dlc_body_swap_mrs_yukinoshita: string;
+  };
   gallery: { title: string; hint: string; items: GalleryCopyItem[] };
 }
 
@@ -56,6 +69,7 @@ const COPY = copy as CopyFile;
 
 export const TITLE_COPY = COPY.title;
 export const MODE_COPY = COPY.modes;
+export const CAMPAIGN_COPY = COPY.campaigns;
 
 export type DifficultyKey = '简单' | '普通' | '困难';
 export const DIFFICULTY_LIST: DifficultyKey[] = ['简单', '普通', '困难'];

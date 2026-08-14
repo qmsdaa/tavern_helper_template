@@ -12,6 +12,13 @@
       </button>
     </div>
     <p class="gallery-hint">{{ GALLERY_COPY.hint }}</p>
+    <div class="gallery-filters">
+      <select v-model="actFilter" aria-label="按幕筛选">
+        <option value="all">全部幕</option>
+        <option v-for="act in 10" :key="act" :value="String(act)">第 {{ act }} 幕</option>
+      </select>
+      <label><input v-model="unlockedOnly" type="checkbox" /> 仅已解锁</label>
+    </div>
 
     <!-- 管理栏 -->
     <div v-if="adminMode" class="admin-bar">
@@ -32,7 +39,7 @@
         <div class="film-track" :class="{ 'is-paused': paused || adminMode }" :style="{ animationDuration: `${duration}s` }">
           <figure v-for="(item, i) in loopItems" :key="i" class="film-frame" @click="openLightbox(item)">
             <div class="frame-thumb" :class="{ 'is-placeholder': !item.src }">
-              <img v-if="item.src" :src="item.src" :alt="item.title" draggable="false" />
+              <img v-if="item.src" :src="item.src" :alt="item.alt || item.title" draggable="false" />
               <template v-else>
                 <i class="fa-regular fa-image"></i>
                 <span>CG 占位</span>
@@ -120,6 +127,7 @@ import {
   addCustomItem,
   galleryItems,
   initGalleryAdmin,
+  refreshGalleryProgress,
   removeItem,
   restoreBuiltins,
   tombstoneCount,
@@ -131,6 +139,8 @@ import { showToast } from './toast';
 const store = useOpeningStore();
 const paused = ref(false);
 const active = ref<GalleryViewItem | null>(null);
+const actFilter = ref('all');
+const unlockedOnly = ref(false);
 
 // —— 管理模式 ——
 const adminMode = ref(false);
@@ -139,10 +149,17 @@ const armedKey = ref<string | null>(null);
 let armTimer: number | undefined;
 
 onMounted(() => {
+  refreshGalleryProgress();
   initGalleryAdmin();
+  window.addEventListener('keydown', onGalleryKeydown);
 });
+onUnmounted(() => window.removeEventListener('keydown', onGalleryKeydown));
 
-const baseItems = computed<GalleryViewItem[]>(() => galleryItems.value);
+const baseItems = computed<GalleryViewItem[]>(() => galleryItems.value.filter(item => {
+  if (unlockedOnly.value && item.unlocked === false) return false;
+  if (actFilter.value !== 'all' && item.act !== Number(actFilter.value)) return false;
+  return true;
+}));
 
 /** 单序列：条目太少时重复填充，保证轨道宽度足够无缝循环 */
 const sequence = computed<GalleryViewItem[]>(() => {
@@ -167,6 +184,15 @@ function openLightbox(item: GalleryViewItem) {
   if (item.src) {
     active.value = item;
   }
+}
+
+function onGalleryKeydown(event: KeyboardEvent) {
+  if (!active.value || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+  const unlocked = baseItems.value.filter(item => item.src);
+  const index = unlocked.findIndex(item => item.key === active.value?.key);
+  if (index < 0 || !unlocked.length) return;
+  const delta = event.key === 'ArrowRight' ? 1 : -1;
+  active.value = unlocked[(index + delta + unlocked.length) % unlocked.length];
 }
 
 async function onDeleteFrame(item: GalleryViewItem) {

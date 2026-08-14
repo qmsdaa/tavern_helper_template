@@ -41,7 +41,28 @@ const POV_NAMES: Record<string, string> = {
   yukino: '雪之下雪乃',
   yui: '由比滨结衣',
   laff: '拉芙希妮·都柏林',
+  mrs_yukinoshita: '雪之下夫人',
 };
+
+export const CAMPAIGN_TITLES: Record<string, string> = {
+  main: 'Counterfeit 公共线',
+  dlc_genderbend_hachiman: '错位的日常',
+  dlc_body_swap_mrs_yukinoshita: '借来的名字',
+};
+
+export function campaignTitle(data: Schema): string {
+  return CAMPAIGN_TITLES[data.campaign_id] || data.campaign_id;
+}
+
+export function identityBadge(data: Schema): string | null {
+  const state = data.identity_state;
+  if (!state) return null;
+  if (state.kind === 'transformation') return '本人：比企谷八幡 · 外观：女性化 · 公开身份：比企谷八幡';
+  const bodyKey = Object.entries(state.occupants).find(([, mind]) => mind === data.current_pov)?.[0];
+  const body = bodyKey === 'body_hachiman' ? '比企谷八幡的身体' : bodyKey === 'body_mrs_yukinoshita' ? '雪之下夫人的身体' : '未确认身体';
+  const apparent = bodyKey === 'body_hachiman' ? '比企谷八幡' : bodyKey === 'body_mrs_yukinoshita' ? '雪之下夫人' : '未确认';
+  return `本人：${playerLabel(data)} · 身体：${body} · 旁人眼中：${apparent}`;
+}
 
 export function playerLabel(data: Schema): string {
   // pov 与 free 四选一都由 current_pov 给出扮演角色；free+自建/custom 走自建名
@@ -95,6 +116,7 @@ const PORTRAIT_KEYS: Record<string, string> = {
   '爱布拉娜·都柏林': 'eblana',
   '比企谷小町': 'komachi',
   '川崎沙希': 'saki',
+  '雪之下夫人': 'mrs_yukinoshita',
 };
 
 /** 角色立绘 URL；无立绘素材的角色返回 null（UI 回退为名字首字占位） */

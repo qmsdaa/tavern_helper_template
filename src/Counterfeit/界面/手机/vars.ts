@@ -92,6 +92,11 @@ export interface CharacterSnapshot {
 }
 
 export interface MvuSnapshot {
+  campaignId: 'main' | 'dlc_genderbend_hachiman' | 'dlc_body_swap_mrs_yukinoshita';
+  campaignTitle: string;
+  campaignCompleted: boolean;
+  identityState: Record<string, any> | null;
+  collection: { cg_unlocks?: Record<string, boolean> };
   mode: 'pov' | 'custom' | 'free' | null;
   pov: string | null;
   playerName: string;
@@ -112,7 +117,9 @@ const POV_NAMES: Record<string, string> = {
   yukino: '雪之下雪乃',
   yui: '由比滨结衣',
   laff: '拉芙希妮·都柏林',
+  mrs_yukinoshita: '雪之下夫人',
 };
+const CAMPAIGN_NAMES: Record<string, string> = { main:'Counterfeit 公共线', dlc_genderbend_hachiman:'错位的日常', dlc_body_swap_mrs_yukinoshita:'借来的名字' };
 
 /** 十幕区间（与 WORKFLOW §大纲总览一致） */
 const ACT_TABLE: [number, string][] = [
@@ -130,6 +137,11 @@ const ACT_TABLE: [number, string][] = [
 
 export function emptySnapshot(): MvuSnapshot {
   return {
+    campaignId: 'main',
+    campaignTitle: CAMPAIGN_NAMES.main,
+    campaignCompleted: false,
+    identityState: null,
+    collection: { cg_unlocks: {} },
     mode: null,
     pov: null,
     playerName: '',
@@ -262,6 +274,11 @@ export function readMvuSnapshot(): MvuSnapshot {
     return snap;
   }
   snap.hasMvu = true;
+  snap.campaignId = (sd.campaign_id as MvuSnapshot['campaignId']) ?? 'main';
+  snap.campaignTitle = CAMPAIGN_NAMES[snap.campaignId] || snap.campaignId;
+  snap.campaignCompleted = sd.campaign_completed === true;
+  snap.identityState = isRecord(sd.identity_state) ? sd.identity_state as Record<string, any> : null;
+  snap.collection = isRecord(sd.collection) ? sd.collection as { cg_unlocks?: Record<string, boolean> } : { cg_unlocks: {} };
   snap.mode = (sd.mode as MvuSnapshot['mode']) ?? null;
   snap.pov = (sd.current_pov as string) ?? null;
   snap.customName = String(sd.custom_protagonist?.name ?? '');
@@ -313,7 +330,8 @@ export function actNameOf(scene: number | null): string {
 }
 
 /** 阶段/时段描述：free 模式场景号冻结为 1，幕表失真，改用开放世界+时段 */
-export function stageText(snap: Pick<MvuSnapshot, 'mode' | 'scene' | 'timeSlot'>): string {
+export function stageText(snap: Pick<MvuSnapshot, 'campaignId' | 'campaignTitle' | 'mode' | 'scene' | 'timeSlot'>): string {
+  if (snap.campaignId !== 'main') return snap.timeSlot ? `${snap.campaignTitle} · ${snap.timeSlot}` : snap.campaignTitle;
   if (snap.mode === 'free') {
     return snap.timeSlot ? `开放世界 · ${snap.timeSlot}` : '开放世界';
   }
@@ -392,31 +410,30 @@ export async function loadPersonaMap(): Promise<Record<string, string>> {
 }
 
 export interface SceneEntry {
-  name: string;
-  /** 3 日窗口关键词（YYYY年M月D日） */
-  keywords: string[];
+  id: string;
+  number: number;
+  date: string;
+  act: number;
+  title: string;
+  transition: null | { visible_title: string; visible_lines: readonly string[] };
 }
 
-/** 读取世界书场景条目（名称以"场景"开头，提取日期关键词） */
+/** 读取构建期生成的权威索引；不再扫描世界书或按日期猜测场景编号。 */
 export async function loadSceneEntries(): Promise<SceneEntry[]> {
-  const list: SceneEntry[] = [];
-  try {
-    const book = await resolveWorldbookName();
-    if (!book || typeof getWorldbook !== 'function') {
-      return list;
-    }
-    const entries = await getWorldbook(book);
-    for (const e of entries) {
-      if (!/^场景/.test(e.name ?? '')) {
-        continue;
-      }
-      const keys = Array.isArray(e.strategy?.keys) ? e.strategy.keys.map(String) : [];
-      list.push({ name: e.name, keywords: keys.filter(k => /^\d{4}年\d{1,2}月\d{1,2}日$/.test(k)) });
-    }
-  } catch {
-    /* 忽略 */
-  }
-  return list;
+  const { sceneIndex } = await import('../../generated/scene-index');
+  return sceneIndex.map(scene => ({
+    id: scene.id,
+    number: scene.number,
+    date: scene.date,
+    act: scene.act,
+    title: scene.title,
+    transition: scene.transition,
+  }));
+}
+
+export async function mainCampaignTotal(): Promise<number> {
+  const { campaignRegistry } = await import('../../generated/scene-index');
+  return campaignRegistry.main.total_scenes;
 }
 
 /** 中文日期（2013年5月20日）→ ISO（2013-05-20）；失败返回空串 */

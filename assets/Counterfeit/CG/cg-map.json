@@ -1,7 +1,13 @@
 {
-  "version": "2026-08-06",
-  "images_base": "https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template@0e601ca2dbb529a160e5b18bae8709c674895134/assets/Counterfeit/CG",
+  "version": "2026-08-14",
+  "images_base": "https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template@9e5de97a57a0b92e1679b0f4da907768f0d44df3/assets/Counterfeit/CG",
   "scenes": {
+    "1": {
+      "file": "场景1.webp",
+      "cond": null,
+      "date": "2013-05-20",
+      "title": "拉芙希妮转学进入总武高年班，建立"
+    },
     "9": {
       "file": "场景9.webp",
       "cond": null,
@@ -37,6 +43,18 @@
       "cond": null,
       "date": "2013-08-21",
       "title": "拉芙被平冢静叫去帮忙整理旧档案—"
+    },
+    "33": {
+      "file": "场景33.webp",
+      "cond": null,
+      "date": "2013-10-25",
+      "title": "八幡用极度恶毒的语言逼相模南回到"
+    },
+    "36": {
+      "file": "场景36.webp",
+      "cond": null,
+      "date": "2013-10-25",
+      "title": "拉芙希妮首次进入雪乃的私人空间—"
     },
     "44": {
       "file": "场景44.webp",
@@ -92,6 +110,18 @@
       "date": "2014-02-14",
       "title": "情人节早晨"
     },
+    "80": {
+      "file": "场景80.webp",
+      "cond": null,
+      "date": "2014-02-24",
+      "title": "三天等待后——平冢静带来回复"
+    },
+    "83": {
+      "file": "场景83.webp",
+      "cond": null,
+      "date": "2014-03-02",
+      "title": "雪乃从本邸出来后无意识走到拉芙希"
+    },
     "85": {
       "file": "场景85.webp",
       "cond": null,
@@ -119,7 +149,7 @@
     "96": {
       "file": "场景96.webp",
       "cond": null,
-      "date": "2014-04-01",
+      "date": "2014-03-31",
       "title": "雷雨夜的越洋电话"
     },
     "98": {

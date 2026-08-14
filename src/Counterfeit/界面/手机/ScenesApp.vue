@@ -6,6 +6,7 @@
       <section class="card">
         <h3 class="card-title">当前</h3>
         <template v-if="isFree">
+          <div class="row"><span>故事</span><b>{{ store.snapshot.campaignTitle }}</b></div>
           <div class="row"><span>模式</span><b>开放世界</b></div>
           <div class="row"><span>日期</span><b>{{ dateText }}</b></div>
           <div class="row"><span>时段</span><b>{{ timeSlotText }}</b></div>
@@ -17,17 +18,22 @@
           <div class="row"><span>日期</span><b>{{ dateText }}</b></div>
           <div class="progress-track"><i :style="{ width: `${progressPct}%` }"></i></div>
           <div class="progress-label">{{ progressLabel }}</div>
+          <div v-if="currentTransition" class="transition-card">
+            <b>{{ currentTransition.visible_title }}</b>
+            <p v-for="line in currentTransition.visible_lines" :key="line">{{ line }}</p>
+          </div>
         </template>
       </section>
 
       <!-- 场景列表 -->
       <section class="card">
-        <h3 class="card-title">场景日历（世界书 {{ entries.length }} 场）</h3>
+        <h3 class="card-title">主线场景索引（{{ entries.length }} 场）</h3>
+        <p v-if="store.snapshot.campaignId !== 'main'" class="free-hint">当前DLC只继承 main:118 连续性快照，不激活或伪造编号场景。</p>
         <p v-if="!entries.length" class="empty">没有读到场景条目（未绑定世界书或预览模式）</p>
-        <div v-for="(item, i) in entries" :key="item.name" class="scene-row" :class="statusOf(i)">
+        <div v-for="item in store.snapshot.campaignId === 'main' ? entries : []" :key="item.id" class="scene-row" :class="statusOf(item)">
           <span class="scene-dot"></span>
-          <span class="scene-name">{{ item.name }}</span>
-          <span class="scene-date">{{ centerDateOf(item) }}</span>
+          <span class="scene-name">场景 {{ item.number }} · {{ item.title }}</span>
+          <span class="scene-date">{{ cnDate(item.date) }}</span>
         </div>
       </section>
     </div>
@@ -36,11 +42,12 @@
 
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue';
-import { actNameOf, cnDate, isoFromCnDate, loadSceneEntries, type SceneEntry } from './vars';
+import { actNameOf, cnDate, loadSceneEntries, mainCampaignTotal, type SceneEntry } from './vars';
 import { usePhoneStore } from './store';
 
 const store = usePhoneStore();
 const entries = ref<SceneEntry[]>([]);
+const campaignTotal = ref(0);
 
 const isFree = computed(() => store.snapshot.mode === 'free');
 const actText = computed(() => actNameOf(store.snapshot.scene) || '—');
@@ -48,15 +55,12 @@ const sceneText = computed(() => (store.snapshot.scene != null ? `场景 ${store
 const dateText = computed(() => (store.snapshot.date ? cnDate(store.snapshot.date) : '—'));
 const timeSlotText = computed(() => store.snapshot.timeSlot || '未确认');
 
-const total = computed(() => Math.max(entries.value.length, 150));
+const total = computed(() => campaignTotal.value || entries.value.length || 1);
 const progressPct = computed(() => (store.snapshot.scene != null ? Math.min(100, (store.snapshot.scene / total.value) * 100) : 0));
 const progressLabel = computed(() => (store.snapshot.scene != null ? `${store.snapshot.scene} / ${total.value}` : '—'));
+const currentTransition = computed(() => entries.value.find(item => item.number === store.snapshot.scene)?.transition ?? null);
 
-function centerDateOf(item: SceneEntry): string {
-  return item.keywords[1] ?? item.keywords[0] ?? '';
-}
-
-function statusOf(index: number): string {
+function statusOf(item: SceneEntry): string {
   if (isFree.value) {
     return '';
   }
@@ -64,18 +68,14 @@ function statusOf(index: number): string {
   if (current == null) {
     return '';
   }
-  // 场景条目按日期排序 ≈ 场景顺序
-  const sceneNo = index + 1;
-  if (sceneNo < current) return 'done';
-  if (sceneNo === current) return 'current';
+  if (item.number < current) return 'done';
+  if (item.number === current) return 'current';
   return 'future';
 }
 
 onMounted(async () => {
-  const list = await loadSceneEntries();
-  entries.value = list
-    .slice()
-    .sort((a, b) => isoFromCnDate(centerDateOf(a)).localeCompare(isoFromCnDate(centerDateOf(b))));
+  if (store.snapshot.campaignId !== 'main') return;
+  [entries.value, campaignTotal.value] = await Promise.all([loadSceneEntries(), mainCampaignTotal()]);
 });
 </script>
 
@@ -143,6 +143,19 @@ onMounted(async () => {
   font-size: 12px;
   color: var(--c-ios-gray);
   text-align: right;
+}
+
+.transition-card {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--c-primary);
+  border-radius: 8px;
+  background: #f7f7fb;
+  font-size: 12px;
+  line-height: 1.65;
+
+  b { display: block; margin-bottom: 3px; }
+  p { margin: 0; color: var(--c-ios-gray); }
 }
 
 .empty {

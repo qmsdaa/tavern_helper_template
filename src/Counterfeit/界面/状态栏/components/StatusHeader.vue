@@ -1,15 +1,15 @@
 <template>
   <header class="status-header">
     <div class="title-row">
-      <template v-if="mode === 'pov'">
-        <span class="title">🌸 {{ actName }}</span>
+      <template v-if="scripted">
+        <span class="title">🌸 {{ campaignTitle }} · {{ actName }}</span>
         <span class="scene">
           场景 <b>{{ scene }}</b>
-          <span class="scene-total"> / 150</span>
+          <span class="scene-total"> / {{ totalScenes }}</span>
         </span>
       </template>
       <template v-else>
-        <span class="title">🌸 Counterfeit · 自建开放世界</span>
+        <span class="title">🌸 {{ campaignTitle }}</span>
       </template>
       <span class="date">{{ dateLabel }}</span>
     </div>
@@ -26,9 +26,12 @@
 
 <script setup lang="ts">
 defineProps<{
-  mode: 'pov' | 'custom';
+  mode: 'pov' | 'custom' | 'free';
+  campaignTitle: string;
+  scripted: boolean;
   actName: string;
   scene: number;
+  totalScenes: number;
   dateLabel: string;
   playerName: string;
   branch: string | null;

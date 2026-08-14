@@ -2,8 +2,10 @@ import { OPENING_TEXTS, povByKey, renderCustomOpening, type PovKey } from './cop
 import { OPENING_DRAFT_MAX, resolveOpeningText } from './openingDraft';
 import { showToast } from './toast';
 
-export type Step = 'gate' | 'intro' | 'title' | 'mode' | 'pov' | 'custom' | 'opening' | 'gallery' | 'done';
+export type Step = 'gate' | 'intro' | 'title' | 'campaign' | 'mode' | 'pov' | 'custom' | 'dlc_setup' | 'save_import' | 'opening' | 'gallery' | 'done';
 export type Mode = 'pov' | 'custom';
+export type CampaignId = 'main' | 'dlc_genderbend_hachiman' | 'dlc_body_swap_mrs_yukinoshita';
+export type DlcMind = 'hachiman' | 'mrs_yukinoshita';
 /** 玩法模式：story=剧本模式（150场）·open=开放世界攻略模式（写入 stat.mode='free'） */
 export type GameMode = 'story' | 'open';
 /** 恋爱难度：开局定档·commit 写入 stat_data.difficulty·全模式生效 */
@@ -115,30 +117,6 @@ function initialCharacters(pov: PovKey): Record<string, unknown> {
   return records;
 }
 
-/**
- * 世界书条目命名规则（MVU-DESIGN §3 · galgame 系统设计 §3.1）：
- * - 场景条目：/^场景\d+$/ · 1-150，pov 模式开、custom 模式关
- * - 尾声条目：/^尾声/ ，pov 模式开、custom 模式关（150a-g 用绿灯特殊触发词，未注册前默认关；commit 仅切可见性不强行开未注册条目）
- * - S1 家族暗线组（在 POV 模式下启用；自建模式禁用）：见下方常量
- * - S2 真相附录（任何模式运行时都不直接启用）：见下方常量
- *   注：条目内容层仍带 @@if EJS 过滤，enabled 仅是第一道门控
- */
-const SCENE_NAME_RE = /^场景\d+$/;
-const SPOILER_S1 = [
-  '还火事件',
-  '伦敦与都柏林家族据点',
-  '都柏林家族势力',
-  '爱布拉娜_基础信息',
-  '爱布拉娜_性格调色盘',
-  '爱布拉娜_三面性',
-  '达洛维小姐',
-  '温斯顿先生',
-  '科尔马克·都柏林',
-  '多琳·都柏林',
-] as const;
-/** S2 真相附录：任何运行时模式都不直接启用（由其内容层 @@if current_pov===laff && current_scene>=123 自行门控） */
-const SPOILER_S2 = ['还火事件_封存真相'] as const;
-
 export interface CustomForm {
   /** 姓名 */
   name: string;
@@ -177,12 +155,14 @@ function escapeAttr(value: string): string {
 /** 预览调试：?screen=title|gallery|intro… 直达指定屏（缺省 gate 启动门） */
 function initialStep(): Step {
   const target = new URLSearchParams(window.location.search).get('screen');
-  const valid: Step[] = ['gate', 'intro', 'title', 'mode', 'pov', 'custom', 'opening', 'gallery', 'done'];
+  const valid: Step[] = ['gate', 'intro', 'title', 'campaign', 'mode', 'pov', 'custom', 'dlc_setup', 'save_import', 'opening', 'gallery', 'done'];
   return valid.includes(target as Step) ? (target as Step) : 'gate';
 }
 
 export const useOpeningStore = defineStore('counterfeit-opening', () => {
   const step = ref<Step>(initialStep());
+  const campaignId = ref<CampaignId>('main');
+  const dlcMind = ref<DlcMind>('hachiman');
   const mode = ref<Mode | null>(null);
   /** 玩法模式：story=剧本 / open=开放世界（stat.mode 写 'free'）；自建角色在两种玩法下均可用 */
   const gameMode = ref<GameMode>('story');
@@ -201,6 +181,12 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
 
   /** 当前选择对应的官方开场文本（默认序幕，不可被自定义覆盖本体） */
   const openingText = computed<string>(() => {
+    if (campaignId.value === 'dlc_genderbend_hachiman') return OPENING_TEXTS.dlc_genderbend_hachiman;
+    if (campaignId.value === 'dlc_body_swap_mrs_yukinoshita') {
+      return dlcMind.value === 'mrs_yukinoshita'
+        ? OPENING_TEXTS.dlc_body_swap_mrs_yukinoshita
+        : OPENING_TEXTS.dlc_body_swap_hachiman;
+    }
     if (mode.value === 'pov' && selectedPov.value) {
       return OPENING_TEXTS[selectedPov.value];
     }
@@ -236,12 +222,31 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
   }
 
   // 切换模式/主角/玩法/难度时丢弃草稿——草稿绑定的是"当前选择对应的官方序幕"，不能跨选择串用
-  watch([mode, selectedPov, gameMode, difficulty], () => {
+  watch([campaignId, dlcMind, mode, selectedPov, gameMode, difficulty], () => {
     openingDraft.value = null;
   });
 
   /** 结构化设定摘要块 */
   const summaryBlock = computed<string>(() => {
+    if (campaignId.value === 'dlc_genderbend_hachiman') {
+      return [
+        `<opening_setup campaign="${campaignId.value}" revision="1" mode="free" pov="hachiman" diff="${difficulty.value}">`,
+        '故事: 《错位的日常》',
+        '玩家视点: 比企谷八幡（稳定本人）',
+        '连续性: main:118 · 2014-07-12',
+        '</opening_setup>',
+      ].join('\n');
+    }
+    if (campaignId.value === 'dlc_body_swap_mrs_yukinoshita') {
+      return [
+        `<opening_setup campaign="${campaignId.value}" revision="1" mode="free" pov="${dlcMind.value}" diff="${difficulty.value}">`,
+        '故事: 《借来的名字》',
+        `玩家意识: ${dlcMind.value === 'hachiman' ? '比企谷八幡' : '雪之下夫人'}（整局稳定）`,
+        `初始身体: ${dlcMind.value === 'hachiman' ? '雪之下夫人的身体' : '比企谷八幡的身体'}`,
+        '连续性: main:118 · 2014-07-12',
+        '</opening_setup>',
+      ].join('\n');
+    }
     const statMode = gameMode.value === 'open' ? 'free' : mode.value;
     if (mode.value === 'pov' && selectedPov.value) {
       const info = povByKey(selectedPov.value);
@@ -282,6 +287,33 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
 
   function toMode() {
     step.value = 'mode';
+  }
+
+  function toCampaign() {
+    step.value = 'campaign';
+  }
+
+  function chooseCampaign(id: CampaignId) {
+    campaignId.value = id;
+    selectedPov.value = null;
+    mode.value = null;
+    if (id === 'main') {
+      step.value = 'mode';
+      return;
+    }
+    gameMode.value = 'open';
+    dlcMind.value = 'hachiman';
+    step.value = 'dlc_setup';
+  }
+
+  function confirmDlc() {
+    if (campaignId.value === 'main') return;
+    if (campaignId.value === 'dlc_genderbend_hachiman') dlcMind.value = 'hachiman';
+    step.value = 'opening';
+  }
+
+  function toSaveImport() {
+    step.value = 'save_import';
   }
 
   function toGallery() {
@@ -354,29 +386,42 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
         if (typeof getVariables === 'function' && typeof updateVariablesWith === 'function') {
           const buildStat = (vars: Record<string, any>) => {
             const stat = _.get(vars, 'stat_data') ?? {};
+            const isDlc = campaignId.value !== 'main';
             const isPov = mode.value === 'pov';
             const isOpen = gameMode.value === 'open';
+            stat.campaign_id = campaignId.value;
+            stat.campaign_revision = 1;
             // 三模式公共项（§2.1 通行口径，路径对齐 schema.ts）
             // open（开放世界攻略）→ stat.mode='free'：current_scene 冻结占位不参与150场路由·time_slot 锚定放课后
-            stat.mode = isOpen ? 'free' : isPov ? 'pov' : 'custom';
+            stat.mode = isDlc || isOpen ? 'free' : isPov ? 'pov' : 'custom';
             stat.difficulty = difficulty.value;
             stat.current_scene = 1;
+            stat.campaign_completed = false;
+            stat.mainline_completed = false;
+            stat.collection = { version: 1, cg_unlocks: {}, ending_unlocks: {} };
+            if (campaignId.value === 'dlc_genderbend_hachiman') {
+              stat.collection.cg_unlocks['dlc_genderbend_hachiman:opening_seen'] = true;
+            } else if (campaignId.value === 'dlc_body_swap_mrs_yukinoshita') {
+              stat.collection.cg_unlocks[`dlc_body_swap_mrs_yukinoshita:opening_seen:${dlcMind.value}`] = true;
+            }
             stat.world = {
-              current_date: '2013-05-20',
-              current_location: isPov && selectedPov.value
-                ? POV_CLASSROOM[selectedPov.value]
-                : '未确认',
-              time_slot: isOpen ? '放课后' : null,
+              current_date: isDlc ? '2014-07-12' : '2013-05-20',
+              current_location: campaignId.value === 'dlc_genderbend_hachiman'
+                ? '比企谷家·八幡房间'
+                : campaignId.value === 'dlc_body_swap_mrs_yukinoshita'
+                  ? dlcMind.value === 'hachiman' ? '雪之下家本邸·夫人卧室' : '比企谷家·八幡房间'
+                  : isPov && selectedPov.value ? POV_CLASSROOM[selectedPov.value] : '未确认',
+              time_slot: isDlc ? '早晨' : isOpen ? '放课后' : null,
             };
             // custom 模式主角家境未知，保持 null（“未确认”）由叙事后续锚定
             stat.player = {
-              cash: isPov && selectedPov.value ? POV_INITIAL_CASH[selectedPov.value] : null,
+              cash: !isDlc && isPov && selectedPov.value ? POV_INITIAL_CASH[selectedPov.value] : null,
               carried_items: [],
             };
             // 预建只属于"四选一"开局（剧本或开放世界均以 mode==='pov' 进入）；自建模式（custom）永不预建。
             // 旧条件 (isPov || isOpen) 会让 open+自建 + selectedPov 残留时错误预建（2026-08-07 修复）。
-            stat.characters = isPov && selectedPov.value ? initialCharacters(selectedPov.value) : {};
-            if (isPov && selectedPov.value) {
+            stat.characters = !isDlc && isPov && selectedPov.value ? initialCharacters(selectedPov.value) : {};
+            if (!isDlc && isPov && selectedPov.value) {
               for (const n of SCENE1_PRESENT[selectedPov.value] ?? []) {
                 if (stat.characters[n]) stat.characters[n].present = true;
               }
@@ -393,12 +438,30 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
             stat.laff_reed_authorized_yukino = false;
             stat.dalloway_pen_used = false;
             stat.branch_choice = null;
-            if (isPov) {
+            if (campaignId.value === 'dlc_genderbend_hachiman') {
+              stat.current_pov = 'hachiman';
+              stat.custom_protagonist = null;
+              stat.identity_state = {
+                kind: 'transformation', current_body: 'hachiman', presentation: 'female',
+                legal_identity: '比企谷八幡', self_naming: '八幡', cause_status: 'unknown', disclosure: {},
+              };
+            } else if (campaignId.value === 'dlc_body_swap_mrs_yukinoshita') {
+              stat.current_pov = dlcMind.value;
+              stat.custom_protagonist = null;
+              stat.identity_state = {
+                kind: 'body_swap',
+                occupants: { body_hachiman: 'mrs_yukinoshita', body_mrs_yukinoshita: 'hachiman' },
+                body_locations: { body_hachiman: '比企谷家·八幡房间', body_mrs_yukinoshita: '雪之下家本邸·夫人卧室' },
+                swap_phase: 'swapped', last_swap_date: '2014-07-12', disclosure: {}, verification_evidence: [], shared_notes: [],
+              };
+            } else if (isPov) {
               stat.current_pov = selectedPov.value;
               stat.custom_protagonist = null;
+              stat.identity_state = null;
             } else {
               stat.current_pov = null;
               stat.custom_protagonist = { ...form };
+              stat.identity_state = null;
             }
             _.set(vars, 'stat_data', stat);
             return vars;
@@ -430,9 +493,10 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
           const committedChat = (getVariables({ type: 'chat' }) ?? {}).stat_data;
           const assertCommitted = (label: string, stat: Record<string, any> | undefined) => {
             if (!stat) throw new Error(`${label}缺少 stat_data`);
-            if (stat.mode !== expected.mode || stat.current_pov !== expected.current_pov) {
-              throw new Error(`${label}模式/视角校验失败`);
+            if (stat.campaign_id !== expected.campaign_id || stat.campaign_revision !== 1 || stat.mode !== expected.mode || stat.current_pov !== expected.current_pov) {
+              throw new Error(`${label}战役/模式/玩家视点校验失败`);
             }
+            if (JSON.stringify(stat.identity_state ?? null) !== JSON.stringify(expected.identity_state ?? null)) throw new Error(`${label}身份状态校验失败`);
             if (JSON.stringify(stat.characters ?? {}) !== JSON.stringify(expected.characters ?? {})) {
               throw new Error(`${label}初始关系校验失败`);
             }
@@ -451,56 +515,8 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
         throw error;
       }
 
-      // 世界书 enabled 批量切换（MVU-DESIGN §3 · 角色卡绑定世界书）
-      // 三阶门控：commit 翻条目 enabled → 场景条目内容层 @@if mode=="pov" && current_scene==N 进一步过滤 → MVU 变量驱动主AI按场景走
-      // 这里只切 enabled：场景/尾声 = pov 开 · S1 暗线组 = pov 开 · S2 = 恒关。custom 模式全部关，仅留世界观/扮演准则/角色等 S0 公开条目
-      try {
-        if (typeof getCharWorldbookNames === 'function' && typeof getWorldbook === 'function' && typeof updateWorldbookWith === 'function') {
-          const names = getCharWorldbookNames('current');
-          const bookName = names?.primary;
-          if (bookName) {
-            const entries = await getWorldbook(bookName);
-            if (Array.isArray(entries)) {
-              const isOpen = gameMode.value === 'open';
-              const isStoryPov = mode.value === 'pov' && gameMode.value === 'story';
-              const next = entries.map(e => {
-                const n = e.name;
-                if (!n) return e;
-                const isScene = SCENE_NAME_RE.test(n);
-                const isEpilogue = /^尾声/.test(n);
-                const isS1 = (SPOILER_S1 as readonly string[]).includes(n);
-                const isS2 = (SPOILER_S2 as readonly string[]).includes(n);
-                let nextEnabled: boolean;
-                if (isS2) {
-                  // S2 真相：任何模式都不直接启用（条目自带更严的 @@if 门控）
-                  nextEnabled = false;
-                } else if (isScene || isEpilogue) {
-                  // 场景/尾声：仅剧本模式开；开放世界与自建关
-                  nextEnabled = isStoryPov;
-                } else if (isS1) {
-                  // S1 家族暗线组：剧本POV开；开放世界全开（爱布拉娜可攻略·家族线自由展开）；剧本自建关
-                  nextEnabled = isStoryPov || isOpen;
-                } else {
-                  // S0 公开/世界观/扮演准则/角色条目等保留原 enabled 状态
-                  nextEnabled = e.enabled;
-                }
-                return { ...e, enabled: nextEnabled };
-              });
-              await updateWorldbookWith(bookName, () => next);
-              console.info(`[开场白] 世界书 enabled 批量切换完成（mode=${isOpen ? 'free' : isStoryPov ? 'pov' : 'custom'}，共 ${entries.length} 条）`);
-            } else {
-              console.error('[开场白] getWorldbook 未返回条目数组，世界书切换跳过');
-            }
-          } else {
-            console.warn('[开场白] 当前角色卡未绑定主世界书，世界书切换跳过');
-          }
-        } else {
-          console.warn('[开场白] 无世界书 API（getCharWorldbookNames/getWorldbook/updateWorldbookWith 缺失），世界书 enabled 未切换');
-        }
-      } catch (error) {
-        console.error('[开场白] 世界书 enabled 切换失败', error);
-        showToast('世界书切换失败，可能需手动启用/禁用场景条目', 'error', 4000);
-      }
+      // 世界书 enabled 是角色卡共享配置，不能按聊天模式修改，否则一个新聊天会污染其他存档。
+      // 场景、暗线与真相隔离统一由各楼层 stat_data + 已验证的 EJS getvar 守卫完成。
 
       // 落盘开场：替换 0 楼的 <OpeningUI/> 占位符，占位符消失后界面随刷新卸载
       if (typeof getChatMessages === 'function' && typeof setChatMessages === 'function') {
@@ -523,7 +539,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
         // 插入可见 user 消息 → 复制 0 楼变量基线 → /trigger 创建 assistant 楼层
         try {
           if (window.parent && window.parent !== window) {
-            window.parent.postMessage({ source: 'counterfeit-opening', type: 'commit-done', summary }, '*');
+            window.parent.postMessage({ source: 'counterfeit-opening', type: 'commit-done', commitKind: 'opening', campaignId: campaignId.value, summary }, '*');
             showToast('开局完成，正在生成第一段剧情…', 'info', 4000);
           } else {
             console.warn('[开场白] 无宿主页面，跳过自动触发首条回复');
@@ -549,6 +565,8 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
 
   return {
     step,
+    campaignId,
+    dlcMind,
     mode,
     gameMode,
     selectedPov,
@@ -566,6 +584,10 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     resetOpeningDraft,
     summaryBlock,
     toMode,
+    toCampaign,
+    chooseCampaign,
+    confirmDlc,
+    toSaveImport,
     toIntro,
     toTitle,
     toGallery,

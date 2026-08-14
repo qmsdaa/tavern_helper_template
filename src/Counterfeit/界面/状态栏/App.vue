@@ -6,8 +6,8 @@
       <!-- 第一行：章节 / 场景编号 / 日期 / 星期 -->
       <div class="panel-head">
         <span class="head-title">🌸 {{ barTitle }}</span>
-        <span v-if="data.mode === 'pov'" class="head-scene">
-          场景 <b>{{ data.current_scene }}</b><span class="scene-total"> / 150</span>
+        <span v-if="data.campaign_id === 'main' && data.mode === 'pov'" class="head-scene">
+          场景 <b>{{ data.current_scene }}</b><span class="scene-total"> / {{ mainTotal }}</span>
         </span>
         <span class="head-date">{{ formatDateLabel(data.world.current_date) }}</span>
       </div>
@@ -21,6 +21,9 @@
         </span>
         <span v-if="data.mode === 'free' && data.world.time_slot" class="sub-field">
           <span class="field-name">时段</span><span class="field-value">{{ data.world.time_slot }}</span>
+        </span>
+        <span v-if="identityText" class="sub-field identity-field">
+          <span class="field-name">身份</span><span class="field-value">{{ identityText }}</span>
         </span>
       </div>
       <!-- 第三行：在场角色头像标签（点击 → postMessage → 宿主顶层角色详情弹窗） -->
@@ -96,24 +99,29 @@
 
 <script setup lang="ts">
 import CharacterModal from './components/CharacterModal.vue';
+import { campaignRegistry } from '../../generated/scene-index';
 import { useDataStore } from './store';
 import { THEMES, currentTheme, onThemeChange, setTheme, type ThemeName } from './theme';
 import {
   actNameOf,
+  campaignTitle,
   formatDateLabel,
+  identityBadge,
   playerLabel,
   presentCharacters,
 } from './utils';
 
 const store = useDataStore();
 const data = computed(() => store.data);
+const mainTotal = campaignRegistry.main.total_scenes;
 
 const characters = computed(() => presentCharacters(data.value));
 
 const barTitle = computed(() => {
-  if (data.value.mode === 'pov') return actNameOf(data.value.current_scene);
-  return data.value.current_pov ? 'Counterfeit · 开放世界' : 'Counterfeit · 自建开放世界';
+  if (data.value.campaign_id === 'main' && data.value.mode === 'pov') return actNameOf(data.value.current_scene);
+  return campaignTitle(data.value);
 });
+const identityText = computed(() => identityBadge(data.value));
 
 // 角色弹窗标记：挂载器开顶层弹窗 iframe 时置 __counterfeitModalChar 为角色规范名
 const hostChar = ((window as any).__counterfeitModalChar as string | null | undefined) ?? null;

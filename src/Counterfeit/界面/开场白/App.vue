@@ -5,9 +5,12 @@
       <IntroSequence v-else-if="store.step === 'intro'" key="intro" />
       <TitleScreen v-else-if="store.step === 'title'" key="title" />
       <GalleryScreen v-else-if="store.step === 'gallery'" key="gallery" />
+      <CampaignSelect v-else-if="store.step === 'campaign'" key="campaign" />
       <ModeSelect v-else-if="store.step === 'mode'" key="mode" />
       <PovConfirm v-else-if="store.step === 'pov'" key="pov" />
       <CustomForm v-else-if="store.step === 'custom'" key="custom" />
+      <DlcSetup v-else-if="store.step === 'dlc_setup'" key="dlc-setup" />
+      <SaveImportScreen v-else-if="store.step === 'save_import'" key="save-import" />
       <OpeningText v-else-if="store.step === 'opening'" key="opening" />
 
       <!-- 完成态：预览模式的确认页；酒馆环境中界面通常已随楼层刷新卸载，此为兜底 -->
@@ -46,12 +49,15 @@
 
 <script setup lang="ts">
 import CustomForm from './CustomForm.vue';
+import CampaignSelect from './CampaignSelect.vue';
+import DlcSetup from './DlcSetup.vue';
 import GalleryScreen from './GalleryScreen.vue';
 import GateScreen from './GateScreen.vue';
 import IntroSequence from './IntroSequence.vue';
 import ModeSelect from './ModeSelect.vue';
 import OpeningText from './OpeningText.vue';
 import PovConfirm from './PovConfirm.vue';
+import SaveImportScreen from './SaveImportScreen.vue';
 import TitleScreen from './TitleScreen.vue';
 import { useOpeningStore } from './store';
 import { useToasts } from './toast';
