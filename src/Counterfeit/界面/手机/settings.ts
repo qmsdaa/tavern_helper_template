@@ -48,6 +48,26 @@ export interface NpcSettings {
   forumAutoRefreshChance: number;
   /** 论坛自动刷新冷却（分钟） */
   forumAutoRefreshCooldownMinutes: number;
+  /** 奉仕部委托自动刷新开关（free/custom 模式 · 主线回复后按概率触发） */
+  requestAutoRefreshEnabled: boolean;
+  /** 委托自动刷新触发概率（0-100） */
+  requestAutoRefreshChance: number;
+  /** 委托自动刷新冷却（分钟） */
+  requestAutoRefreshCooldownMinutes: number;
+  /** 数据库（shujuku）只读联动：委托生成时读取当前全局快照表格取材；未安装时自动跳过 */
+  shujukuEnabled: boolean;
+  /** 读取·角色表/恋爱日记：私聊/群聊回复时注入对方的角色表行与其近期日记 */
+  dbReadCharEnabled: boolean;
+  /** 读取·剧情纪要：回复时注入最近剧情纪要（已发生事实参考，默认开启） */
+  dbReadSummaryEnabled: boolean;
+  /** 读取·导演大纲：回复时注入导演规划（导演层资料不是角色记忆，默认关闭+防剧透） */
+  dbReadDirectorEnabled: boolean;
+  /** 写入·约定同步：手机里的约定写入备忘录表，状态变化同步更新 */
+  dbWriteMemoEnabled: boolean;
+  /** 写入·纪要归档：重要手机会话经 LLM 判断后写入纪要表（AM 码自动递增） */
+  dbWriteSummaryEnabled: boolean;
+  /** 写入·恋爱日记：恋爱向会话在纪要归档后补写第一人称日记（依赖纪要归档开启） */
+  dbWriteDiaryEnabled: boolean;
 }
 
 export const DEFAULT_NPC_SETTINGS: NpcSettings = {
@@ -59,6 +79,16 @@ export const DEFAULT_NPC_SETTINGS: NpcSettings = {
   forumAutoRefreshEnabled: false,
   forumAutoRefreshChance: 20,
   forumAutoRefreshCooldownMinutes: 30,
+  requestAutoRefreshEnabled: false,
+  requestAutoRefreshChance: 30,
+  requestAutoRefreshCooldownMinutes: 60,
+  shujukuEnabled: true,
+  dbReadCharEnabled: true,
+  dbReadSummaryEnabled: true,
+  dbReadDirectorEnabled: false,
+  dbWriteMemoEnabled: true,
+  dbWriteSummaryEnabled: true,
+  dbWriteDiaryEnabled: true,
 };
 
 /* —— 读写 —— */
@@ -111,6 +141,24 @@ export function loadNpcSettings(): NpcSettings {
   s.forumAutoRefreshEnabled = s.forumAutoRefreshEnabled === true;
   s.forumAutoRefreshChance = clamp(Math.round(s.forumAutoRefreshChance), 0, 100);
   s.forumAutoRefreshCooldownMinutes = clamp(Math.round(s.forumAutoRefreshCooldownMinutes), 1, 1440);
+  s.requestAutoRefreshEnabled = s.requestAutoRefreshEnabled === true;
+  s.requestAutoRefreshChance = clamp(Math.round(s.requestAutoRefreshChance ?? 30), 0, 100);
+  s.requestAutoRefreshCooldownMinutes = clamp(Math.round(s.requestAutoRefreshCooldownMinutes ?? 60), 1, 1440);
+  s.shujukuEnabled = s.shujukuEnabled !== false;
+  // v5.1 起把「读取增强」拆成三个独立开关；旧版 dbReadEnrichEnabled=false 迁移为三者全关
+  const legacyRead = s as NpcSettings & { dbReadEnrichEnabled?: boolean };
+  if (legacyRead.dbReadEnrichEnabled === false) {
+    s.dbReadCharEnabled = false;
+    s.dbReadSummaryEnabled = false;
+    s.dbReadDirectorEnabled = false;
+  }
+  s.dbReadCharEnabled = s.dbReadCharEnabled !== false;
+  s.dbReadSummaryEnabled = s.dbReadSummaryEnabled !== false;
+  s.dbReadDirectorEnabled = s.dbReadDirectorEnabled === true;
+  delete legacyRead.dbReadEnrichEnabled;
+  s.dbWriteMemoEnabled = s.dbWriteMemoEnabled !== false;
+  s.dbWriteSummaryEnabled = s.dbWriteSummaryEnabled !== false;
+  s.dbWriteDiaryEnabled = s.dbWriteDiaryEnabled !== false;
   // v4 以前的 extraPrompt 已迁移为独立内容导演提示词，不再混入私聊回复。
   const legacy = s as NpcSettings & { extraPrompt?: string; affectionGate?: number; affectionGain?: boolean };
   delete legacy.extraPrompt;

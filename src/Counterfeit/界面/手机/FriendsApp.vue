@@ -67,7 +67,16 @@
           <h3 class="profile-name">{{ profile.display_name }}</h3>
           <span class="status-pill" :class="profile.status">{{ statusLabel(profile.status) }}</span>
           <p class="profile-basis">联系方式依据：{{ profile.basis || '未记录' }}</p>
-          <p class="profile-persona">{{ personaSnippet(profile.character, 320) || '还没有角色资料' }}</p>
+          <p class="profile-persona">{{ bioSnippet(profile) }}</p>
+          <button
+            v-if="!profile.profile_bio && !bioLoading"
+            class="bio-btn"
+            :disabled="bioLoading"
+            @click="generateBio(profile.character)"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles"></i> 生成手机简介
+          </button>
+          <p v-else-if="bioLoading" class="bio-loading">正在提炼简介…</p>
 
           <div class="profile-actions">
             <button v-if="profile.status !== 'blocked'" class="primary-btn" @click="chatWith(profile.character)">
@@ -108,6 +117,30 @@ const inactiveContacts = computed(() => store.allContacts.filter(contact => cont
 function personaSnippet(name: string, limit = 80): string {
   const text = (store.personas[name] ?? '').replace(/\s+/g, ' ').trim();
   return text.length > limit ? `${text.slice(0, limit)}…` : text;
+}
+
+/** Bug10：优先展示缓存的手机简介，未生成时回退世界书资料摘要 */
+function bioSnippet(contact: PhoneContact): string {
+  if (contact.profile_bio) return contact.profile_bio;
+  const fallback = personaSnippet(contact.character, 320);
+  return fallback ? `${fallback}（可点下方按钮生成专属手机简介）` : '还没有角色资料，可生成手机简介';
+}
+
+const bioLoading = ref(false);
+
+async function generateBio(name: string) {
+  if (bioLoading.value || !profile.value) return;
+  bioLoading.value = true;
+  try {
+    const bio = await store.generateContactBio(name);
+    if (bio && profile.value) {
+      profile.value = store.phone.contacts[name] ?? null;
+    }
+  } catch (error) {
+    console.warn('[手机·简介] 生成失败', error);
+  } finally {
+    bioLoading.value = false;
+  }
 }
 
 function statusLabel(status: ContactStatus): string {
@@ -391,6 +424,30 @@ function describeOutcome(outcome: IngestOutcome): { text: string; tone: 'ok' | '
 .profile-persona {
   max-height: 110px;
   overflow-y: auto;
+}
+
+.bio-btn {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: rgba(10, 132, 255, 0.1);
+  color: var(--c-ios-blue);
+  font-size: 12px;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+
+  i {
+    margin-right: 5px;
+  }
+}
+
+.bio-loading {
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  color: var(--c-ios-gray);
 }
 
 .profile-actions {

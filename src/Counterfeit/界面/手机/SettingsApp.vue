@@ -211,8 +211,180 @@
       </section>
 
       <section class="card">
+        <h3 class="card-title">奉仕部委托</h3>
+        <div class="setting-row toggle-row">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <span>主线回复后自动生成委托</span>
+          <button
+            class="switch"
+            :class="{ on: npcDraft.requestAutoRefreshEnabled }"
+            @click="npcDraft.requestAutoRefreshEnabled = !npcDraft.requestAutoRefreshEnabled"
+          >
+            <i></i>
+          </button>
+        </div>
+        <template v-if="npcDraft.requestAutoRefreshEnabled">
+          <div class="setting-row range-row">
+            <span>触发概率</span>
+            <input v-model.number="npcDraft.requestAutoRefreshChance" type="range" min="0" max="100" step="5" />
+            <b>{{ npcDraft.requestAutoRefreshChance }}%</b>
+          </div>
+          <label class="field">
+            <span>冷却（分钟）</span>
+            <input v-model.number="npcDraft.requestAutoRefreshCooldownMinutes" type="number" min="1" max="1440" />
+          </label>
+        </template>
+        <p class="field-hint">
+          委托面向开放世界（free）模式：结合日期、在场人物、世界书 NPC 与数据库记录生成"事件方向提示"。也可在"委托"里手动刷新。POV 剧本模式下不生成。
+        </p>
+      </section>
+
+      <section class="card">
+        <h3 class="card-title">数据库联动</h3>
+        <div class="setting-row toggle-row">
+          <i class="fa-solid fa-database"></i>
+          <span>数据库联动总开关</span>
+          <button
+            class="switch"
+            :class="{ on: npcDraft.shujukuEnabled }"
+            @click="npcDraft.shujukuEnabled = !npcDraft.shujukuEnabled"
+          >
+            <i></i>
+          </button>
+        </div>
+        <template v-if="npcDraft.shujukuEnabled">
+          <div class="setting-row toggle-row">
+            <i class="fa-solid fa-book-open-reader"></i>
+            <span>读取角色表 / 日记</span>
+            <button
+              class="switch"
+              :class="{ on: npcDraft.dbReadCharEnabled }"
+              @click="npcDraft.dbReadCharEnabled = !npcDraft.dbReadCharEnabled"
+            >
+              <i></i>
+            </button>
+          </div>
+          <div class="setting-row toggle-row">
+            <i class="fa-solid fa-scroll"></i>
+            <span>读取剧情纪要<span v-if="npcDraft.dbReadSummaryEnabled" class="toggle-badge">默认开启</span></span>
+            <button
+              class="switch"
+              :class="{ on: npcDraft.dbReadSummaryEnabled }"
+              @click="npcDraft.dbReadSummaryEnabled = !npcDraft.dbReadSummaryEnabled"
+            >
+              <i></i>
+            </button>
+          </div>
+          <div class="setting-row toggle-row">
+            <i class="fa-solid fa-film"></i>
+            <span>读取导演大纲<span v-if="npcDraft.dbReadDirectorEnabled" class="toggle-badge">已开启</span></span>
+            <button
+              class="switch"
+              :class="{ on: npcDraft.dbReadDirectorEnabled }"
+              @click="npcDraft.dbReadDirectorEnabled = !npcDraft.dbReadDirectorEnabled"
+            >
+              <i></i>
+            </button>
+          </div>
+          <p class="field-hint spoiler-hint">
+            导演大纲是<b>导演层资料，不是角色记忆</b>：仅供手机互动不与未来规划冲突；NPC
+            不得声称知道、看过或复述大纲；未发生内容不会作为事实、消息或秘密提前泄露。默认关闭以防剧透。
+          </p>
+          <div class="setting-row toggle-row">
+            <i class="fa-solid fa-note-sticky"></i>
+            <span>约定同步到备忘录表</span>
+            <button
+              class="switch"
+              :class="{ on: npcDraft.dbWriteMemoEnabled }"
+              @click="npcDraft.dbWriteMemoEnabled = !npcDraft.dbWriteMemoEnabled"
+            >
+              <i></i>
+            </button>
+          </div>
+          <div class="setting-row toggle-row">
+            <i class="fa-solid fa-box-archive"></i>
+            <span>重要会话归档纪要表</span>
+            <button
+              class="switch"
+              :class="{ on: npcDraft.dbWriteSummaryEnabled }"
+              @click="npcDraft.dbWriteSummaryEnabled = !npcDraft.dbWriteSummaryEnabled"
+            >
+              <i></i>
+            </button>
+          </div>
+          <div class="setting-row toggle-row">
+            <i class="fa-solid fa-heart"></i>
+            <span>恋爱向会话补写恋爱日记</span>
+            <button
+              class="switch"
+              :class="{ on: npcDraft.dbWriteDiaryEnabled }"
+              @click="npcDraft.dbWriteDiaryEnabled = !npcDraft.dbWriteDiaryEnabled"
+            >
+              <i></i>
+            </button>
+          </div>
+          <div class="db-status" v-if="shujukuOk">
+            <div class="db-status-head">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>数据库 API 已就绪</span>
+              <button class="link-btn" @click="refreshDbStatus">刷新</button>
+            </div>
+            <div v-for="row in dbStatusRows" :key="row.label" class="db-status-row">
+              <span>{{ row.label }}</span>
+              <b v-if="row.name">{{ row.name }}（{{ row.rowCount }} 行）</b>
+              <em v-else>未命中（候选：{{ row.candidates }}）</em>
+            </div>
+          </div>
+          <p v-else class="field-hint">当前状态：未检测到数据库 API（自动跳过，不影响手机功能）。</p>
+        </template>
+        <p class="field-hint">
+          只读联动：通过 shujuku（SP·数据库）读取当前存档表格（角色/纪要/导演规划）作为回复参考，
+          已发生纪要仍是"角色只知道自己亲历/被告知/合理可知的部分"。
+          写入联动：归档以摘要推进为节奏，AM 码自动递增，来源标记【手机】写进纪要正文真实存在的列；
+          写进纪要表的内容会经数据库自己的世界书注入回到主线。
+        </p>
+      </section>
+
+      <section class="card">
+        <h3 class="card-title">数据</h3>
+        <div class="row"><span>会话数</span><b>{{ stats.threadCount }}</b></div>
+        <div class="row"><span>消息数</span><b>{{ stats.messageCount }}</b></div>
+        <div class="row"><span>存档大小</span><b>{{ statsBytes }}</b></div>
+        <div class="row">
+          <span>自动保存</span>
+          <b :class="saveTone">{{ saveText }}</b>
+        </div>
+        <button class="mini-btn" @click="saveNow"><i class="fa-solid fa-floppy-disk"></i> 立即保存</button>
+        <div class="data-actions">
+          <button class="data-btn" @click="exportAll">
+            <i class="fa-solid fa-file-arrow-down"></i> 导出全部数据（JSON）
+          </button>
+          <label class="data-btn file-btn">
+            <i class="fa-solid fa-file-arrow-up"></i> 导入备份（JSON）
+            <input type="file" accept=".json,application/json" hidden @change="onPickImportFile" />
+          </label>
+        </div>
+        <p v-if="importMessage" class="field-hint" :class="importTone">{{ importMessage }}</p>
+        <template v-if="pendingBackup">
+          <p class="field-hint import-note">
+            已自动导出当前数据为备份（导入前备份）。校验通过：{{ pendingSummary }}。选择导入方式（ID
+            冲突不会静默覆盖）：
+          </p>
+          <div class="import-actions">
+            <button class="data-btn" @click="doImport('merge')"><i class="fa-solid fa-code-merge"></i> 合并导入</button>
+            <button class="data-btn danger" @click="doImport('overwrite')">
+              <i class="fa-solid fa-rectangle-xmark"></i> 覆盖导入
+            </button>
+          </div>
+        </template>
+        <p class="field-hint">
+          清空会话只删除消息：联系人与会话壳保留、不回滚已发生的主线、不删除已写入数据库的纪要/日记/备忘。
+        </p>
+      </section>
+
+      <section class="card">
         <h3 class="card-title">关于</h3>
-        <div class="row"><span>版本</span><b>v5 · Counterfeit</b></div>
+        <div class="row"><span>版本</span><b>v5.1 · Counterfeit</b></div>
         <div class="row"><span>变量</span><b>stat_data.phone.*</b></div>
         <div class="row"><span>数据层</span><b>contacts / threads / messages</b></div>
         <div class="row"><span>长期记忆</span><b>摘要 + 事实 + 待办</b></div>
@@ -231,11 +403,14 @@ import {
   type LlmConfig,
   type NpcSettings,
 } from './settings';
-import { usePhoneStore } from './store';
+import { invalidateSheets, readDbStatus, type DbStatusRow } from './shujuku';
+import { usePhoneStore, type ImportReport } from './store';
 
 const store = usePhoneStore();
 const posReset = ref(false);
 const reloaded = ref(false);
+const shujukuOk = ref(false);
+const dbStatusRows = ref<DbStatusRow[]>([]);
 
 /* —— LLM 模型配置 —— */
 
@@ -259,6 +434,132 @@ const proxyPresets = ref<string[]>([]);
 const manualParsing = ref(false);
 const manualParseHint = ref('');
 
+/* —— 数据统计 / 自动保存 / 导入导出 —— */
+
+const stats = computed(() => store.dataStats());
+const statsBytes = computed(() => {
+  const bytes = stats.value.bytes;
+  return bytes >= 1024 * 1024
+    ? `${(bytes / 1024 / 1024).toFixed(1)} MB`
+    : bytes >= 1024
+      ? `${(bytes / 1024).toFixed(1)} KB`
+      : `${bytes} B`;
+});
+const saveText = computed(() => {
+  if (store.saveState === 'saving') return '保存中…';
+  if (store.saveState === 'error') return `保存失败：${store.saveError || '未知错误'}`;
+  if (store.saveState === 'saved' && store.lastSavedAt) {
+    return `已保存 · ${new Date(store.lastSavedAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`;
+  }
+  return store.lastSavedAt ? '已自动保存' : '尚无保存记录';
+});
+const saveTone = computed(() => (store.saveState === 'error' ? 'save-error' : ''));
+
+const importMessage = ref('');
+const importTone = ref('');
+const pendingBackup = ref<{
+  name: string;
+  summary: string;
+  merge: () => Promise<void>;
+  overwrite: () => Promise<void>;
+} | null>(null);
+
+async function saveNow() {
+  await store.saveNow();
+}
+
+function exportAll() {
+  store.exportAllPhoneJson();
+  importMessage.value = '';
+}
+
+function onPickImportFile(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  input.value = '';
+  if (!file) return;
+  void handleImportFile(file);
+}
+
+async function handleImportFile(file: File) {
+  importMessage.value = '';
+  importTone.value = '';
+  pendingBackup.value = null;
+  try {
+    const text = await file.text();
+    const parsed = store.parsePhoneBackup(text);
+    if (!parsed.ok) {
+      importMessage.value = `导入校验失败：${parsed.errors.join('；')}`;
+      importTone.value = 'error';
+      return;
+    }
+    const backup = parsed.backup!;
+    const names = Object.keys(backup.threads ?? {}).length;
+    const count = Object.values((backup.messages ?? {}) as Record<string, unknown[]>).reduce(
+      (sum, list) => sum + (Array.isArray(list) ? list.length : 0),
+      0,
+    );
+    const factCount = Array.isArray(backup.facts) ? backup.facts.length : 0;
+    const apptCount = Array.isArray(backup.appointments) ? backup.appointments.length : 0;
+    // 导入前自动导出现有备份（下载当前数据）
+    store.backupBeforeImport();
+    pendingBackup.value = {
+      name: file.name,
+      summary: `${names} 个会话 / ${count} 条消息 / ${factCount} 条事实 / ${apptCount} 项约定`,
+      merge: async () => {
+        await store.importPhoneBackup(backup, 'merge');
+      },
+      overwrite: async () => {
+        await store.importPhoneBackup(backup, 'overwrite');
+      },
+    };
+  } catch (error) {
+    importMessage.value = `读取文件失败：${error instanceof Error ? error.message : String(error)}`;
+    importTone.value = 'error';
+  }
+}
+
+async function doImport(mode: 'merge' | 'overwrite') {
+  const pending = pendingBackup.value;
+  if (!pending) return;
+  try {
+    const report: ImportReport = mode === 'merge' ? await pending.merge() : await pending.overwrite();
+    const added =
+      report.contactsAdded +
+      report.threadsAdded +
+      report.messagesAdded +
+      report.factsAdded +
+      report.appointmentsAdded +
+      report.requestsAdded;
+    const skipped =
+      report.contactsSkipped +
+      report.threadsSkipped +
+      report.messagesSkipped +
+      report.factsSkipped +
+      report.appointmentsSkipped +
+      report.requestsSkipped;
+    importMessage.value = `${mode === 'merge' ? '合并' : '覆盖'}完成：新增 ${added} 项；冲突/跳过 ${skipped} 项${skipped ? '（未静默覆盖）' : ''}`;
+    if (report.conflicts.length) {
+      importMessage.value += `；冲突明细：${report.conflicts.slice(0, 3).join('；')}${report.conflicts.length > 3 ? '…' : ''}`;
+    }
+    importTone.value = skipped ? 'warn' : 'ok';
+    pendingBackup.value = null;
+    refreshDbStatus();
+  } catch (error) {
+    importMessage.value = `导入失败：${error instanceof Error ? error.message : String(error)}`;
+    importTone.value = 'error';
+  }
+}
+
+/* —— 数据库状态 —— */
+
+function refreshDbStatus() {
+  invalidateSheets();
+  const status = readDbStatus();
+  shujukuOk.value = status.available;
+  dbStatusRows.value = status.sheets;
+}
+
 const llmStatus = computed(() => llmStatusText(llmDraft));
 
 // 温度/tokens：输入框是字符串，空串＝跟随预设
@@ -280,6 +581,13 @@ const maxTokensText = computed({
 watch(llmDraft, () => store.updateLlmConfig({ ...llmDraft }), { deep: true });
 watch(npcDraft, () => store.updateNpcSettings({ ...npcDraft }), { deep: true });
 watch(contentPromptDraft, value => store.updateContentPrompt(value));
+// 数据库总开关变化时刷新命中状态
+watch(
+  () => npcDraft.shujukuEnabled,
+  enabled => {
+    if (enabled) refreshDbStatus();
+  },
+);
 // 重置后回同步草稿
 watch(
   () => store.llm,
@@ -341,6 +649,7 @@ async function parseLatest() {
 
 onMounted(() => {
   proxyPresets.value = listProxyPresets();
+  refreshDbStatus();
 });
 
 /* —— 原有操作 —— */
@@ -525,10 +834,12 @@ async function reloadData() {
 
 .field-pair {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
 
   .field {
     flex: 1;
+    min-width: 160px;
 
     span {
       width: auto;
@@ -665,5 +976,131 @@ async function reloadData() {
     text-align: right;
     font-size: 13px;
   }
+}
+
+/* —— 数据库状态 / 数据统计 / 导入导出 —— */
+
+.toggle-badge {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(40, 199, 111, 0.12);
+  color: var(--c-success);
+  font-size: 9px;
+}
+
+.spoiler-hint {
+  border-left: 2px solid rgba(255, 149, 0, 0.5);
+  padding-left: 8px;
+  color: #8a6d1a;
+}
+
+.db-status {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--c-phone-screen);
+  font-size: 11px;
+  line-height: 1.9;
+}
+
+.db-status-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--c-success);
+  font-weight: 700;
+
+  .link-btn {
+    margin-left: auto;
+  }
+}
+
+.db-status-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+
+  span {
+    flex: none;
+    width: 72px;
+    color: var(--c-ios-gray);
+  }
+
+  b {
+    flex: 1;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  em {
+    flex: 1;
+    color: #b26a00;
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.save-error {
+  color: var(--c-danger);
+}
+
+.data-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.data-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: rgba(10, 132, 255, 0.1);
+  color: var(--c-ios-blue);
+  font-size: 12px;
+
+  &.danger {
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--c-danger);
+  }
+
+  i {
+    font-size: 12px;
+  }
+}
+
+.file-btn {
+  cursor: pointer;
+}
+
+.import-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.import-note {
+  color: #8a6d1a;
+}
+
+.field-hint.error {
+  color: var(--c-danger);
+}
+
+.field-hint.ok {
+  color: var(--c-success);
+}
+
+.field-hint.warn {
+  color: #b26a00;
 }
 </style>

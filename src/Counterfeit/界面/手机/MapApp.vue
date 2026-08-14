@@ -123,11 +123,18 @@ const STREETS = [
 
 const MAP_LOCATIONS: MapLocation[] = [
   { name: '千叶站', short: '千叶站', layer: '校外', keywords: ['千叶站', '车站'], x: 58, y: 52, lx: 0, ly: -9, anchor: 'middle' },
+  { name: '千叶站前拉面馆', short: '拉面馆', layer: '校外', keywords: ['拉面馆', '站前拉面'], x: 34, y: 96, lx: 0, ly: -9, anchor: 'middle' },
+  { name: '千叶市图书馆', short: '图书馆', layer: '校外', keywords: ['图书馆'], x: 128, y: 42, lx: 0, ly: -9, anchor: 'middle' },
+  { name: '千叶都市单轨电车', short: '单轨电车', layer: '校外', keywords: ['单轨', '美滨区', '通学路线'], x: 88, y: 34, lx: 9, ly: 3, anchor: 'start' },
   { name: 'MARINPIA商场', short: 'MARINPIA', layer: '校外', keywords: ['MARINPIA', '商场'], x: 258, y: 146, lx: -9, ly: 3, anchor: 'end' },
   { name: '稻毛海滨公园', short: '海滨公园', layer: '校外', keywords: ['稻毛海滨公园', '海滨公园', '海滨'], x: 282, y: 212, lx: -9, ly: 3, anchor: 'end' },
   { name: '中高滨公园', short: '中高滨公园', layer: '校外', keywords: ['中高滨公园', '学校对面公园', '街对面公园'], x: 226, y: 96, lx: 9, ly: -4, anchor: 'start' },
   { name: '稻毛浅间神社', short: '浅间神社', layer: '校外', keywords: ['浅间神社', '神社'], x: 268, y: 62, lx: -9, ly: 3, anchor: 'end' },
   { name: '萨莉亚家庭餐厅', short: '萨莉亚', layer: '校外', keywords: ['萨莉亚', '家庭餐厅'], x: 96, y: 216, lx: 0, ly: 17, anchor: 'middle' },
+  { name: '格兰皇宫酒店', short: '格兰皇宫', layer: '校外', keywords: ['格兰皇宫'], x: 312, y: 38, lx: -9, ly: 3, anchor: 'end' },
+  { name: '千叶港湾酒店', short: '港湾酒店', layer: '校外', keywords: ['千叶港湾酒店', '港湾酒店'], x: 298, y: 108, lx: 9, ly: 3, anchor: 'start' },
+  { name: '幕张Messe', short: '幕张Messe', layer: '校外', keywords: ['幕张', 'Messe'], x: 322, y: 248, lx: -9, ly: 3, anchor: 'end' },
+  { name: '便利店', short: '便利店', layer: '校外', keywords: ['便利店', 'LAWSON', '7-11', '711'], x: 60, y: 178, lx: 0, ly: 17, anchor: 'middle' },
   { name: '奉仕部活动室', short: '奉仕部', layer: '校园', keywords: ['活动室', '特别栋', '奉仕部'], x: 152, y: 142, lx: -8, ly: 3, anchor: 'end' },
   { name: '体育馆', short: '体育馆', layer: '校园', keywords: ['体育馆'], x: 196, y: 140, lx: 8, ly: 3, anchor: 'start' },
   { name: '操场', short: '操场', layer: '校园', keywords: ['操场', '后山'], x: 150, y: 178, lx: 0, ly: 15, anchor: 'middle' },
@@ -149,9 +156,29 @@ function descOf(loc: MapLocation): string {
   return descriptions.value[loc.name] || `常去之处：${loc.keywords.join('、')}。`;
 }
 
-/** 从世界书场景条目推当前位置：找日期窗口覆盖 current_date 的场景，取其正文"地点"行匹配关键词 */
+/** 文本 → 地图地点：先精确名，再关键词包含（双向） */
+function matchLocation(text: string): string | null {
+  const value = String(text ?? '').trim();
+  if (!value) return null;
+  for (const loc of MAP_LOCATIONS) {
+    if (loc.name === value) return loc.name;
+  }
+  for (const loc of MAP_LOCATIONS) {
+    if (loc.keywords.some(keyword => value.includes(keyword) || keyword.includes(value))) {
+      return loc.name;
+    }
+  }
+  return null;
+}
+
+/** 定位当前地点：① MVU world.current_location → ② 场景条目日期窗口（fallback） */
 async function detectCurrentLocation() {
   try {
+    // ① 直接读 MVU 变量（POV/free 模式都维护 world.current_location），不再绕道日期匹配
+    const direct = matchLocation(store.snapshot.location);
+    if (direct) {
+      currentLocation.value = direct;
+    }
     const book = await resolveWorldbookName();
     if (!book || typeof getWorldbook !== 'function') {
       return;
@@ -165,11 +192,11 @@ async function detectCurrentLocation() {
         }
       }
     }
-    // 当前场景：日期窗口覆盖 current_date
-    const today = store.snapshot.date;
-    if (!today) {
+    // ② 日期窗口未命中（或地点变量为空）时兜底：匹配覆盖当前日期的场景条目
+    if (direct || !store.snapshot.date) {
       return;
     }
+    const today = store.snapshot.date;
     const cnToday = `${today.slice(0, 4)}年${Number(today.slice(5, 7))}月${Number(today.slice(8, 10))}日`;
     for (const e of entries) {
       if (!/^场景/.test(e.name ?? '')) {

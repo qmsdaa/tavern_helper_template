@@ -1,12 +1,13 @@
-import { OPENING_TEXTS, povByKey, renderCustomOpening, type DifficultyKey, type PovKey } from './copy';
+import { OPENING_TEXTS, povByKey, renderCustomOpening, type PovKey } from './copy';
+import { OPENING_DRAFT_MAX, resolveOpeningText } from './openingDraft';
 import { showToast } from './toast';
 
 export type Step = 'gate' | 'intro' | 'title' | 'mode' | 'pov' | 'custom' | 'opening' | 'gallery' | 'done';
 export type Mode = 'pov' | 'custom';
 /** 玩法模式：story=剧本模式（150场）·open=开放世界攻略模式（写入 stat.mode='free'） */
 export type GameMode = 'story' | 'open';
-/** 恋爱难度：开局一次定档，写入 stat_data.difficulty（键名与 schema.ts 枚举对齐） */
-export type Difficulty = DifficultyKey;
+/** 恋爱难度：开局定档·commit 写入 stat_data.difficulty·全模式生效 */
+export type DifficultyKey = '简单' | '普通' | '困难';
 
 /** POV 角色开局所在班级教室（MVU-DESIGN §2.1：world.current_location 在 POV 模式填对应 F/J 班教室） */
 const POV_CLASSROOM: Record<PovKey, string> = {
@@ -57,13 +58,14 @@ const INITIAL_RELATIONS: Record<PovKey, Record<string, InitialRelation>> = {
     三浦优美子: { display: '优美子', bond: 15, romance: 0, known: true },
     海老名姬菜: { display: '姬菜', bond: 15, romance: 0, known: true },
     川崎沙希: { display: '沙希', bond: 15, romance: 0, known: true },
+    拉芙希妮·都柏林: { display: '拉芙希妮', bond: 0, romance: 0, known: false },
   },
   yukino: {
     比企谷八幡: { display: '八幡', bond: 50, romance: 10, known: true },
     由比滨结衣: { display: '结衣', bond: 50, romance: 5, known: true },
     雪之下阳乃: { display: '阳乃', bond: 40, romance: 0, known: true },
     平冢静: { display: '平冢老师', bond: 25, romance: 0, known: true },
-    拉芙希妮·都柏林: { display: '拉芙希妮', bond: 0, romance: 5, known: false },
+    拉芙希妮·都柏林: { display: '拉芙希妮', bond: 0, romance: 0, known: false },
   },
   yui: {
     比企谷八幡: { display: '八幡', bond: 50, romance: 15, known: true },
@@ -74,10 +76,20 @@ const INITIAL_RELATIONS: Record<PovKey, Record<string, InitialRelation>> = {
     川崎沙希: { display: '沙希', bond: 15, romance: 0, known: true },
     比企谷小町: { display: '小町', bond: 20, romance: 0, known: true },
     平冢静: { display: '平冢老师', bond: 25, romance: 0, known: true },
+    拉芙希妮·都柏林: { display: '拉芙希妮', bond: 0, romance: 0, known: false },
   },
   laff: {
     爱布拉娜: { display: '爱布拉娜', bond: 70, romance: 25, known: true },
+    雪之下雪乃: { display: '雪乃', bond: 0, romance: 0, known: false },
+    比企谷八幡: { display: '八幡', bond: 0, romance: 0, known: false },
+    由比滨结衣: { display: '结衣', bond: 0, romance: 0, known: false },
   },
+};
+
+/** 场景1在场预置（与更新规则"初始关系表"同步）：POV 剧本模式开局即与玩家同教室的角色 */
+const SCENE1_PRESENT: Partial<Record<PovKey, string[]>> = {
+  yukino: ['拉芙希妮·都柏林'],
+  laff: ['雪之下雪乃'],
 };
 
 /** 按初始关系表生成 characters 记录集（present=false·空记忆·穿搭未确认，与 record_creation 默认形状一致） */
@@ -88,7 +100,7 @@ function initialCharacters(pov: PovKey): Record<string, unknown> {
       display_name: rel.display,
       present: false,
       known: rel.known,
-      relationship: { bond: rel.bond, romance: rel.romance, commitment: '未确认' },
+      relationship: { bond: rel.bond, romance: rel.romance, commitment: '未确认', intimate_memory: '', intimate_sexual_memory: '' },
       latest_user_memory: { memory: '', inner_thought: '' },
       outfit: {
         outerwear: '未确认',
@@ -106,7 +118,6 @@ function initialCharacters(pov: PovKey): Record<string, unknown> {
 /**
  * 世界书条目命名规则（MVU-DESIGN §3 · galgame 系统设计 §3.1）：
  * - 场景条目：/^场景\d+$/ · 1-150，pov 模式开、custom 模式关
- * - 剧本日历：固定名 "剧本日历"，pov 模式开
  * - 尾声条目：/^尾声/ ，pov 模式开、custom 模式关（150a-g 用绿灯特殊触发词，未注册前默认关；commit 仅切可见性不强行开未注册条目）
  * - S1 家族暗线组（在 POV 模式下启用；自建模式禁用）：见下方常量
  * - S2 真相附录（任何模式运行时都不直接启用）：见下方常量
@@ -176,8 +187,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
   /** 玩法模式：story=剧本 / open=开放世界（stat.mode 写 'free'）；自建角色在两种玩法下均可用 */
   const gameMode = ref<GameMode>('story');
   const selectedPov = ref<PovKey | null>(null);
-  /** 恋爱难度：开局一次定档（默认普通），commit 写入 stat.difficulty */
-  const difficulty = ref<Difficulty>('普通');
+  const difficulty = ref<DifficultyKey>('普通');
   const form = reactive<CustomForm>(emptyForm());
   const submitting = ref(false);
   /** 已提交的设定摘要块（done 屏展示） */
@@ -189,7 +199,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
 
   const povInfo = computed(() => (selectedPov.value ? povByKey(selectedPov.value) : null));
 
-  /** 当前选择对应的开场文本 */
+  /** 当前选择对应的官方开场文本（默认序幕，不可被自定义覆盖本体） */
   const openingText = computed<string>(() => {
     if (mode.value === 'pov' && selectedPov.value) {
       return OPENING_TEXTS[selectedPov.value];
@@ -198,6 +208,36 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
       return renderCustomOpening(form.name);
     }
     return '';
+  });
+
+  /** 玩家自定义序幕草稿：null=未编辑（用官方默认）。只存内存，不写 localStorage，只对当前新存档生效 */
+  const openingDraft = ref<string | null>(null);
+
+  /** 最终提交正文：草稿清洗后优先，空草稿回退官方默认。
+   *  自定义正文只改变 0 楼可见叙事文字——summaryBlock（<opening_setup>）与 MVU 变量写入路径不变 */
+  const finalOpeningText = computed<string>(() => resolveOpeningText(openingDraft.value, openingText.value));
+
+  /** 应用自定义序幕草稿：超过 3000 字拒绝保存；全空白视为清空草稿（回退官方） */
+  function applyOpeningDraft(raw: string): { ok: boolean; message: string } {
+    if (raw.trim().length === 0) {
+      openingDraft.value = null;
+      return { ok: true, message: '已清空自定义文案，序幕使用官方默认' };
+    }
+    if (raw.length > OPENING_DRAFT_MAX) {
+      return { ok: false, message: `序幕最长 ${OPENING_DRAFT_MAX} 字（当前 ${raw.length} 字），请精简后再保存` };
+    }
+    openingDraft.value = raw;
+    return { ok: true, message: '已应用自定义序幕（仅修改叙事文字，开局角色/日期/场景/难度不变）' };
+  }
+
+  /** 恢复官方默认序幕 */
+  function resetOpeningDraft() {
+    openingDraft.value = null;
+  }
+
+  // 切换模式/主角/玩法/难度时丢弃草稿——草稿绑定的是"当前选择对应的官方序幕"，不能跨选择串用
+  watch([mode, selectedPov, gameMode, difficulty], () => {
+    openingDraft.value = null;
   });
 
   /** 结构化设定摘要块 */
@@ -276,6 +316,9 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
 
   function toCustom() {
     mode.value = 'custom';
+    // 自建入口必须清空 POV 残留，否则 open+自建 commit 会按残留 POV 预建初始关系表
+    // （曾实测：先点拉芙卡再来自建 → characters 混入拉芙 POV 预建记录，爱布拉娜 bond=70 等）
+    selectedPov.value = null;
     step.value = 'custom';
   }
 
@@ -301,7 +344,8 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     submitting.value = true;
     try {
       const summary = summaryBlock.value;
-      const text = openingText.value;
+      // 自定义序幕只替换 0 楼可见叙事文字；summaryBlock（<opening_setup>）与下方 MVU 写入不受影响
+      const text = finalOpeningText.value;
       const payload = `${summary}\n\n${text}`;
 
       // MVU 写入：按 MVU-DESIGN §2.1 全量写入初始状态（双模式各自的 commit 集）
@@ -329,8 +373,14 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
               cash: isPov && selectedPov.value ? POV_INITIAL_CASH[selectedPov.value] : null,
               carried_items: [],
             };
-            stat.characters =
-              (isPov || isOpen) && selectedPov.value ? initialCharacters(selectedPov.value) : {};
+            // 预建只属于"四选一"开局（剧本或开放世界均以 mode==='pov' 进入）；自建模式（custom）永不预建。
+            // 旧条件 (isPov || isOpen) 会让 open+自建 + selectedPov 残留时错误预建（2026-08-07 修复）。
+            stat.characters = isPov && selectedPov.value ? initialCharacters(selectedPov.value) : {};
+            if (isPov && selectedPov.value) {
+              for (const n of SCENE1_PRESENT[selectedPov.value] ?? []) {
+                if (stat.characters[n]) stat.characters[n].present = true;
+              }
+            }
             stat['Ω_resonance'] = 0;
             for (const hammer of [
               'hammer_thunder_1', 'hammer_tea_1', 'hammer_tea_2',
@@ -403,7 +453,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
 
       // 世界书 enabled 批量切换（MVU-DESIGN §3 · 角色卡绑定世界书）
       // 三阶门控：commit 翻条目 enabled → 场景条目内容层 @@if mode=="pov" && current_scene==N 进一步过滤 → MVU 变量驱动主AI按场景走
-      // 这里只切 enabled：场景/日历/尾声 = pov 开 · S1 暗线组 = pov 开 · S2 = 恒关。custom 模式全部关，仅留世界观/扮演准则/角色等 S0 公开条目
+      // 这里只切 enabled：场景/尾声 = pov 开 · S1 暗线组 = pov 开 · S2 = 恒关。custom 模式全部关，仅留世界观/扮演准则/角色等 S0 公开条目
       try {
         if (typeof getCharWorldbookNames === 'function' && typeof getWorldbook === 'function' && typeof updateWorldbookWith === 'function') {
           const names = getCharWorldbookNames('current');
@@ -417,7 +467,6 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
                 const n = e.name;
                 if (!n) return e;
                 const isScene = SCENE_NAME_RE.test(n);
-                const isCalendar = n === '剧本日历';
                 const isEpilogue = /^尾声/.test(n);
                 const isS1 = (SPOILER_S1 as readonly string[]).includes(n);
                 const isS2 = (SPOILER_S2 as readonly string[]).includes(n);
@@ -425,8 +474,8 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
                 if (isS2) {
                   // S2 真相：任何模式都不直接启用（条目自带更严的 @@if 门控）
                   nextEnabled = false;
-                } else if (isScene || isCalendar || isEpilogue) {
-                  // 场景/日历/尾声：仅剧本模式开；开放世界与自建关
+                } else if (isScene || isEpilogue) {
+                  // 场景/尾声：仅剧本模式开；开放世界与自建关
                   nextEnabled = isStoryPov;
                 } else if (isS1) {
                   // S1 家族暗线组：剧本POV开；开放世界全开（爱布拉娜可攻略·家族线自由展开）；剧本自建关
@@ -511,6 +560,10 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     previewMode,
     povInfo,
     openingText,
+    openingDraft,
+    finalOpeningText,
+    applyOpeningDraft,
+    resetOpeningDraft,
     summaryBlock,
     toMode,
     toIntro,

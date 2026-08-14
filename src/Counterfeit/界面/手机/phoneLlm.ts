@@ -7,7 +7,10 @@ export type PhoneLlmTask =
   | 'mainline_ingest'
   | 'context_digest'
   | 'proactive_message'
-  | 'forum_batch';
+  | 'forum_batch'
+  | 'contact_bio'
+  | 'request_batch'
+  | 'session_archive';
 
 /** 字符串感知的括号平衡：从 text 中截取第一个完整 {...} 顶层对象，找不到返回 null */
 function extractFirstJsonObject(text: string): string | null {

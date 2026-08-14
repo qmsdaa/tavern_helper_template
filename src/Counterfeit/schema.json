@@ -76,6 +76,22 @@
         }
       ]
     },
+    "difficulty": {
+      "default": null,
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "简单",
+            "普通",
+            "困难"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "current_scene": {
       "default": 1,
       "type": "integer",
@@ -171,7 +187,8 @@
             "default": {
               "bond": 0,
               "romance": 0,
-              "commitment": "未确认"
+              "commitment": "未确认",
+              "intimate_memory": ""
             },
             "type": "object",
             "properties": {
@@ -191,6 +208,10 @@
                   "仅朋友",
                   "恋人"
                 ]
+              },
+              "intimate_memory": {
+                "default": "",
+                "type": "string"
               }
             }
           },
@@ -347,6 +368,149 @@
     "dalloway_pen_used": {
       "default": false,
       "type": "boolean"
+    },
+    "arc_milestones": {
+      "default": {
+        "hachiman": {
+          "asked_before_self_sacrifice": false,
+          "accepted_shared_cost": false,
+          "stated_personal_desire": false
+        },
+        "yukino": {
+          "offered_resources_without_deciding": false,
+          "admitted_personal_wish": false,
+          "separated_self_from_family_standard": false
+        },
+        "yui": {
+          "voiced_disagreement_publicly": false,
+          "did_not_retract_after_conflict": false,
+          "admitted_selfish_wish": false
+        },
+        "laff": {
+          "expressed_preference": false,
+          "refused_without_explanation": false,
+          "chose_against_group_expectation": false,
+          "accepted_consequence_without_withdrawing_choice": false
+        }
+      },
+      "type": "object",
+      "properties": {
+        "hachiman": {
+          "default": {
+            "asked_before_self_sacrifice": false,
+            "accepted_shared_cost": false,
+            "stated_personal_desire": false
+          },
+          "type": "object",
+          "properties": {
+            "asked_before_self_sacrifice": {
+              "default": false,
+              "type": "boolean"
+            },
+            "accepted_shared_cost": {
+              "default": false,
+              "type": "boolean"
+            },
+            "stated_personal_desire": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        },
+        "yukino": {
+          "default": {
+            "offered_resources_without_deciding": false,
+            "admitted_personal_wish": false,
+            "separated_self_from_family_standard": false
+          },
+          "type": "object",
+          "properties": {
+            "offered_resources_without_deciding": {
+              "default": false,
+              "type": "boolean"
+            },
+            "admitted_personal_wish": {
+              "default": false,
+              "type": "boolean"
+            },
+            "separated_self_from_family_standard": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        },
+        "yui": {
+          "default": {
+            "voiced_disagreement_publicly": false,
+            "did_not_retract_after_conflict": false,
+            "admitted_selfish_wish": false
+          },
+          "type": "object",
+          "properties": {
+            "voiced_disagreement_publicly": {
+              "default": false,
+              "type": "boolean"
+            },
+            "did_not_retract_after_conflict": {
+              "default": false,
+              "type": "boolean"
+            },
+            "admitted_selfish_wish": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        },
+        "laff": {
+          "default": {
+            "expressed_preference": false,
+            "refused_without_explanation": false,
+            "chose_against_group_expectation": false,
+            "accepted_consequence_without_withdrawing_choice": false
+          },
+          "type": "object",
+          "properties": {
+            "expressed_preference": {
+              "default": false,
+              "type": "boolean"
+            },
+            "refused_without_explanation": {
+              "default": false,
+              "type": "boolean"
+            },
+            "chose_against_group_expectation": {
+              "default": false,
+              "type": "boolean"
+            },
+            "accepted_consequence_without_withdrawing_choice": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "iroha_milestones": {
+      "default": {
+        "rejected_profitable_solution": false,
+        "made_uncalculated_request": false,
+        "stated_desire_without_performance": false
+      },
+      "type": "object",
+      "properties": {
+        "rejected_profitable_solution": {
+          "default": false,
+          "type": "boolean"
+        },
+        "made_uncalculated_request": {
+          "default": false,
+          "type": "boolean"
+        },
+        "stated_desire_without_performance": {
+          "default": false,
+          "type": "boolean"
+        }
+      }
     },
     "branch_choice": {
       "default": null,

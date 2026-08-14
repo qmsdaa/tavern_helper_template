@@ -13,6 +13,12 @@ export const APPS: AppMeta[] = [
   { id: 'map', icon: 'fa-solid fa-map-location-dot', label: '地图', tint: 'linear-gradient(145deg, #b39ddb, #7e57c2)' },
   { id: 'cg', icon: 'fa-solid fa-images', label: 'CG', tint: 'linear-gradient(145deg, #f8bbd0, #ec5f92)' },
   { id: 'forum', icon: 'fa-solid fa-comments', label: '论坛', tint: 'linear-gradient(145deg, #ffab91, #f2704e)' },
+  { id: 'requests', icon: 'fa-solid fa-clipboard-list', label: '委托', tint: 'linear-gradient(145deg, #a5d6a7, #43a047)' },
+  { id: 'archive', icon: 'fa-solid fa-box-archive', label: '纪要', tint: 'linear-gradient(145deg, #80cbc4, #26a0b5)' },
+  { id: 'diary', icon: 'fa-solid fa-heart', label: '日记', tint: 'linear-gradient(145deg, #f8bbd0, #ec5f92)' },
+  { id: 'memo', icon: 'fa-solid fa-note-sticky', label: '备忘', tint: 'linear-gradient(145deg, #ffe082, #f0a53a)' },
+  { id: 'inventory', icon: 'fa-solid fa-bag-shopping', label: '物品', tint: 'linear-gradient(145deg, #d7ccc8, #8d6e63)' },
+  { id: 'profiles', icon: 'fa-solid fa-address-book', label: '档案', tint: 'linear-gradient(145deg, #9fa8da, #5c6bc0)' },
   { id: 'wallpaper', icon: 'fa-solid fa-photo-film', label: '壁纸', tint: 'linear-gradient(145deg, #f48fb1, #d81b60)' },
   { id: 'settings', icon: 'fa-solid fa-gear', label: '设置', tint: 'linear-gradient(145deg, #b0bec5, #78909c)' },
 ];

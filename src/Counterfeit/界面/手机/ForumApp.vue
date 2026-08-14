@@ -11,7 +11,12 @@
 
       <p v-if="!posts.length && !loadingBatch" class="empty">点“刷新论坛”生成当前日期的校园帖子</p>
 
-      <article v-for="post in posts" :key="post.id" class="post-card" :class="{ expanded: expanded.has(post.id) }">
+      <article
+        v-for="post in visiblePosts"
+        :key="post.id"
+        class="post-card"
+        :class="{ expanded: expanded.has(post.id), folded: post.folded }"
+      >
         <button class="post-head" @click="toggle(post.id)">
           <div class="post-tags">
             <span>{{ post.board }}</span>
@@ -42,6 +47,10 @@
         </div>
       </article>
 
+      <button v-if="visibleCount < posts.length" class="more-btn" @click="loadMore">
+        <i class="fa-solid fa-angle-down"></i> 加载更多旧帖（{{ posts.length - visibleCount }}）
+      </button>
+
       <p v-if="error" class="error-hint">{{ error }}</p>
     </div>
   </div>
@@ -58,6 +67,19 @@ const replyLoading = reactive<Record<string, boolean>>({});
 const expanded = reactive(new Set<string>());
 const error = ref('');
 const posts = computed(() => [...store.forumPosts].reverse());
+
+/** Bug6：分页渲染，避免长列表一次性渲染拖慢手机 UI */
+const PAGE_SIZE = 15;
+const visibleCount = ref(PAGE_SIZE);
+const visiblePosts = computed(() => posts.value.slice(0, visibleCount.value));
+
+function loadMore() {
+  visibleCount.value = Math.min(posts.value.length, visibleCount.value + PAGE_SIZE);
+}
+
+watch(posts, () => {
+  if (visibleCount.value < PAGE_SIZE) visibleCount.value = PAGE_SIZE;
+});
 
 function toggle(postId: string) {
   if (expanded.has(postId)) expanded.delete(postId);
@@ -160,6 +182,28 @@ async function generateReplies(postId: string) {
 
   &.expanded {
     border-left-color: var(--c-ios-blue);
+  }
+
+  &.folded {
+    opacity: 0.72;
+
+    .post-body {
+      color: var(--c-ios-gray);
+      font-size: 12px;
+    }
+  }
+}
+
+.more-btn {
+  align-self: center;
+  padding: 8px 22px;
+  border-radius: 999px;
+  background: rgba(10, 132, 255, 0.1);
+  color: var(--c-ios-blue);
+  font-size: 12px;
+
+  &:disabled {
+    opacity: 0.5;
   }
 }
 

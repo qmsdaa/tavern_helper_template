@@ -23,7 +23,7 @@
     <div class="difficulty-row">
       <span class="diff-title">恋爱难度</span>
       <button
-        v-for="d in DIFFICULTY_KEYS"
+        v-for="d in DIFFICULTY_LIST"
         :key="d"
         class="diff-tab"
         :class="{ active: store.difficulty === d }"
@@ -79,13 +79,12 @@
 </template>
 
 <script setup lang="ts">
-import { DIFFICULTY_COPY, MODE_COPY, POV_LIST, type DifficultyKey } from './copy';
+import { DIFFICULTY_COPY, DIFFICULTY_LIST, MODE_COPY, POV_LIST } from './copy';
 import { portraitUrl } from './data';
 import { useOpeningStore, type GameMode } from './store';
 
 const store = useOpeningStore();
 const GAME_MODES: GameMode[] = ['story', 'open'];
-const DIFFICULTY_KEYS: DifficultyKey[] = ['简单', '普通', '困难'];
 </script>
 
 <style lang="scss" scoped>
@@ -137,61 +136,6 @@ const DIFFICULTY_KEYS: DifficultyKey[] = ['简单', '普通', '困难'];
 
 .plugin-warning code {
   color: var(--c-primary-strong);
-}
-
-.difficulty-row {
-  width: 100%;
-  max-width: 480px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 20px;
-}
-
-.diff-title {
-  font-size: 13px;
-  color: var(--c-text-muted);
-  letter-spacing: 2px;
-  flex-shrink: 0;
-}
-
-.diff-tab {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 7px 6px 8px;
-  border-radius: 9px;
-  border: 1px solid var(--c-border);
-  background: var(--c-surface);
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-
-  &.active {
-    border-color: var(--c-primary);
-    box-shadow: 0 0 0 1px var(--c-primary);
-  }
-
-  &:hover {
-    border-color: var(--c-primary);
-  }
-}
-
-.diff-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--c-text);
-  letter-spacing: 1px;
-}
-
-.diff-desc {
-  font-size: 10px;
-  color: var(--c-text-muted);
-  line-height: 1.4;
-  text-align: center;
 }
 
 .gm-tab {
@@ -353,5 +297,58 @@ const DIFFICULTY_KEYS: DifficultyKey[] = ['简单', '普通', '困难'];
 .next-btn {
   padding: 12px 28px;
   font-size: 15px;
+}
+
+.difficulty-row {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.diff-title {
+  font-size: 13px;
+  color: var(--c-text-muted);
+  letter-spacing: 2px;
+  flex-shrink: 0;
+}
+
+.diff-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 6px 8px;
+  border-radius: 9px;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &.active {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 1px var(--c-primary);
+  }
+
+  &:hover {
+    border-color: var(--c-primary);
+  }
+}
+
+.diff-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text);
+  letter-spacing: 1px;
+}
+
+.diff-desc {
+  font-size: 10px;
+  color: var(--c-text-muted);
+  line-height: 1.4;
+  text-align: center;
 }
 </style>

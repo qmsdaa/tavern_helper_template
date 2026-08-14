@@ -192,21 +192,65 @@ function normalizeCharacter(canonicalName: string, value: unknown): CharacterSna
   };
 }
 
+/** 判定某变量表里是否真的含 MVU 状态（避免把只有 phone 容器的聊天变量误当快照） */
+function isMvuStatData(value: Record<string, any>): boolean {
+  return Boolean(
+    value &&
+      typeof value === 'object' &&
+      (value.mode !== undefined ||
+        value.current_pov !== undefined ||
+        value.world !== undefined ||
+        value.player !== undefined ||
+        value.characters !== undefined),
+  );
+}
+
+function extractStatData(raw: unknown): Record<string, any> {
+  if (!raw || typeof raw !== 'object') {
+    return {};
+  }
+  const record = raw as Record<string, any>;
+  // 楼层变量形如 {stat_data: {...}}；聊天基线可能是平铺或同样套在 stat_data 下
+  const wrapped = record.stat_data;
+  return wrapped && typeof wrapped === 'object' ? wrapped : record;
+}
+
+/**
+ * Bug2：MVU 变量抓取多级回退。
+ * 1) 最新消息楼层的 stat_data（MVU 更新块写入处；手机自身只写 chat 级 phone 容器）
+ * 2) 回退：从最新往旧遍历消息，找最近一个含完整 stat_data 的楼层（首轮/楼清空时 latest 为 null）
+ * 3) 聊天级基线（仍无效则返回空快照，界面显示占位）
+ */
 function readStatData(): Record<string, any> {
   try {
     if (typeof getVariables !== 'function') {
       return {};
     }
-    // 世界/玩家/角色状态属于 MVU 消息楼层；手机本体 phone 容器才属于聊天级变量。
-    // 楼层快照缺失（AI 首轮未输出变量更新块）时回退读取聊天级基线，保证开局状态可见。
-    const v = getVariables({ type: 'message', message_id: 'latest' }) ?? {};
-    const sd = (v as Record<string, any>).stat_data ?? v;
-    if (sd && Object.keys(sd).length) {
-      return sd;
+    const latest = getVariables({ type: 'message', message_id: 'latest' } as any) ?? {};
+    const latestSd = extractStatData(latest);
+    if (isMvuStatData(latestSd)) {
+      return latestSd;
     }
-    const c = getVariables({ type: 'chat' }) ?? {};
-    return (c as Record<string, any>).stat_data ?? c;
-  } catch {
+    // 楼层回退：遍历消息 data.stat_data（含部分更新块的楼层也要跳过，直到找到完整快照）
+    if (typeof getChatMessages === 'function') {
+      const messages = getChatMessages() as unknown[];
+      for (let i = messages.length - 1; i >= 0; i--) {
+        const stat = (messages[i] as { data?: { stat_data?: unknown } } | null)?.data?.stat_data;
+        const sd = extractStatData(stat);
+        if (isMvuStatData(sd)) {
+          return sd;
+        }
+      }
+    }
+    const chat = getVariables({ type: 'chat' } as any) ?? {};
+    const chatSd = extractStatData(chat);
+    if (isMvuStatData(chatSd)) {
+      return chatSd;
+    }
+    console.warn('[手机·变量] 未找到完整 MVU 快照（楼层与聊天变量均无有效 stat_data）');
+    return {};
+  } catch (error) {
+    console.warn('[手机·变量] readStatData 失败', error);
     return {};
   }
 }

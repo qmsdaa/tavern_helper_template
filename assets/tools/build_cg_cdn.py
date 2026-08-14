@@ -4,7 +4,8 @@
 功能：
   1. 扫描 图片素材/CG/ 终稿（场景N.png 或「CG NN · 场景N.png」「场景N · 标题.png」等命名），
      压缩为 webp（限宽1600·q80）到 assets/Counterfeit/CG/
-  2. 从 剧本日历.yaml 抓场景日期（支持幕块年份）、从场景yaml抓场景功能首条作标题
+  2. 从各场景 YAML 的「时间」字段抓场景日期（2026-08-09 起：剧本日历条目已删除，
+     日期事实源 = 世界书/事件/场景*.yaml 的 时间 字段）、从场景yaml抓场景功能首条作标题
   3. 生成 cg-map.json（--base 指定 jsdelivr 固定提交基址；缺省保留旧 base）
 
 用法：
@@ -22,7 +23,6 @@ from PIL import Image
 ROOT = r"D:/由我们所书/我的青春恋爱物语果然有问题 Counterfeit"
 SRC = os.path.join(ROOT, "图片素材", "CG")
 CARD = os.path.join(ROOT, "cards", "Counterfeit")
-CALENDAR = os.path.join(CARD, "世界书", "时间线", "剧本日历.yaml")
 SCENE_DIR = os.path.join(CARD, "世界书", "事件")
 OUT = os.path.join(ROOT, "tavern_helper_template", "assets", "Counterfeit", "CG")
 MAP_PATH = os.path.join(OUT, "cg-map.json")
@@ -71,31 +71,37 @@ def _cn(n):
 def scene_file(n):
     return os.path.join(SCENE_DIR, f"场景{_cn(n)}.yaml")
 
-def parse_dates():
-    """解析剧本日历：按幕块年份匹配「场景(区间):月/日」，产出 场景号 → YYYY-M-D。
-    日历为 EJS 模板（<%- 行需跳过），年份挂在幕块标题「第X幕（YYYY）」上。"""
-    dates = {}
-    text = open(CALENDAR, encoding="utf-8").read()
-    current_year = None
-    for raw in text.splitlines():
-        line = raw.strip()
-        if not line or line.startswith("<%") or ":" not in line:
-            if "（" in line and "）" in line:
-                ym = re.search(r"（(\d{4})）", line)
-                if ym and "幕" in line:
-                    current_year = int(ym.group(1))
-            continue
-        if re.search(r"（(\d{4})）", line) and "幕" in line:
-            ym = re.search(r"（(\d{4})）", line)
-            current_year = int(ym.group(1))
-        for m in re.finditer(r"(\d{1,3})(?:-(\d{1,3}))?:(\d{1,2})/(\d{1,2})", line):
-            start, end, month, day = int(m.group(1)), m.group(2), int(m.group(3)), int(m.group(4))
-            end = int(end) if end else start
-            year = current_year or datetime.now().year
-            iso = f"{year}-{month:02d}-{day:02d}"
-            for n in range(start, end + 1):
-                dates[n] = iso
-    return dates
+# 场景 YAML「时间」字段仅精确到旬的手工锚点（与旧剧本日历日期一致，避免 CG 日期漂移）
+DATE_OVERRIDE = {
+    9: "2013-07-03",
+    10: "2013-07-05",
+    11: "2013-07-05",
+    21: "2013-07-26",
+    24: "2013-08-13",
+    25: "2013-08-21",
+}
+
+def parse_date(n):
+    """从场景 YAML 的「时间」字段解析日期：优先 年月日 精确日期；
+    仅「X旬」精度时回落 DATE_OVERRIDE 手工锚点，再无则按旬取代表日。"""
+    if n in DATE_OVERRIDE:
+        return DATE_OVERRIDE[n]
+    p = scene_file(n)
+    if not os.path.isfile(p):
+        return ""
+    text = open(p, encoding="utf-8").read()
+    m = re.search(r'^时间:\s*"?([^"\n]+)"?', text, re.M)
+    if not m:
+        return ""
+    field = m.group(1)
+    ym = re.search(r"(\d{4})年(\d{1,2})月(\d{1,2})日", field)
+    if ym:
+        return f"{int(ym.group(1))}-{int(ym.group(2)):02d}-{int(ym.group(3)):02d}"
+    ym2 = re.search(r"(\d{4})年(\d{1,2})月(上旬|中旬|下旬|末)", field)
+    if ym2:
+        day = {"上旬": 5, "中旬": 15, "下旬": 25, "末": 28}[ym2.group(3)]
+        return f"{int(ym2.group(1))}-{int(ym2.group(2)):02d}-{day:02d}"
+    return ""
 
 def parse_title(n):
     p = scene_file(n)
@@ -145,7 +151,7 @@ def main():
         old_map = json.load(open(MAP_PATH, encoding="utf-8"))
     base = args.base or old_map.get("images_base") or "__IMAGES_BASE__"
 
-    dates = parse_dates()
+    dates = {}
     scenes = {}
     done = pending = 0
     for n in ALL_SCENES:
@@ -161,7 +167,7 @@ def main():
         scenes[str(n)] = {
             "file": file_name,
             "cond": COND.get(n),
-            "date": dates.get(n, ""),
+            "date": parse_date(n),
             "title": TITLE_OVERRIDE.get(n, parse_title(n)),
         }
         if not file_name:

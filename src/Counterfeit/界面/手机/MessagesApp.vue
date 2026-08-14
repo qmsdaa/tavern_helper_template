@@ -36,6 +36,9 @@
           <h2 class="app-title">{{ activeThread.title }}</h2>
           <span>{{ activeThread.type === 'group' ? activeThread.participants.join('、') : '私聊' }}</span>
         </div>
+        <button class="clear-btn" title="导出本会话为 Markdown" @click="exportActiveThread">
+          <i class="fa-solid fa-file-export"></i>
+        </button>
         <button class="clear-btn" title="清空聊天" @click="clearActiveThread">
           <i class="fa-solid fa-trash-can"></i>
         </button>
@@ -94,6 +97,30 @@
         </div>
       </div>
     </Transition>
+
+    <!-- 清空会话确认（带备份入口与边界说明） -->
+    <Transition name="sheet">
+      <div v-if="showClearConfirm" class="creator-mask" @click="showClearConfirm = false">
+        <div class="creator-sheet" @click.stop>
+          <h3>清空「{{ activeThread?.title }}」</h3>
+          <p class="clear-warn">
+            只删除本会话的聊天记录。以下内容<b>不会</b>被清空：
+            <br />· 联系人与会话壳（群聊成员、好友关系）保留
+            <br />· 已经发生的主线剧情不会回滚
+            <br />· 已写入数据库的纪要 / 日记 / 备忘不会删除
+          </p>
+          <div class="clear-actions">
+            <button class="clear-cancel" @click="showClearConfirm = false">取消</button>
+            <button class="clear-export" @click="exportAndClear">
+              <i class="fa-solid fa-file-export"></i> 导出备份并清空
+            </button>
+            <button class="clear-danger" @click="clearOnly">
+              <i class="fa-solid fa-trash-can"></i> 直接清空
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -108,6 +135,7 @@ const draft = ref('');
 const typing = ref(false);
 const scrollEl = ref<HTMLElement | null>(null);
 const showGroupCreator = ref(false);
+const showClearConfirm = ref(false);
 const groupTitle = ref('');
 const groupMembers = ref<string[]>([]);
 
@@ -167,8 +195,25 @@ async function send() {
 
 function clearActiveThread() {
   if (!activeThread.value) return;
-  if (!window.confirm(`只清空“${activeThread.value.title}”的聊天记录？联系人和群聊本身会保留。`)) return;
-  store.clearThread(activeThread.value.id);
+  showClearConfirm.value = true;
+}
+
+function exportActiveThread() {
+  if (!activeThread.value) return;
+  store.exportThreadMarkdown(activeThread.value.id);
+}
+
+async function exportAndClear() {
+  if (!activeThread.value) return;
+  store.exportThreadMarkdown(activeThread.value.id);
+  await clearOnly();
+}
+
+async function clearOnly() {
+  if (!activeThread.value) return;
+  const threadId = activeThread.value.id;
+  showClearConfirm.value = false;
+  await store.clearThread(threadId);
 }
 
 function createGroup() {
@@ -520,6 +565,54 @@ function createGroup() {
 
   &:disabled {
     opacity: 0.4;
+  }
+}
+
+/* —— 清空会话确认 —— */
+
+.clear-warn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 149, 0, 0.08);
+  color: #8a6d1a;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.clear-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+
+  button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+}
+
+.clear-cancel {
+  background: #fff;
+  color: var(--c-ios-gray);
+}
+
+.clear-export {
+  background: rgba(10, 132, 255, 0.1);
+  color: var(--c-ios-blue);
+
+  i {
+    margin-right: 5px;
+  }
+}
+
+.clear-danger {
+  background: rgba(255, 59, 48, 0.1);
+  color: var(--c-danger);
+
+  i {
+    margin-right: 5px;
   }
 }
 </style>

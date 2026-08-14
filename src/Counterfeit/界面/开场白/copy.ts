@@ -37,7 +37,7 @@ export interface GameModeCopy {
   desc: string;
 }
 
-/** 恋爱难度（简单 / 普通 / 困难）文案 */
+/** 恋爱难度（全模式可选·仅开局定档） */
 export interface DifficultyCopy {
   label: string;
   desc: string;
@@ -46,7 +46,7 @@ export interface DifficultyCopy {
 interface CopyFile {
   title: TitleCopy;
   modes: { story: GameModeCopy; open: GameModeCopy };
-  difficulty: { 简单: DifficultyCopy; 普通: DifficultyCopy; 困难: DifficultyCopy };
+  difficulty: Record<string, DifficultyCopy>;
   povs: PovCopy[];
   openings: Record<PovCopy['key'], string> & { custom: string };
   gallery: { title: string; hint: string; items: GalleryCopyItem[] };
@@ -56,7 +56,10 @@ const COPY = copy as CopyFile;
 
 export const TITLE_COPY = COPY.title;
 export const MODE_COPY = COPY.modes;
-export const DIFFICULTY_COPY = COPY.difficulty;
+
+export type DifficultyKey = '简单' | '普通' | '困难';
+export const DIFFICULTY_LIST: DifficultyKey[] = ['简单', '普通', '困难'];
+export const DIFFICULTY_COPY = COPY.difficulty as Record<DifficultyKey, DifficultyCopy>;
 export const POV_LIST = COPY.povs;
 export const OPENING_TEXTS = COPY.openings;
 /** 画廊条目：优先用脚本生成的真实图片清单（assets/tools/build_gallery.py），空则回退 copy.yaml 占位项 */
@@ -66,9 +69,6 @@ export const GALLERY_COPY = {
 };
 
 export type PovKey = PovCopy['key'];
-
-/** 恋爱难度键：与 schema.ts 的 stat_data.difficulty 枚举一一对应 */
-export type DifficultyKey = keyof CopyFile['difficulty'];
 
 export function povByKey(key: PovKey): PovCopy {
   return POV_LIST.find(p => p.key === key) ?? POV_LIST[0];
