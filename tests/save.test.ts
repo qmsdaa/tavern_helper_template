@@ -154,7 +154,7 @@ test('parser rejects oversized files before reading and rejects oversized embedd
 
 function commitFixture(): MigrationResult {
   const stat = Schema.parse({ mode: 'pov', current_pov: 'hachiman', mainline_completed: false, campaign_completed: false });
-  return { report: { status: 'exact', sourceVersion: '0.6.0', schemaVersion: 1, campaignId: 'main', campaignRevision: 1, playerViewpoint: 'hachiman', scene: 1, date: stat.world.current_date, location: stat.world.current_location, recoveredFloor: 1, messageCount: 2, migrationSteps: [], addedFields: [], discardedFields: [], conflicts: [], warnings: [] }, statData: stat, resumeTail: [{ role: 'assistant', text: '最后可见时刻' }], legacyEstablishedFacts: [], provenance: parsedSource(stat) };
+  return { report: { status: 'exact', sourceVersion: '0.6.0', schemaVersion: 1, campaignId: 'main', campaignRevision: 1, playerViewpoint: 'hachiman', scene: 1, date: stat.world.current_date, location: stat.world.current_location, recoveredFloor: 1, messageCount: 2, tableSheetCount: 0, migrationSteps: [], addedFields: [], discardedFields: [], conflicts: [], warnings: [] }, statData: stat, resumeTail: [{ role: 'assistant', text: '最后可见时刻' }], legacyEstablishedFacts: [], tableSheets: null, provenance: parsedSource(stat) };
 }
 
 test('successful resume writes equal snapshots and one sanitized capsule without replaying the transcript', async () => {
@@ -192,4 +192,115 @@ test('incompatible result performs zero mutator calls', async () => {
     async setMessage0() { calls++; }, async setFloor0Variables() { calls++; }, async setChatVariables() { calls++; },
   }), /不能提交/);
   assert.equal(calls, 0);
+});
+
+/* ── shujuku(ACU) 数据库表格迁移 ── */
+
+const acuMetaFixture = () => ({
+  TavernDB_ACU_InternalSheetGuide: { version: 3, tags: { '': { data: {
+    sheet_memo: { uid: 'u1', name: '备忘', content: [['row_id', '备忘标题'], ['1', '旧档记忆']] },
+    sheet_summary: { uid: 'u2', name: '纪要', content: [['row_id', '纪要'], ['1', '某次委托']] },
+  } } } },
+  TavernDB_ACU_InternalSheetGuide__chatId: 'old-chat-id',
+  TavernDB_ACU_ScopedConfig: { version: 1, template: { name: 'Counterfeit适配表格' }, templateArchives: [] },
+  TavernDB_ACU_ScopedConfig__chatId: 'old-chat-id',
+  unrelated_key: { untouched: true },
+});
+
+test('jsonl header ACU metadata is extracted without chatId bindings', async () => {
+  const stat = Schema.parse({ mode: 'pov', current_pov: 'hachiman', mainline_completed: false, campaign_completed: false });
+  const raw = `${JSON.stringify({ user_name: 'u', chat_metadata: acuMetaFixture() })}\n${JSON.stringify({ is_user: false, mes: '楼层', variables: { stat_data: stat } })}`;
+  const parsed = await parseChatExport(new File([raw], 'legacy.jsonl'));
+  assert.equal(parsed.tableSheets?.TavernDB_ACU_InternalSheetGuide != null, true);
+  assert.equal(parsed.tableSheets?.TavernDB_ACU_ScopedConfig != null, true);
+  assert.equal('TavernDB_ACU_InternalSheetGuide__chatId' in (parsed.tableSheets ?? {}), false);
+  assert.equal('unrelated_key' in (parsed.tableSheets ?? {}), false);
+  const result = migrateParsedSave(parsed);
+  assert.equal(result.report.tableSheetCount, 2);
+  assert.ok(result.report.migrationSteps.some(step => step.includes('数据库表格 2 张')));
+  assert.equal(result.tableSheets != null, true);
+});
+
+test('resume commit migrates ACU tables with new chatId binding, and rolls metadata back on failure', async () => {
+  const fixture = commitFixture();
+  fixture.tableSheets = { TavernDB_ACU_InternalSheetGuide: acuMetaFixture().TavernDB_ACU_InternalSheetGuide, TavernDB_ACU_ScopedConfig: acuMetaFixture().TavernDB_ACU_ScopedConfig };
+  const metadata: any = { TavernDB_ACU_InternalSheetGuide: { version: 0, tags: { '': { data: {} } } }, keep_me: 1 };
+  const metadataBefore = clone(metadata);
+  let saves = 0;
+  const state: any = { message0: [{ message_id: 0, message: '<OpeningUI/>' }], floor0: {}, chat: {} };
+  const deps = {
+    getMessage0: () => clone(state.message0), getFloor0Variables: () => clone(state.floor0), getChatVariables: () => clone(state.chat),
+    async setMessage0(value: any) { state.message0 = clone(value); },
+    async setFloor0Variables(updater: any) { state.floor0 = clone(updater(clone(state.floor0))); },
+    async setChatVariables(updater: any) { state.chat = clone(updater(clone(state.chat))); },
+    getChatMetadata: () => metadata, saveMetadata: async () => { saves++; }, getCurrentChatId: () => 'new-chat-id',
+  };
+  await commitPortableResume(fixture, deps);
+  assert.equal(metadata.TavernDB_ACU_InternalSheetGuide.tags[''].data.sheet_memo.uid, 'u1');
+  assert.equal(metadata.TavernDB_ACU_InternalSheetGuide__chatId, 'new-chat-id');
+  assert.equal(metadata.TavernDB_ACU_ScopedConfig__chatId, 'new-chat-id');
+  assert.equal(metadata.keep_me, 1);
+  assert.equal(saves, 1);
+
+  // 失败路径：saveMetadata 抛错 → metadata 恢复原样（含旧值恢复与新增键删除）
+  const metadata2: any = { TavernDB_ACU_InternalSheetGuide: { version: 0, tags: {} }, keep_me: 2 };
+  const before2 = clone(metadata2);
+  await assert.rejects(() => commitPortableResume(fixture, {
+    ...deps,
+    getMessage0: () => clone(state.message0), getFloor0Variables: () => clone(state.floor0), getChatVariables: () => clone(state.chat),
+    getChatMetadata: () => metadata2, saveMetadata: async () => { throw new Error('disk full'); },
+  }), /已回滚/);
+  assert.deepEqual(metadata2, before2);
+});
+
+test('resume commit without metadata deps skips table migration but still writes stat_data', async () => {
+  const fixture = commitFixture();
+  fixture.tableSheets = { TavernDB_ACU_InternalSheetGuide: acuMetaFixture().TavernDB_ACU_InternalSheetGuide };
+  const state: any = { message0: [], floor0: {}, chat: {} };
+  await commitPortableResume(fixture, {
+    getMessage0: () => clone(state.message0), getFloor0Variables: () => clone(state.floor0), getChatVariables: () => clone(state.chat),
+    async setMessage0(value: any) { state.message0 = clone(value); },
+    async setFloor0Variables(updater: any) { state.floor0 = clone(updater(clone(state.floor0))); },
+    async setChatVariables(updater: any) { state.chat = clone(updater(clone(state.chat))); },
+  });
+  assert.deepEqual(state.chat.stat_data, fixture.statData);
+});
+
+test('resume commit tolerates getChatMetadata returning undefined (no TypeError, tables skipped, stat_data still written)', async () => {
+  const fixture = commitFixture();
+  fixture.tableSheets = { TavernDB_ACU_InternalSheetGuide: acuMetaFixture().TavernDB_ACU_InternalSheetGuide };
+  const state: any = { message0: [{ message_id: 0, message: '<OpeningUI/>' }], floor0: {}, chat: {} };
+  let saves = 0;
+  await commitPortableResume(fixture, {
+    getMessage0: () => clone(state.message0), getFloor0Variables: () => clone(state.floor0), getChatVariables: () => clone(state.chat),
+    async setMessage0(value: any) { state.message0 = clone(value); },
+    async setFloor0Variables(updater: any) { state.floor0 = clone(updater(clone(state.floor0))); },
+    async setChatVariables(updater: any) { state.chat = clone(updater(clone(state.chat))); },
+    getChatMetadata: () => undefined, saveMetadata: async () => { saves++; },
+  });
+  assert.equal(saves, 0);
+  assert.deepEqual(state.floor0.stat_data, fixture.statData);
+  assert.deepEqual(state.chat.stat_data, fixture.statData);
+  assert.equal((state.message0[0].message.match(/<counterfeit_resume_capsule/g) ?? []).length, 1);
+});
+
+test('resume commit fails cleanly and rolls back when metadata disappears between snapshot and write', async () => {
+  const fixture = commitFixture();
+  fixture.tableSheets = { TavernDB_ACU_InternalSheetGuide: acuMetaFixture().TavernDB_ACU_InternalSheetGuide };
+  const metadata: any = { keep_me: 1 };
+  const state: any = { message0: [{ message_id: 0, message: 'old' }], floor0: { stat_data: { old: 1 } }, chat: { stat_data: { old: 2 } } };
+  const before = clone(state);
+  let readCount = 0;
+  await assert.rejects(() => commitPortableResume(fixture, {
+    getMessage0: () => clone(state.message0), getFloor0Variables: () => clone(state.floor0), getChatVariables: () => clone(state.chat),
+    async setMessage0(value: any) { state.message0 = clone(value); },
+    async setFloor0Variables(updater: any) { state.floor0 = clone(updater(clone(state.floor0))); },
+    async setChatVariables(updater: any) { state.chat = clone(updater(clone(state.chat))); },
+    // 快照阶段元数据可用，stat 写入完成后（第 2 次读取起）消失 → 表格写入前应明确失败并整体回滚
+    getChatMetadata: () => (++readCount === 1 ? metadata : null),
+    saveMetadata: async () => { throw new Error('should not be called'); },
+    getCurrentChatId: () => 'new-chat-id',
+  }), /聊天元数据不可用/);
+  assert.equal(readCount >= 2, true);
+  assert.deepEqual(state, before);
 });
