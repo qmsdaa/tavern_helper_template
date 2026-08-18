@@ -665,9 +665,6 @@ function applyInjection() {
 // █  Part 7: 设置与头像自定义面板                             █
 // ████████████████████████████████████████████████████████████
 
-// 当前面板 iframe 引用，用于 data URL 场景的 source 校验
-let currentPanelIframe = null;
-
 function openPanel(doc) {
   if (doc.getElementById('cf-bubble-panel-mask')) return;
 
@@ -680,13 +677,8 @@ function openPanel(doc) {
   iframe.className = 'cf-panel-iframe';
   iframe.src = `${PANEL_URL}?v=${Date.now()}`;
   iframe.setAttribute('allow', 'clipboard-read; clipboard-write');
-  currentPanelIframe = iframe;
 
-  const close = () => {
-    mask.remove();
-    iframe.remove();
-    currentPanelIframe = null;
-  };
+  const close = () => { mask.remove(); iframe.remove(); };
   mask.addEventListener('click', close);
 
   doc.body.appendChild(mask);
@@ -696,7 +688,6 @@ function openPanel(doc) {
 function closePanel(doc) {
   doc.getElementById('cf-bubble-panel-mask')?.remove();
   doc.getElementById('cf-bubble-panel-iframe')?.remove();
-  currentPanelIframe = null;
 }
 
 function onPanelMessage(event) {
