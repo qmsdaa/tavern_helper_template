@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { klona } from 'klona';
 
 const LS_CONFIG_KEY = 'cf_bubble_config_v1';
