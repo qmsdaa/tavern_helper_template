@@ -702,7 +702,7 @@ function registerBubbleButton() {
     const on = typeof eventOn === 'function' ? eventOn : (typeof window !== 'undefined' && typeof window.eventOn === 'function' ? window.eventOn : null);
     const getBtn = typeof getButtonEvent === 'function' ? getButtonEvent : (typeof window !== 'undefined' && typeof window.getButtonEvent === 'function' ? window.getButtonEvent : null);
     if (typeof on !== 'function' || typeof getBtn !== 'function') return false;
-    on(getBtn('对话气泡'), () => {
+    on(getBtn('Dialogue Bubble'), () => {
       const doc = findHostDocument();
       if (!doc) {
         console.warn('[CF-Bubble] 找不到宿主文档，无法打开面板');
@@ -714,9 +714,9 @@ function registerBubbleButton() {
     // 动态确保按钮在脚本列表中可见（兼容某些只读运行时按钮配置）
     try {
       if (typeof appendInexistentScriptButtons === 'function') {
-        appendInexistentScriptButtons([{ name: '对话气泡', visible: true }]);
+        appendInexistentScriptButtons([{ name: 'Dialogue Bubble', visible: true }]);
       } else if (typeof replaceScriptButtons === 'function') {
-        replaceScriptButtons([{ name: '对话气泡', visible: true }]);
+        replaceScriptButtons([{ name: 'Dialogue Bubble', visible: true }]);
       }
     } catch (e) {
       console.warn('[CF-Bubble] 动态同步按钮失败:', e);

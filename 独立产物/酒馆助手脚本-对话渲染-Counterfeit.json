@@ -9,7 +9,7 @@
     "enabled": true,
     "buttons": [
       {
-        "name": "对话气泡",
+        "name": "Dialogue Bubble",
         "visible": true
       }
     ]
