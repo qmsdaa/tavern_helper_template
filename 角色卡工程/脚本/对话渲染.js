@@ -261,6 +261,7 @@ if (typeof module !== 'undefined' && module.exports) {
 // ████████████████████████████████████████████████████████████
 
 const PROMPT_INJECTION_ID = 'counterfeit-bubble-format';
+const PANEL_URL = 'http://localhost:6621/dist/Counterfeit/界面/对话渲染/index.html';
 
 function buildMoodPoolText() {
   return MOOD_GROUPS.map(group => `【${group.label}】${group.words.join('、')}`).join('\n');
@@ -353,6 +354,7 @@ const STYLE_TEXT = `
 .cf-panel .cf-theme-active{background:#e87a90 !important;color:#fff !important}
 .cf-panel .cf-close{position:absolute;top:10px;right:12px;border:none;background:none;font-size:18px;color:#a5737f;cursor:pointer}
 .cf-panel-note{font-size:12px;color:#a08a90;margin-top:10px}
+.cf-panel-iframe{position:fixed;top:8vh;left:50%;transform:translateX(-50%);width:min(520px,92vw);height:min(680px,84vh);border:none;border-radius:14px;z-index:99991;box-shadow:0 8px 40px rgba(90,60,70,.25);background:#fdfaf4}
 `;
 
 // ████████████████████████████████████████████████████████████
@@ -664,127 +666,45 @@ function applyInjection() {
 // ████████████████████████████████████████████████████████████
 
 function openPanel(doc) {
-  doc.getElementById('cf-bubble-panel-mask')?.remove();
-  doc.getElementById('cf-bubble-panel')?.remove();
-
-  const config = loadConfig();
-  const customUrls = loadCustomUrls();
-  const { seen } = renderAllMessagesSilent(doc);
-  const names = [...new Set([...Object.keys(AVATAR_TABLE), ...KNOWN_NO_AVATAR, ...seen])];
+  if (doc.getElementById('cf-bubble-panel-mask')) return;
 
   const mask = doc.createElement('div');
-  mask.className = 'cf-panel-mask';
   mask.id = 'cf-bubble-panel-mask';
-  const panel = doc.createElement('div');
-  panel.className = 'cf-panel';
-  panel.id = 'cf-bubble-panel';
+  mask.className = 'cf-panel-mask';
 
-  const rows = names.map(name => {
-    const preset = AVATAR_TABLE[name] || '';
-    const custom = customUrls[name] || '';
-    const initial = preset || custom || '';
-    const uploadMark = uploadUrlCache.has(name) ? '（已上传本地图）' : '';
-    return `<div class="cf-panel-row" data-name="${escapeHtml(name)}">
-      <img src="${escapeHtml(initial || 'data:image/gif;base64,R0lGODlhAQABAAAAACw=')}" alt="" />
-      <span class="cf-name">${escapeHtml(name)}</span>
-      <input type="text" placeholder="${preset ? '预置头像（粘贴 URL 可覆盖）' : '粘贴图片 URL 或点上传'}" value="${escapeHtml(custom)}" />
-      <button data-act="upload">上传</button>${uploadMark}
-      <button data-act="reset">重置</button>
-    </div>`;
-  }).join('');
+  const iframe = doc.createElement('iframe');
+  iframe.id = 'cf-bubble-panel-iframe';
+  iframe.className = 'cf-panel-iframe';
+  iframe.src = `${PANEL_URL}?v=${Date.now()}`;
+  iframe.setAttribute('allow', 'clipboard-read; clipboard-write');
 
-  panel.innerHTML = `
-    <button class="cf-close" title="关闭">×</button>
-    <h2>🌸 对话气泡 · Counterfeit</h2>
-    <label><input type="checkbox" id="cf-enabled" ${config.enabled ? 'checked' : ''} /> 启用对话气泡（关闭后不再注入格式规则，也不渲染）</label>
-    <h3>主题（正文羊皮纸卡片 + 气泡同套配色）</h3>
-    <div class="cf-theme-row">
-      <button data-theme="parchment" class="${config.theme === 'dark' || config.theme === 'green' ? '' : 'cf-theme-active'}">羊皮纸</button>
-      <button data-theme="dark" class="${config.theme === 'dark' ? 'cf-theme-active' : ''}">暗夜</button>
-      <button data-theme="green" class="${config.theme === 'green' ? 'cf-theme-active' : ''}">豆沙绿</button>
-    </div>
-    <h3>头像自定义</h3>
-    <div>${rows}</div>
-    <div class="cf-panel-note">
-      粘贴 URL 立即覆盖预置头像；「上传」把图片存进浏览器 IndexedDB（不上传服务器）；「重置」清除该角色的自定义 URL 与上传图。<br>
-      情绪字段决定头像描边与徽记颜色（喜悦金／愤怒红／悲伤蓝／紧张赭／平和绿／害羞青／嫌弃紫／爱恋粉）。
-    </div>`;
-
-  const close = () => { mask.remove(); panel.remove(); };
+  const close = () => { mask.remove(); iframe.remove(); };
   mask.addEventListener('click', close);
-  panel.querySelector('.cf-close').addEventListener('click', close);
-
-  panel.querySelector('#cf-enabled').addEventListener('change', ev => {
-    const next = { ...loadConfig(), enabled: ev.target.checked };
-    saveConfig(next);
-    applyInjection();
-    if (next.enabled) scheduleRender(doc);
-  });
-
-  panel.querySelectorAll('.cf-theme-row [data-theme]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      saveConfig({ ...loadConfig(), theme: btn.dataset.theme });
-      panel.querySelectorAll('.cf-theme-row [data-theme]').forEach(b => b.classList.toggle('cf-theme-active', b === btn));
-      applyTheme(doc);
-    });
-  });
-
-  panel.querySelectorAll('.cf-panel-row').forEach(row => {
-    const name = row.dataset.name;
-    const input = row.querySelector('input[type=text]');
-    input.addEventListener('change', () => {
-      const urls = loadCustomUrls();
-      const value = input.value.trim();
-      if (value) urls[name] = value; else delete urls[name];
-      saveCustomUrls(urls);
-      if (value) row.querySelector('img').src = value;
-      scheduleRender(doc);
-    });
-    row.querySelector('[data-act=upload]').addEventListener('click', () => {
-      const picker = doc.createElement('input');
-      picker.type = 'file';
-      picker.accept = 'image/*';
-      picker.onchange = async () => {
-        const file = picker.files && picker.files[0];
-        if (!file) return;
-        try {
-          await idbPut(name, file);
-          if (uploadUrlCache.has(name)) URL.revokeObjectURL(uploadUrlCache.get(name));
-          uploadUrlCache.set(name, URL.createObjectURL(file));
-          row.querySelector('img').src = uploadUrlCache.get(name);
-          scheduleRender(doc);
-        } catch (err) {
-          console.warn('[CF-Bubble] 上传保存失败:', err);
-        }
-      };
-      picker.click();
-    });
-    row.querySelector('[data-act=reset]').addEventListener('click', async () => {
-      const urls = loadCustomUrls();
-      delete urls[name];
-      saveCustomUrls(urls);
-      try { await idbDelete(name); } catch (_) {}
-      if (uploadUrlCache.has(name)) { URL.revokeObjectURL(uploadUrlCache.get(name)); uploadUrlCache.delete(name); }
-      input.value = '';
-      row.querySelector('img').src = AVATAR_TABLE[name] || 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
-      scheduleRender(doc);
-    });
-  });
 
   doc.body.appendChild(mask);
-  doc.body.appendChild(panel);
+  doc.body.appendChild(iframe);
 }
 
-// 只收集名字不重渲染（面板用）
-function renderAllMessagesSilent(doc) {
-  const seen = new Set();
-  for (const mesText of doc.querySelectorAll('#chat .mes_text, #chat .mes-text')) {
-    const original = originalHtmlCache.get(mesText) || mesText.innerHTML || '';
-    for (const match of original.matchAll(/@bubble[:：]([^|｜<\n]+)[|｜]/g)) {
-      seen.add(match[1].trim());
-    }
+function closePanel(doc) {
+  doc.getElementById('cf-bubble-panel-mask')?.remove();
+  doc.getElementById('cf-bubble-panel-iframe')?.remove();
+}
+
+function onPanelMessage(event) {
+  const data = event.data;
+  if (!data || data.source !== 'cf-bubble-panel') return;
+  const doc = findHostDocument();
+  if (!doc) return;
+  if (data.type === 'config-update') {
+    saveConfig({ ...loadConfig(), ...data.config });
+    applyTheme(doc);
+    applyConfig(doc);
+    if (loadConfig().enabled) renderAllMessages(doc, true);
+  } else if (data.type === 'close-panel') {
+    closePanel(doc);
+  } else if (data.type === 'request-config') {
+    event.source.postMessage({ source: 'cf-bubble-script', type: 'init-config', config: loadConfig() }, '*');
   }
-  return { seen };
 }
 
 // ████████████████████████████████████████████████████████████
@@ -801,6 +721,7 @@ function boot() {
   applyInjection();
   if (loadConfig().enabled) scheduleRender(doc);
   startObserver(doc);
+  doc.defaultView.addEventListener('message', onPanelMessage);
 
   // 酒馆助手按钮
   try {
