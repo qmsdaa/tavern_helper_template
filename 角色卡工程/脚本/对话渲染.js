@@ -261,7 +261,22 @@ if (typeof module !== 'undefined' && module.exports) {
 // ████████████████████████████████████████████████████████████
 
 const PROMPT_INJECTION_ID = 'counterfeit-bubble-format';
-const PANEL_URL = 'http://localhost:6621/dist/Counterfeit/界面/对话渲染/index.html';
+
+/**
+ * 设置面板 URL。
+ * 发布到社区前，请把 DEFAULT_PANEL_URL 替换为你上传的 CDN 地址。
+ * 本地开发时可在浏览器控制台执行：
+ *   localStorage.setItem('cf_bubble_panel_url', 'http://localhost:6621/dist/Counterfeit/界面/对话渲染/index.html')
+ * 然后刷新页面即可覆盖。
+ */
+const DEFAULT_PANEL_URL = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@latest/dist/Counterfeit/界面/对话渲染/index.html';
+const PANEL_URL = (() => {
+  try {
+    return localStorage.getItem('cf_bubble_panel_url') || DEFAULT_PANEL_URL;
+  } catch (_) {
+    return DEFAULT_PANEL_URL;
+  }
+})();
 const PANEL_ORIGIN = new URL(PANEL_URL).origin;
 
 function buildMoodPoolText() {
@@ -300,10 +315,10 @@ const STYLE_TEXT = `
 /* 统一字体栈：优先现代系统字体，保持中文清晰可读 */
 .cf-bub-host,.cf-bub{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif}
 .cf-bub{display:flex;gap:12px;margin:14px 4px;align-items:flex-start;font-size:var(--cf-bubble-fs,15px);line-height:var(--cf-line-height,1.7)}
-.cf-bub-avatar{flex:0 0 auto;width:46px;height:46px;border-radius:50%;padding:2px;background:var(--cf-avatar-bg,#fdfaf4);
+.cf-bub-avatar{flex:0 0 auto;width:36px;height:52px;border-radius:8px;padding:2px;background:var(--cf-avatar-bg,#fdfaf4);
   box-shadow:0 0 0 2px var(--cf-ring,#b8a6ab),0 2px 8px rgba(120,90,100,.12);overflow:hidden;
   display:flex;align-items:center;justify-content:center}
-.cf-bub-avatar-img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.cf-bub-avatar-img{width:100%;height:100%;object-fit:cover;border-radius:6px;display:block}
 .cf-bub-avatar-fallback{font-size:18px;color:var(--cf-accent-soft,#a5737f);font-weight:600;user-select:none}
 .cf-bub-main{flex:1 1 auto;min-width:0;max-width:80%}
 .cf-bub-plate{display:flex;align-items:baseline;gap:8px;margin:0 0 5px 4px}
