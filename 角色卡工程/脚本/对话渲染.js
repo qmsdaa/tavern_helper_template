@@ -297,7 +297,7 @@ const STYLE_TEXT = `
   --cf-page-bg:#e6f1da;--cf-page-text:#475341;--cf-page-border:#cfdfc0;--cf-page-shadow:rgba(90,120,80,.12)}
 /* 统一字体栈：优先现代系统字体，保持中文清晰可读 */
 .cf-bub-host,.cf-bub{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif}
-.cf-bub{display:flex;gap:12px;margin:14px 4px;align-items:flex-start;font-size:15px;line-height:1.7}
+.cf-bub{display:flex;gap:12px;margin:14px 4px;align-items:flex-start;font-size:var(--cf-bubble-fs,15px);line-height:var(--cf-line-height,1.7)}
 .cf-bub-avatar{flex:0 0 auto;width:46px;height:46px;border-radius:50%;padding:2px;background:var(--cf-avatar-bg,#fdfaf4);
   box-shadow:0 0 0 2px var(--cf-ring,#b8a6ab),0 2px 8px rgba(120,90,100,.12);overflow:hidden;
   display:flex;align-items:center;justify-content:center}
@@ -312,7 +312,7 @@ const STYLE_TEXT = `
 .cf-bub-bubble{position:relative;background:var(--cf-bub-bg,#fbf5ec);color:var(--cf-bub-text,#5b4a4f);
   border:1px solid var(--cf-bub-border,#efe0e3);border-radius:4px 16px 16px 16px;
   padding:10px 14px;box-shadow:0 1px 4px rgba(140,100,110,.08);word-break:break-word;white-space:pre-wrap;
-  font-size:15px;line-height:1.7}
+  font-size:var(--cf-bubble-fs,15px);line-height:var(--cf-line-height,1.7)}
 .cf-bub-bubble::before{content:"";position:absolute;left:-6px;top:0;width:10px;height:10px;
   background:var(--cf-bub-bg,#fbf5ec);border-left:1px solid var(--cf-bub-border,#efe0e3);
   border-top:1px solid var(--cf-bub-border,#efe0e3);border-radius:2px 0 0 0;transform:skewX(-12deg)}
@@ -331,7 +331,7 @@ const STYLE_TEXT = `
 #chat .cf-bub-host{background:var(--cf-page-bg,#f6efdc);color:var(--cf-page-text,#5b4a4f);
   border:1px solid var(--cf-page-border,#e7dbc0);border-radius:12px;padding:14px 16px;margin:8px 0;
   box-shadow:0 1px 6px var(--cf-page-shadow,rgba(140,110,80,.10))}
-#chat .cf-bub-host>p:not(:has(img)){text-indent:2em;text-align:justify;line-height:1.75;margin:8px 2px;font-size:13.5px;opacity:.95}
+#chat .cf-bub-host>p:not(:has(img)){text-indent:2em;text-align:justify;line-height:var(--cf-line-height,1.75);margin:8px 2px;font-size:var(--cf-narrative-fs,13.5px);opacity:.95}
 .cf-bub-inner .cf-bub-bubble::before{background:var(--cf-inner-bg,#f7f3e8);
   border-color:var(--cf-inner-border,#e3d3c6);border-left-style:dashed;border-top-style:dashed}
 .cf-bub-inner .cf-bub-name{color:var(--cf-accent,#b0708a)}
@@ -365,11 +365,12 @@ const IDB_NAME = 'CounterfeitBubbleAvatars';
 const IDB_STORE = 'uploads';
 
 function loadConfig() {
+  const defaults = { enabled: true, theme: 'parchment', bubbleFontSize: 15, narrativeFontSize: 13.5, lineHeight: 1.7 };
   try {
     const raw = localStorage.getItem(LS_CONFIG_KEY);
-    return raw ? { enabled: true, theme: 'parchment', ...JSON.parse(raw) } : { enabled: true, theme: 'parchment' };
+    return raw ? { ...defaults, ...JSON.parse(raw) } : defaults;
   } catch (_) {
-    return { enabled: true, theme: 'parchment' };
+    return defaults;
   }
 }
 
@@ -523,6 +524,7 @@ function processMessageElement(mesText, doc, force = false) {
 function renderAllMessages(doc, force = false) {
   ensureStyle(doc);
   applyTheme(doc);
+  applyConfig(doc);
   const seen = new Set();
   let rendered = 0;
   for (const mesText of doc.querySelectorAll('#chat .mes_text, #chat .mes-text')) {
@@ -553,6 +555,15 @@ function applyTheme(doc) {
   for (const id of THEME_IDS) {
     chat.classList.toggle(`cf-theme-${id}`, id === theme);
   }
+}
+
+function applyConfig(doc) {
+  const cfg = loadConfig();
+  const chat = doc.getElementById('chat');
+  if (!chat) return;
+  chat.style.setProperty('--cf-bubble-fs', `${cfg.bubbleFontSize}px`);
+  chat.style.setProperty('--cf-narrative-fs', `${cfg.narrativeFontSize}px`);
+  chat.style.setProperty('--cf-line-height', cfg.lineHeight);
 }
 
 function scheduleRender(doc) {
