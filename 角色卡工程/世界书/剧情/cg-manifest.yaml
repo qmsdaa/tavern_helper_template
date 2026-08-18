@@ -1,0 +1,50 @@
+schema_version: 2
+release: v0.6.0
+asset_commit: 9e5de97a57a0b92e1679b0f4da907768f0d44df3
+preview_asset_commit: 0e601ca2dbb529a160e5b18bae8709c674895134
+asset_repository: qmsdaa/tavern_helper_template
+asset_directory: assets/Counterfeit/CG
+alt_template: "场景{scene}剧情插图：{title}"
+items:
+  - scene: 1
+  - scene: 9
+  - scene: 10
+  - scene: 11
+  - scene: 21
+  - scene: 24
+  - scene: 25
+  - scene: 33
+  - scene: 36
+  - scene: 44
+  - scene: 57
+  - scene: 61
+  - scene: 67
+  - scene: 68
+  - scene: 70
+  - scene: 75
+  - scene: 76
+  - scene: 77
+  - scene: 80
+  - scene: 83
+  - scene: 85
+  - scene: 88
+  - scene: 90
+  - scene: 92
+  - scene: 96
+  - scene: 98
+  - scene: 99
+  - scene: 100
+  - scene: 105
+  - scene: 117
+  - scene: 119
+  - scene: 122
+  - scene: 124
+  - scene: 126
+  - scene: 132
+  - scene: 133
+  - scene: 139
+  - scene: 140
+  - scene: 143
+  - scene: 145
+  - scene: 148
+  - scene: 150

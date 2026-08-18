@@ -1,0 +1,217 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 110)
+场景: 110
+幕: "第七幕·重新为奉仕部命名"
+时间: "2014年5月8日 · 周四上午至放学前"
+索引日期: "2014-05-08"
+地点: "总武高体育馆前厅／入口登记区 → 特别栋一层候场走廊与男女分流口 → 体育馆器材收拢处"
+人物: "雪之下雪乃、比企谷八幡、由比滨结衣、拉芙希妮·都柏林、比企谷小町、川崎大志、一色彩羽、折本香织、高坂理津子、总武高与京王高中师生"
+场景呈现参考: "共享场景／零POV"
+事件焦点:
+  类型: 角色
+  角色:
+    - "雪之下雪乃"
+    - "由比滨结衣"
+
+# TRANSITION_RUNTIME_GUARD_START main:110
+# <%_ const __cfTransitionTarget110 = 110; _%>
+# <%_ const __cfTransitionCurrentScene110 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign110 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages110 = []; _%>
+# <%_ try { const __cfTransitionLastId110 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages110 = getChatMessages('0-' + __cfTransitionLastId110, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages110 = []; } _%>
+# <%_ const __cfTransitionSnapshots110 = (Array.isArray(__cfTransitionMessages110) ? __cfTransitionMessages110 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious110 = __cfTransitionSnapshots110.length ? __cfTransitionSnapshots110[__cfTransitionSnapshots110.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene110 = Number(__cfTransitionPrevious110 && __cfTransitionPrevious110.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign110 = (__cfTransitionPrevious110 && __cfTransitionPrevious110.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped110 = Math.max(0, __cfTransitionCurrentScene110 - __cfTransitionPreviousScene110 - 1); _%>
+# <%_ const __cfTransitionExpose110 = __cfTransitionCurrentCampaign110 === 'main' && __cfTransitionPreviousCampaign110 === 'main' && __cfTransitionCurrentScene110 === __cfTransitionTarget110 && Number.isInteger(__cfTransitionPreviousScene110) && __cfTransitionPreviousScene110 < __cfTransitionCurrentScene110; _%>
+# <%_ if (__cfTransitionExpose110) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped110 %>"
+  mode: date_only
+  visible_title: 五月，联合体检当天
+  visible_lines:
+    - 八天里，受理后的方案被印成标牌、名单和现场分工表。
+    - 真正的人流抵达校舍后，纸上的顺序开始接受检验。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:110
+场景功能:
+  - ★结衣的咨询台是四起现场问题中唯一由"不问原因"解决的——她对紧张的学生说"是路线不清楚还是想去安静一点的地方等"，然后直接举手叫老师。人际润滑不是氛围装饰，是把事推过终点线的执行位；与雪乃的动线图指挥并列为本场的两条承重线（2026-08-17 第二批 B3a 补录）
+  - 联合体检现场执行——奉仕部方案在真实场景中接受检验
+  - 现场出现的四个问题逐一被团队解决：
+    ①入口标识不清→小町用手写"还没登记/已经登记"夹板解决
+    ②叫名字喊出特殊需求→大志阻止志愿者第三次叫名字，改为只叫号码
+    ③咨询台与登记桌排队重叠→结衣挪桌椅+高坂要求名单交还教师
+    ④报名表应统一→一色推翻自己的旧表，亲自向双方老师道歉
+  - 八幡划下的"到场/健康信息"方案被一色在事件中更正
+  - 拉芙希妮完成涂改公开记录——"把多出的内容涂去只留下编号时间地点处理环节"
+  - 折本作为外部观察员记录了全过程→最后叫住八幡（过渡到场景111）
+
+进入状态:
+  已发生:
+    - 委托已在场景109受理
+    - 联合体检安排在5月8日
+    - 两校学生会各自准备了流程
+  当前局面:
+    - 第一辆校车刚到体育馆外
+    - 入口两列队伍正在混成一列
+    - 广播播报被桌脚拖地的声音盖住
+  未发生:
+    - 一天的现场执行尚未结束
+    - 交接单尚未签完
+
+世界推动:
+  - 体育馆外的校车一趟一趟运人
+  - 广播不断循环注意事项
+  - 鞋底声、桌脚拖地声、志愿者叫喊声
+  - 下午器材收拢的桌腿扣进卡槽声
+
+NPC动机（主要角色在现场执行时的行为模式）:
+  雪之下雪乃:
+    - 现场指挥角色：按动线图做判断、下达指令、在每件故障发生后立即修正
+    - 关键动作：从早上到现在被叫住十几次——"十天前那张别着回形针的时间表让整所学校都知道了'场地的事去问奉仕部的雪之下'"
+  比企谷八幡:
+    - 关键动作：蹲在登记桌侧面用尺划纸→"入口留编号和到场。其他纸装封套交给学校指定的人"
+    - 对大志报信息时的反应："先说发生了什么，别说名字"
+  由比滨结衣:
+    - 咨询台角色：用最低音量接触紧张的学生→"是路线不清楚还是想去安静一点的地方等"
+    - 全程没问原因，直接举手叫老师
+  拉芙希妮·都柏林:
+    - 关键动作：在公开流程表上写字后→发现临时记录员写了多余个人信息→"用直尺压住那一行将多出的内容涂去只留下编号时间地点和处理环节——纸面上多了一道黑线"
+  比企谷小町:
+    - 发挥创造力的瞬间：把备用夹板翻到背面写下"还没登记/已经登记"→自己举远看一遍→划掉重写→"雪乃姐能不能先挂这个？楼名放下面走近再看"
+  川崎大志:
+    - 发挥判断力的瞬间：阻止志愿者喊第三次名字→跑去找八幡报告→"他手里有号码也可以让老师走过去找他"→这是大志第一次主动做判断
+  一色彩羽:
+    - 发挥领导力的瞬间：承认错误→"这次算学生会的。我们把共同登记当成了一张表管到底"→独自去向双方负责老师道歉→"自己做错的统一表总不能让奉仕部替我挨个解释吧"
+
+信息边界:
+  公开:
+    - 现场发生的所有故障和修正
+    - 修正后的流程：入口只确认到场、其他材料装封套、叫号不叫名、咨询和登记分开
+  局部:
+    - 仅拉芙希妮：涂去记录中多写内容的那一道黑线
+    - 仅一色和被她道歉的教师：道歉时说的具体内容
+  隐藏:
+    - 折本在观察的完整记录
+    - 个别学生的特殊需求细节
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - 八幡在登记桌侧面用尺划纸——在名单两栏上方写下"到场"和"材料"，把每一个编号登记得一丝不苟（"入口留编号和到场。其他纸装封套交给学校指定的人"）
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - "体检当天——她从早上到现在被叫住十几次；四起变故每一起她都先短暂静默，翻动线图背面，修改，记录，继续。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - "体检当天——她在咨询台用最低音量接触紧张的学生：'是路线不清楚还是想去安静一点的地方等'；她全程没问原因，直接举手叫老师。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+
+    演绎入口:
+      - "体检当天——她在公开流程表上写字，发现临时记录员写了多余个人信息，用直尺压住那一行把多出的内容涂去——纸面上多了一道黑线。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "体检当天——他蹲在登记桌侧面用尺划纸：'入口留编号和到场。其他纸装封套交给学校指定的人'；大志跑来说有人不肯动时他先问：'先说发生了什么，别说名字'。"
+  yukino: "体检当天——她从早上到现在被叫住十几次；四起变故每一起她都先短暂静默，翻动线图背面，修改，记录，继续。"
+  yui: "体检当天——她在咨询台用最低音量接触紧张的学生：'是路线不清楚还是想去安静一点的地方等'；她全程没问原因，直接举手叫老师。"
+  laff: "体检当天——她在公开流程表上写字，发现临时记录员写了多余个人信息，用直尺压住那一行把多出的内容涂去——纸面上多了一道黑线。"
+
+玩家控制边界:
+  - 此为群体现场执行场景——玩家可选择切入任何角色的视角
+  - 核心是用最短的互动体现每个角色的能力
+
+可用节拍（按问题顺序）:
+  问题1:入口标识不清——广播被盖、两列混成一条
+  - 雪乃拿开透明文件夹:"入口只确认到场。两校表格分开放"
+  - 志愿者反馈有人拿错表→对面的人又让回来登记→循环
+  - 折本指出"特别栋"是楼名第一次来的人不知道→两个"受付"会让人走回来
+  - 小町翻夹板写"还没登记/已经登记"→举远看→划掉重写
+  - 拉芙希妮将字描粗→"楼名放箭头后面。先写做什么再写去哪里"
+  - 一色的文件袋里找出粗记号笔→在几张手里来回传
+  - 那块夹板挂上去后那名循环的学生径直排到队尾
+  问题2:男生候场区喊名字导致学生不肯动
+  - 大志跑来找八幡:"那边叫人出去单独确认没说是什么事。名字一喊大家都知道他和别人不一样了。他现在不肯动"
+  - 八幡:"先说发生了什么别说名字"
+  - 大志关键信息:"手里有号码。也可以让老师走过去找他"
+  - 八幡让大志去叫志愿者先别喊第三次→大志转身跑回去
+  - 八幡在两栏上方写"到场"和"材料"→推到一色手边
+  - 八幡:"入口留编号和到场。其他纸装封套交给学校指定的人。队伍里只叫号码"
+  - 高坂从分流口经过→"名单交还带队教师。需要单独确认由教师或医务人员过去。学生志愿者只报号码"
+  - 带队教师接过名单往队伍后方走
+  问题3:咨询台旁有学生站了很久不敢开口
+  - 结衣放下号码纸→压低声音→先指通道再指空椅:"如果都不是我也可以叫老师或者医务人员过来。你不用在这里说原因"
+  - 学生只朝教师指了一下→结衣举手→陪学生沿墙边离开
+  问题4(系统级):一色发现学生会自己错了
+  - 拉芙希妮在流程表上涂掉多写的个人信息→一道黑线
+  - 雪乃:"谁写的？"→一色:"学生会的临时记录员"
+  - 一色抽走"共同登记"的牌子反扣→"这次算学生会的。我们把共同登记当成了一张表管到底连现场记录也照着做了"
+  - 一色独自去向两校负责老师说明"刚才是我漏了权限区别"
+  收束:
+  - 第二批学生入场→最前面的人从夹板下取号码→报班级→继续向前
+  - 装着材料的封套被教师直接收进带盖文件箱
+  - 志愿者举起号码牌喊出的只有两位数字
+  - 下午器材收拢→一色蹲在车边清点→"少一支粗记号笔通缉令"
+  - 折本从自己夹板下抽出笔→走到八幡面前:"刚才写观察表的时候压住了"
+  - 折本叫住八幡:"小企。等一下有空吗？"
+  - 广播在体育馆上方响起→器材车前轮越过门槛盖住八幡还没出口的声音
+
+偏离处理:
+  - 若任何一个问题未能及时解决：真实后果→混乱持续、学生会承担压力→但场景会后通过高坂等介入最终解决
+
+推进边界:
+  保持当前场景:
+    - 问题尚未被解决
+    - 第一天流程尚未结束
+  可以推进:
+    - 器材全部收拢，折本叫住八幡
+  永久失效:
+    - 不适用
+
+完成后事实:
+  - 联合体检现场执行完成——两校交接单全部签完
+  - 四个问题的发现者分别展示了自己独特的贡献
+  - 一色建立了领导力（道歉+说明+现场修订）
+  - 拉芙希妮的公开记录只留下了编号/时间/地点/处理环节
+
+氛围锚点:
+  - 校车一趟一趟运人→入口不断被突破
+  - 纸牌"总武受付/京王受付"下面一行小字"特别栋分流"——两种意思混在一起
+  - 叫名字的声音越过半条走廊→队伍里有人拖长声"哦"了一下
+  - 粗记号笔在几张手里来回传→最后落在折本的公开观察表旁
+  - 下午桌脚扣进卡槽的连续响声
+  - 折本从自己夹板下抽出笔的那只手
+  - "小企。等一下有空吗？"在广播的回音中被盖住的尾声
+
+禁止提前:
+  - 折本找八幡的谈话内容（场景111）
+  - 一色道歉后各老师的反应
+  - 体检现场涉及任何学生的个人健康信息

@@ -1,0 +1,5124 @@
+{
+  "projectName": "Counterfeit",
+  "worldbookName": "Counterfeit",
+  "form": "charactercard",
+  "mvu": true,
+  "entryManifest": {
+    "unknown": {
+      "EJS预处理": {
+        "abstract": "",
+        "uid": 0,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 10
+        },
+        "display_index": 0,
+        "keywords": [],
+        "path": "世界书\\EJS预处理.txt"
+      },
+      "一色彩羽_三面性": {
+        "abstract": "",
+        "uid": 1,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "一色彩羽",
+            "一色",
+            "伊吕波酱"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 150
+        },
+        "display_index": 1,
+        "keywords": [
+          "一色彩羽",
+          "一色",
+          "伊吕波酱"
+        ],
+        "path": "世界书\\一色彩羽_三面性.txt"
+      },
+      "世界观与舞台设定": {
+        "abstract": "",
+        "uid": 2,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 20
+        },
+        "display_index": 2,
+        "keywords": [],
+        "path": "世界书\\世界观与舞台设定.txt"
+      },
+      "还火事件": {
+        "abstract": "",
+        "uid": 3,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 21
+        },
+        "display_index": 3,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null))"
+          },
+          {
+            "file": "世界书\\还火事件.yaml"
+          }
+        ]
+      },
+      "扮演准则": {
+        "abstract": "",
+        "uid": 4,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 30
+        },
+        "display_index": 4,
+        "keywords": [],
+        "path": "世界书\\扮演准则.yaml"
+      },
+      "原著时间线参考": {
+        "abstract": "",
+        "uid": 6,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 40
+        },
+        "display_index": 6,
+        "keywords": [],
+        "path": "世界书\\原著时间线参考.yaml"
+      },
+      "千叶市概览": {
+        "abstract": "",
+        "uid": 7,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "千叶市",
+            "千叶",
+            "东京湾"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 60
+        },
+        "display_index": 7,
+        "keywords": [
+          "千叶市",
+          "千叶",
+          "东京湾"
+        ],
+        "path": "世界书\\千叶市概览.yaml"
+      },
+      "总武高中": {
+        "abstract": "",
+        "uid": 8,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "总武高中",
+            "奉仕部活动室",
+            "特别栋"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 70
+        },
+        "display_index": 8,
+        "keywords": [
+          "总武高中",
+          "奉仕部活动室",
+          "特别栋"
+        ],
+        "path": "世界书\\总武高中.yaml"
+      },
+      "拉芙希妮的公寓": {
+        "abstract": "",
+        "uid": 9,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "拉芙希妮的公寓",
+            "美滨区",
+            "安保公寓"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 80
+        },
+        "display_index": 9,
+        "keywords": [
+          "拉芙希妮的公寓",
+          "美滨区",
+          "安保公寓"
+        ],
+        "path": "世界书\\拉芙希妮的公寓.txt"
+      },
+      "雪之下雪乃的公寓": {
+        "abstract": "",
+        "uid": 10,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下雪乃的公寓",
+            "稻毛区",
+            "潘先生"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 90
+        },
+        "display_index": 10,
+        "keywords": [
+          "雪之下雪乃的公寓",
+          "稻毛区",
+          "潘先生"
+        ],
+        "path": "世界书\\雪之下雪乃的公寓.yaml"
+      },
+      "千叶市街景与交通": {
+        "abstract": "",
+        "uid": 11,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "千叶站",
+            "单轨电车",
+            "萨莉亚",
+            "海滨公园",
+            "稻毛浅间神社",
+            "MARINPIA",
+            "千叶市图书馆",
+            "中高滨公园"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 100
+        },
+        "display_index": 11,
+        "keywords": [
+          "千叶站",
+          "单轨电车",
+          "萨莉亚",
+          "海滨公园",
+          "稻毛浅间神社",
+          "MARINPIA",
+          "千叶市图书馆",
+          "中高滨公园"
+        ],
+        "path": "世界书\\千叶市街景与交通.yaml"
+      },
+      "千叶高级场所": {
+        "abstract": "",
+        "uid": 12,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "格兰皇宫酒店",
+            "千叶港湾酒店",
+            "幕张Messe",
+            "星空宴会厅"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 110
+        },
+        "display_index": 12,
+        "keywords": [
+          "格兰皇宫酒店",
+          "千叶港湾酒店",
+          "幕张Messe",
+          "星空宴会厅"
+        ],
+        "path": "世界书\\千叶高级场所.yaml"
+      },
+      "伦敦与都柏林家族据点": {
+        "abstract": "",
+        "uid": 13,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "塔拉庄园",
+            "克拉伦登街",
+            "翡翠资本",
+            "金丝雀港口",
+            "伦敦",
+            "都柏林"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 120
+        },
+        "display_index": 13,
+        "keywords": [
+          "塔拉庄园",
+          "克拉伦登街",
+          "翡翠资本",
+          "金丝雀港口",
+          "伦敦",
+          "都柏林"
+        ],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null))"
+          },
+          {
+            "file": "世界书\\伦敦与都柏林家族据点.yaml"
+          }
+        ]
+      },
+      "都柏林家族势力": {
+        "abstract": "",
+        "uid": 14,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "都柏林家族",
+            "爱布拉娜",
+            "科尔马克",
+            "翡翠资本",
+            "家族议会"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 121
+        },
+        "display_index": 14,
+        "keywords": [
+          "都柏林家族",
+          "爱布拉娜",
+          "科尔马克",
+          "翡翠资本",
+          "家族议会"
+        ],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null))"
+          },
+          {
+            "file": "世界书\\都柏林家族势力.yaml"
+          }
+        ]
+      },
+      "雪之下家族势力": {
+        "abstract": "",
+        "uid": 15,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下家族",
+            "雪之下夫人",
+            "雪之下阳乃",
+            "雪之下本邸"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 130
+        },
+        "display_index": 15,
+        "keywords": [
+          "雪之下家族",
+          "雪之下夫人",
+          "雪之下阳乃",
+          "雪之下本邸"
+        ],
+        "path": "世界书\\雪之下家族势力.yaml"
+      },
+      "总武高中制度": {
+        "abstract": "",
+        "uid": 16,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "总武高中制度",
+            "高坂理津子",
+            "社团管理"
+          ]
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 140
+        },
+        "display_index": 16,
+        "keywords": [
+          "总武高中制度",
+          "高坂理津子",
+          "社团管理"
+        ],
+        "path": "世界书\\总武高中制度.yaml"
+      },
+      "拉芙希妮_基础信息": {
+        "abstract": "",
+        "uid": 17,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "拉芙希妮",
+            "拉芙希妮·都柏林",
+            "苇草"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 160
+        },
+        "display_index": 17,
+        "keywords": [
+          "拉芙希妮",
+          "拉芙希妮·都柏林",
+          "苇草"
+        ],
+        "contents": [
+          {
+            "content": "@@if ((getvar('stat_data.current_pov', {defaults: null}) === 'laff') || ((!('拉芙希妮·都柏林' in getvar('stat_data.characters', {defaults: {}})) || getvar('stat_data.characters', {defaults: {}})['拉芙希妮·都柏林'].present === true)))"
+          },
+          {
+            "content": "---\n<character_basic character=\"拉芙希妮·都柏林\">"
+          },
+          {
+            "file": "世界书\\拉芙希妮_基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ]
+      },
+      "拉芙希妮_性格调色盘": {
+        "abstract": "",
+        "uid": 18,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "拉芙希妮",
+            "拉芙希妮·都柏林"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 161
+        },
+        "display_index": 18,
+        "keywords": [
+          "拉芙希妮",
+          "拉芙希妮·都柏林"
+        ],
+        "path": "世界书\\拉芙希妮_性格调色盘.txt"
+      },
+      "拉芙希妮_三面性": {
+        "abstract": "",
+        "uid": 19,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "拉芙希妮",
+            "拉芙希妮·都柏林"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 162
+        },
+        "display_index": 19,
+        "keywords": [
+          "拉芙希妮",
+          "拉芙希妮·都柏林"
+        ],
+        "path": "世界书\\拉芙希妮_三面性.txt"
+      },
+      "拉芙希妮_二次解释": {
+        "abstract": "",
+        "uid": 20,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "拉芙希妮",
+            "拉芙希妮·都柏林"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 413
+        },
+        "display_index": 20,
+        "keywords": [
+          "拉芙希妮",
+          "拉芙希妮·都柏林"
+        ],
+        "contents": [
+          {
+            "content": "@@if ((getvar('stat_data.current_pov', {defaults: null}) === 'laff') || ((!('拉芙希妮·都柏林' in getvar('stat_data.characters', {defaults: {}})) || getvar('stat_data.characters', {defaults: {}})['拉芙希妮·都柏林'].present === true)))"
+          },
+          {
+            "content": "---\n<character_rephrase character=\"拉芙希妮·都柏林\">"
+          },
+          {
+            "file": "世界书\\拉芙希妮_二次解释.yaml"
+          },
+          {
+            "content": "</character_rephrase>"
+          }
+        ]
+      },
+      "雪之下雪乃_基础信息": {
+        "abstract": "",
+        "uid": 21,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下雪乃",
+            "雪之下",
+            "雪乃"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 163
+        },
+        "display_index": 21,
+        "keywords": [
+          "雪之下雪乃",
+          "雪之下",
+          "雪乃"
+        ],
+        "contents": [
+          {
+            "content": "@@if ((getvar('stat_data.current_pov', {defaults: null}) === 'yukino') || ((!('雪之下雪乃' in getvar('stat_data.characters', {defaults: {}})) || getvar('stat_data.characters', {defaults: {}})['雪之下雪乃'].present === true)))"
+          },
+          {
+            "content": "---\n<character_basic character=\"雪之下雪乃\">"
+          },
+          {
+            "file": "世界书\\雪之下雪乃_基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ]
+      },
+      "雪之下雪乃_性格调色盘": {
+        "abstract": "",
+        "uid": 22,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下雪乃",
+            "雪之下",
+            "雪乃"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 164
+        },
+        "display_index": 22,
+        "keywords": [
+          "雪之下雪乃",
+          "雪之下",
+          "雪乃"
+        ],
+        "path": "世界书\\雪之下雪乃_性格调色盘.txt"
+      },
+      "雪之下雪乃_三面性": {
+        "abstract": "",
+        "uid": 23,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下雪乃",
+            "雪之下",
+            "雪乃"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 165
+        },
+        "display_index": 23,
+        "keywords": [
+          "雪之下雪乃",
+          "雪之下",
+          "雪乃"
+        ],
+        "path": "世界书\\雪之下雪乃_三面性.txt"
+      },
+      "比企谷八幡_基础信息": {
+        "abstract": "",
+        "uid": 24,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "比企谷八幡",
+            "八幡",
+            "小企"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 166
+        },
+        "display_index": 24,
+        "keywords": [
+          "比企谷八幡",
+          "八幡",
+          "小企"
+        ],
+        "contents": [
+          {
+            "content": "@@if ((getvar('stat_data.current_pov', {defaults: null}) === 'hachiman') || ((!('比企谷八幡' in getvar('stat_data.characters', {defaults: {}})) || getvar('stat_data.characters', {defaults: {}})['比企谷八幡'].present === true)))"
+          },
+          {
+            "content": "---\n<character_basic character=\"比企谷八幡\">"
+          },
+          {
+            "file": "世界书\\比企谷八幡_基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ]
+      },
+      "比企谷八幡_性格调色盘": {
+        "abstract": "",
+        "uid": 25,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "比企谷八幡",
+            "八幡",
+            "小企"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 167
+        },
+        "display_index": 25,
+        "keywords": [
+          "比企谷八幡",
+          "八幡",
+          "小企"
+        ],
+        "path": "世界书\\比企谷八幡_性格调色盘.txt"
+      },
+      "比企谷八幡_三面性": {
+        "abstract": "",
+        "uid": 26,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "比企谷八幡",
+            "八幡",
+            "小企"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 168
+        },
+        "display_index": 26,
+        "keywords": [
+          "比企谷八幡",
+          "八幡",
+          "小企"
+        ],
+        "path": "世界书\\比企谷八幡_三面性.txt"
+      },
+      "由比滨结衣_基础信息": {
+        "abstract": "",
+        "uid": 27,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "由比滨结衣",
+            "结衣",
+            "由比滨"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 169
+        },
+        "display_index": 27,
+        "keywords": [
+          "由比滨结衣",
+          "结衣",
+          "由比滨"
+        ],
+        "contents": [
+          {
+            "content": "@@if ((getvar('stat_data.current_pov', {defaults: null}) === 'yui') || ((!('由比滨结衣' in getvar('stat_data.characters', {defaults: {}})) || getvar('stat_data.characters', {defaults: {}})['由比滨结衣'].present === true)))"
+          },
+          {
+            "content": "---\n<character_basic character=\"由比滨结衣\">"
+          },
+          {
+            "file": "世界书\\由比滨结衣_基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ]
+      },
+      "由比滨结衣_性格调色盘": {
+        "abstract": "",
+        "uid": 28,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "由比滨结衣",
+            "结衣",
+            "由比滨"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 170
+        },
+        "display_index": 28,
+        "keywords": [
+          "由比滨结衣",
+          "结衣",
+          "由比滨"
+        ],
+        "path": "世界书\\由比滨结衣_性格调色盘.txt"
+      },
+      "由比滨结衣_三面性": {
+        "abstract": "",
+        "uid": 29,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "由比滨结衣",
+            "结衣",
+            "由比滨"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 171
+        },
+        "display_index": 29,
+        "keywords": [
+          "由比滨结衣",
+          "结衣",
+          "由比滨"
+        ],
+        "path": "世界书\\由比滨结衣_三面性.txt"
+      },
+      "一色彩羽_基础信息": {
+        "abstract": "",
+        "uid": 30,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "一色彩羽",
+            "一色",
+            "伊吕波酱"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 172
+        },
+        "display_index": 30,
+        "keywords": [
+          "一色彩羽",
+          "一色",
+          "伊吕波酱"
+        ],
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"一色彩羽\">"
+          },
+          {
+            "file": "世界书\\一色彩羽_基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ]
+      },
+      "一色彩羽_性格调色盘": {
+        "abstract": "",
+        "uid": 31,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "一色彩羽",
+            "一色",
+            "伊吕波酱"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 173
+        },
+        "display_index": 31,
+        "keywords": [
+          "一色彩羽",
+          "一色",
+          "伊吕波酱"
+        ],
+        "path": "世界书\\一色彩羽_性格调色盘.txt"
+      },
+      "爱布拉娜_基础信息": {
+        "abstract": "",
+        "uid": 32,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "爱布拉娜",
+            "爱布拉娜·都柏林"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 174
+        },
+        "display_index": 32,
+        "keywords": [
+          "爱布拉娜",
+          "爱布拉娜·都柏林"
+        ],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.mode', {defaults: null}) === 'pov' || getvar('stat_data.mode', {defaults: null}) === 'free' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null))"
+          },
+          {
+            "content": "---\n<character_basic character=\"爱布拉娜·都柏林\">"
+          },
+          {
+            "file": "世界书\\爱布拉娜_基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ]
+      },
+      "爱布拉娜_性格调色盘": {
+        "abstract": "",
+        "uid": 33,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "爱布拉娜",
+            "爱布拉娜·都柏林"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 175
+        },
+        "display_index": 33,
+        "keywords": [
+          "爱布拉娜",
+          "爱布拉娜·都柏林"
+        ],
+        "path": "世界书\\爱布拉娜_性格调色盘.txt"
+      },
+      "爱布拉娜_三面性": {
+        "abstract": "",
+        "uid": 34,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "爱布拉娜",
+            "爱布拉娜·都柏林"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 176
+        },
+        "display_index": 34,
+        "keywords": [
+          "爱布拉娜",
+          "爱布拉娜·都柏林"
+        ],
+        "path": "世界书\\爱布拉娜_三面性.txt"
+      },
+      "平冢静_基础信息": {
+        "abstract": "",
+        "uid": 35,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "平冢静",
+            "平冢老师",
+            "平冢"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 177
+        },
+        "display_index": 35,
+        "keywords": [
+          "平冢静",
+          "平冢老师",
+          "平冢"
+        ],
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"平冢静\">"
+          },
+          {
+            "file": "世界书\\平冢静_基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ]
+      },
+      "平冢静_性格调色盘": {
+        "abstract": "",
+        "uid": 36,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "平冢静",
+            "平冢老师",
+            "平冢"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 178
+        },
+        "display_index": 36,
+        "keywords": [
+          "平冢静",
+          "平冢老师",
+          "平冢"
+        ],
+        "path": "世界书\\平冢静_性格调色盘.txt"
+      },
+      "平冢静_三面性": {
+        "abstract": "",
+        "uid": 37,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "平冢静",
+            "平冢老师",
+            "平冢"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 179
+        },
+        "display_index": 37,
+        "keywords": [
+          "平冢静",
+          "平冢老师",
+          "平冢"
+        ],
+        "path": "世界书\\平冢静_三面性.txt"
+      },
+      "雪之下阳乃_基础信息": {
+        "abstract": "",
+        "uid": 38,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下阳乃",
+            "阳乃"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 180
+        },
+        "display_index": 38,
+        "keywords": [
+          "雪之下阳乃",
+          "阳乃"
+        ],
+        "contents": [
+          {
+            "content": "---\n<character_basic character=\"雪之下阳乃\">"
+          },
+          {
+            "file": "世界书\\雪之下阳乃_基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ]
+      },
+      "雪之下阳乃_性格调色盘": {
+        "abstract": "",
+        "uid": 39,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下阳乃",
+            "阳乃"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 181
+        },
+        "display_index": 39,
+        "keywords": [
+          "雪之下阳乃",
+          "阳乃"
+        ],
+        "path": "世界书\\雪之下阳乃_性格调色盘.txt"
+      },
+      "雪之下阳乃_三面性": {
+        "abstract": "",
+        "uid": 40,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下阳乃",
+            "阳乃"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 182
+        },
+        "display_index": 40,
+        "keywords": [
+          "雪之下阳乃",
+          "阳乃"
+        ],
+        "path": "世界书\\雪之下阳乃_三面性.txt"
+      },
+      "角色一览": {
+        "abstract": "",
+        "uid": 41,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 190
+        },
+        "display_index": 41,
+        "keywords": [],
+        "path": "世界书\\角色一览.yaml"
+      },
+      "达洛维小姐": {
+        "abstract": "",
+        "uid": 42,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "达洛维",
+            "Outcast",
+            "达洛维小姐"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 210
+        },
+        "display_index": 42,
+        "keywords": [
+          "达洛维",
+          "Outcast",
+          "达洛维小姐"
+        ],
+        "path": "世界书\\达洛维小姐.txt"
+      },
+      "温斯顿先生": {
+        "abstract": "",
+        "uid": 43,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "温斯顿",
+            "温斯顿先生"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 211
+        },
+        "display_index": 43,
+        "keywords": [
+          "温斯顿",
+          "温斯顿先生"
+        ],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null))"
+          },
+          {
+            "file": "世界书\\温斯顿先生.yaml"
+          }
+        ]
+      },
+      "雪之下夫人": {
+        "abstract": "",
+        "uid": 44,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下夫人",
+            "雪之下母亲"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 212
+        },
+        "display_index": 44,
+        "keywords": [
+          "雪之下夫人",
+          "雪之下母亲"
+        ],
+        "path": "世界书\\雪之下夫人.yaml"
+      },
+      "科尔马克·都柏林": {
+        "abstract": "",
+        "uid": 45,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "科尔马克",
+            "科尔马克·都柏林"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 213
+        },
+        "display_index": 45,
+        "keywords": [
+          "科尔马克",
+          "科尔马克·都柏林"
+        ],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null))"
+          },
+          {
+            "file": "世界书\\科尔马克·都柏林.yaml"
+          }
+        ]
+      },
+      "多琳·都柏林": {
+        "abstract": "",
+        "uid": 46,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "多琳",
+            "多琳·都柏林",
+            "都柏林夫人"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 214
+        },
+        "display_index": 46,
+        "keywords": [
+          "多琳",
+          "多琳·都柏林",
+          "都柏林夫人"
+        ],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null))"
+          },
+          {
+            "file": "世界书\\多琳·都柏林.yaml"
+          }
+        ]
+      },
+      "高坂理津子": {
+        "abstract": "",
+        "uid": 47,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "高坂理津子",
+            "高坂",
+            "社团管理"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 215
+        },
+        "display_index": 47,
+        "keywords": [
+          "高坂理津子",
+          "高坂",
+          "社团管理"
+        ],
+        "path": "世界书\\高坂理津子.yaml"
+      },
+      "比企谷小町": {
+        "abstract": "",
+        "uid": 48,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "比企谷小町",
+            "小町"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 216
+        },
+        "display_index": 48,
+        "keywords": [
+          "比企谷小町",
+          "小町"
+        ],
+        "path": "世界书\\比企谷小町.txt"
+      },
+      "户冢彩加": {
+        "abstract": "",
+        "uid": 49,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "户冢彩加",
+            "户冢"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 217
+        },
+        "display_index": 49,
+        "keywords": [
+          "户冢彩加",
+          "户冢"
+        ],
+        "path": "世界书\\户冢彩加.txt"
+      },
+      "材木座义辉": {
+        "abstract": "",
+        "uid": 50,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "材木座义辉",
+            "材木座"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 218
+        },
+        "display_index": 50,
+        "keywords": [
+          "材木座义辉",
+          "材木座"
+        ],
+        "path": "世界书\\材木座义辉.yaml"
+      },
+      "叶山隼人": {
+        "abstract": "",
+        "uid": 51,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "叶山隼人",
+            "叶山"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 219
+        },
+        "display_index": 51,
+        "keywords": [
+          "叶山隼人",
+          "叶山"
+        ],
+        "path": "世界书\\叶山隼人.yaml"
+      },
+      "三浦优美子": {
+        "abstract": "",
+        "uid": 52,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "三浦优美子",
+            "三浦"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 220
+        },
+        "display_index": 52,
+        "keywords": [
+          "三浦优美子",
+          "三浦"
+        ],
+        "path": "世界书\\三浦优美子.txt"
+      },
+      "海老名姬菜": {
+        "abstract": "",
+        "uid": 53,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "海老名姬菜",
+            "海老名"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 221
+        },
+        "display_index": 53,
+        "keywords": [
+          "海老名姬菜",
+          "海老名"
+        ],
+        "path": "世界书\\海老名姬菜.txt"
+      },
+      "户部翔": {
+        "abstract": "",
+        "uid": 54,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "户部翔",
+            "户部"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 222
+        },
+        "display_index": 54,
+        "keywords": [
+          "户部翔",
+          "户部"
+        ],
+        "path": "世界书\\户部翔.yaml"
+      },
+      "川崎沙希": {
+        "abstract": "",
+        "uid": 55,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "川崎沙希",
+            "川崎"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 223
+        },
+        "display_index": 55,
+        "keywords": [
+          "川崎沙希",
+          "川崎"
+        ],
+        "path": "世界书\\川崎沙希.txt"
+      },
+      "相模南": {
+        "abstract": "",
+        "uid": 56,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "相模南",
+            "相模"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 224
+        },
+        "display_index": 56,
+        "keywords": [
+          "相模南",
+          "相模"
+        ],
+        "path": "世界书\\相模南.yaml"
+      },
+      "城廻巡": {
+        "abstract": "",
+        "uid": 57,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "城廻巡",
+            "城廻"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 225
+        },
+        "display_index": 57,
+        "keywords": [
+          "城廻巡",
+          "城廻"
+        ],
+        "path": "世界书\\城廻巡.yaml"
+      },
+      "折本香织": {
+        "abstract": "",
+        "uid": 58,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "折本香织",
+            "折本"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 226
+        },
+        "display_index": 58,
+        "keywords": [
+          "折本香织",
+          "折本"
+        ],
+        "path": "世界书\\折本香织.yaml"
+      },
+      "鹤见留美": {
+        "abstract": "",
+        "uid": 59,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "鹤见留美",
+            "鹤见"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 227
+        },
+        "display_index": 59,
+        "keywords": [
+          "鹤见留美",
+          "鹤见"
+        ],
+        "path": "世界书\\鹤见留美.txt"
+      },
+      "其他配角群像": {
+        "abstract": "",
+        "uid": 60,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "川崎京华",
+            "川崎大志",
+            "由比滨太太",
+            "大冈",
+            "大和",
+            "鹤见老师"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 228
+        },
+        "display_index": 60,
+        "keywords": [
+          "川崎京华",
+          "川崎大志",
+          "由比滨太太",
+          "大冈",
+          "大和",
+          "鹤见老师"
+        ],
+        "path": "世界书\\其他配角群像.yaml"
+      },
+      "场景一": {
+        "abstract": "",
+        "uid": 61,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 230,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 61,
+        "keywords": [],
+        "path": "世界书\\场景一.txt"
+      },
+      "场景二": {
+        "abstract": "",
+        "uid": 62,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 231,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 62,
+        "keywords": [],
+        "path": "世界书\\场景二.txt"
+      },
+      "场景三": {
+        "abstract": "",
+        "uid": 63,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 232,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 63,
+        "keywords": [],
+        "path": "世界书\\场景三.txt"
+      },
+      "场景四": {
+        "abstract": "",
+        "uid": 64,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 233,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 64,
+        "keywords": [],
+        "path": "世界书\\场景四.txt"
+      },
+      "场景五": {
+        "abstract": "",
+        "uid": 65,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 234,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 65,
+        "keywords": [],
+        "path": "世界书\\场景五.txt"
+      },
+      "场景六": {
+        "abstract": "",
+        "uid": 66,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 235,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 66,
+        "keywords": [],
+        "path": "世界书\\场景六.txt"
+      },
+      "场景七": {
+        "abstract": "",
+        "uid": 67,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 236,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 67,
+        "keywords": [],
+        "path": "世界书\\场景七.txt"
+      },
+      "场景八": {
+        "abstract": "",
+        "uid": 68,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 237,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 68,
+        "keywords": [],
+        "path": "世界书\\场景八.txt"
+      },
+      "场景九": {
+        "abstract": "",
+        "uid": 69,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 238,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 69,
+        "keywords": [],
+        "path": "世界书\\场景九.txt"
+      },
+      "场景十": {
+        "abstract": "",
+        "uid": 70,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 239,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 70,
+        "keywords": [],
+        "path": "世界书\\场景十.txt"
+      },
+      "场景十一": {
+        "abstract": "",
+        "uid": 71,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 240,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 71,
+        "keywords": [],
+        "path": "世界书\\场景十一.txt"
+      },
+      "场景十二": {
+        "abstract": "",
+        "uid": 72,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 241,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 72,
+        "keywords": [],
+        "path": "世界书\\场景十二.txt"
+      },
+      "场景十三": {
+        "abstract": "",
+        "uid": 73,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 242,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 73,
+        "keywords": [],
+        "path": "世界书\\场景十三.txt"
+      },
+      "场景十四": {
+        "abstract": "",
+        "uid": 74,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 243,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 74,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 14)"
+          },
+          {
+            "file": "世界书\\场景十四.yaml"
+          }
+        ]
+      },
+      "场景十五": {
+        "abstract": "",
+        "uid": 75,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 244,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 75,
+        "keywords": [],
+        "path": "世界书\\场景十五.txt"
+      },
+      "场景十六": {
+        "abstract": "",
+        "uid": 76,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 245,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 76,
+        "keywords": [],
+        "path": "世界书\\场景十六.txt"
+      },
+      "场景十七": {
+        "abstract": "",
+        "uid": 77,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 246,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 77,
+        "keywords": [],
+        "path": "世界书\\场景十七.txt"
+      },
+      "场景十八": {
+        "abstract": "",
+        "uid": 78,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 247,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 78,
+        "keywords": [],
+        "path": "世界书\\场景十八.txt"
+      },
+      "场景十九": {
+        "abstract": "",
+        "uid": 79,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 248,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 79,
+        "keywords": [],
+        "path": "世界书\\场景十九.txt"
+      },
+      "场景二十": {
+        "abstract": "",
+        "uid": 80,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 249,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 80,
+        "keywords": [],
+        "path": "世界书\\场景二十.txt"
+      },
+      "场景二十一": {
+        "abstract": "",
+        "uid": 81,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 250,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 81,
+        "keywords": [],
+        "path": "世界书\\场景二十一.txt"
+      },
+      "场景二十二": {
+        "abstract": "",
+        "uid": 82,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 251,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 82,
+        "keywords": [],
+        "path": "世界书\\场景二十二.txt"
+      },
+      "场景二十三": {
+        "abstract": "",
+        "uid": 83,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 252,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 83,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 23)"
+          },
+          {
+            "file": "世界书\\场景二十三.yaml"
+          }
+        ]
+      },
+      "场景二十四": {
+        "abstract": "",
+        "uid": 84,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 253,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 84,
+        "keywords": [],
+        "path": "世界书\\场景二十四.txt"
+      },
+      "场景二十五": {
+        "abstract": "",
+        "uid": 85,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 254,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 85,
+        "keywords": [],
+        "path": "世界书\\场景二十五.txt"
+      },
+      "场景二十六": {
+        "abstract": "",
+        "uid": 86,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 255,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 86,
+        "keywords": [],
+        "path": "世界书\\场景二十六.txt"
+      },
+      "场景二十七": {
+        "abstract": "",
+        "uid": 87,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 256,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 87,
+        "keywords": [],
+        "path": "世界书\\场景二十七.txt"
+      },
+      "场景二十八": {
+        "abstract": "",
+        "uid": 88,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 257,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 88,
+        "keywords": [],
+        "path": "世界书\\场景二十八.txt"
+      },
+      "场景二十九": {
+        "abstract": "",
+        "uid": 89,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 258,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 89,
+        "keywords": [],
+        "path": "世界书\\场景二十九.txt"
+      },
+      "场景三十": {
+        "abstract": "",
+        "uid": 90,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 259,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 90,
+        "keywords": [],
+        "path": "世界书\\场景三十.txt"
+      },
+      "场景三十一": {
+        "abstract": "",
+        "uid": 91,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 260,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 91,
+        "keywords": [],
+        "path": "世界书\\场景三十一.txt"
+      },
+      "场景三十二": {
+        "abstract": "",
+        "uid": 92,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 261,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 92,
+        "keywords": [],
+        "path": "世界书\\场景三十二.txt"
+      },
+      "场景三十三": {
+        "abstract": "",
+        "uid": 93,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 262,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 93,
+        "keywords": [],
+        "path": "世界书\\场景三十三.txt"
+      },
+      "场景三十四": {
+        "abstract": "",
+        "uid": 94,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 263,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 94,
+        "keywords": [],
+        "path": "世界书\\场景三十四.txt"
+      },
+      "场景三十五": {
+        "abstract": "",
+        "uid": 95,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 264,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 95,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 35)"
+          },
+          {
+            "file": "世界书\\场景三十五.yaml"
+          }
+        ]
+      },
+      "场景三十六": {
+        "abstract": "",
+        "uid": 96,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 265,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 96,
+        "keywords": [],
+        "path": "世界书\\场景三十六.txt"
+      },
+      "场景三十七": {
+        "abstract": "",
+        "uid": 97,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 266,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 97,
+        "keywords": [],
+        "path": "世界书\\场景三十七.txt"
+      },
+      "场景三十八": {
+        "abstract": "",
+        "uid": 98,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 267,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 98,
+        "keywords": [],
+        "path": "世界书\\场景三十八.txt"
+      },
+      "场景三十九": {
+        "abstract": "",
+        "uid": 99,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 268,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 99,
+        "keywords": [],
+        "path": "世界书\\场景三十九.txt"
+      },
+      "场景四十": {
+        "abstract": "",
+        "uid": 100,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 269,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 100,
+        "keywords": [],
+        "path": "世界书\\场景四十.txt"
+      },
+      "场景四十一": {
+        "abstract": "",
+        "uid": 101,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 270,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 101,
+        "keywords": [],
+        "path": "世界书\\场景四十一.txt"
+      },
+      "场景四十二": {
+        "abstract": "",
+        "uid": 102,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 271,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 102,
+        "keywords": [],
+        "path": "世界书\\场景四十二.txt"
+      },
+      "场景四十三": {
+        "abstract": "",
+        "uid": 103,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 272,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 103,
+        "keywords": [],
+        "path": "世界书\\场景四十三.txt"
+      },
+      "场景四十四": {
+        "abstract": "",
+        "uid": 104,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 273,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 104,
+        "keywords": [],
+        "path": "世界书\\场景四十四.txt"
+      },
+      "场景四十五": {
+        "abstract": "",
+        "uid": 105,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 274,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 105,
+        "keywords": [],
+        "path": "世界书\\场景四十五.txt"
+      },
+      "场景四十六": {
+        "abstract": "",
+        "uid": 106,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 275,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 106,
+        "keywords": [],
+        "path": "世界书\\场景四十六.txt"
+      },
+      "场景四十七": {
+        "abstract": "",
+        "uid": 107,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 276,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 107,
+        "keywords": [],
+        "path": "世界书\\场景四十七.txt"
+      },
+      "场景四十八": {
+        "abstract": "",
+        "uid": 108,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 277,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 108,
+        "keywords": [],
+        "path": "世界书\\场景四十八.txt"
+      },
+      "场景四十九": {
+        "abstract": "",
+        "uid": 109,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 278,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 109,
+        "keywords": [],
+        "path": "世界书\\场景四十九.txt"
+      },
+      "场景五十": {
+        "abstract": "",
+        "uid": 110,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 279,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 110,
+        "keywords": [],
+        "path": "世界书\\场景五十.txt"
+      },
+      "场景五十一": {
+        "abstract": "",
+        "uid": 111,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 280,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 111,
+        "keywords": [],
+        "path": "世界书\\场景五十一.txt"
+      },
+      "场景五十二": {
+        "abstract": "",
+        "uid": 112,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 281,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 112,
+        "keywords": [],
+        "path": "世界书\\场景五十二.txt"
+      },
+      "场景五十三": {
+        "abstract": "",
+        "uid": 113,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 282,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 113,
+        "keywords": [],
+        "path": "世界书\\场景五十三.txt"
+      },
+      "场景五十四": {
+        "abstract": "",
+        "uid": 114,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 283,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 114,
+        "keywords": [],
+        "path": "世界书\\场景五十四.txt"
+      },
+      "场景五十五": {
+        "abstract": "",
+        "uid": 115,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 284,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 115,
+        "keywords": [],
+        "path": "世界书\\场景五十五.txt"
+      },
+      "场景五十六": {
+        "abstract": "",
+        "uid": 116,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 285,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 116,
+        "keywords": [],
+        "path": "世界书\\场景五十六.txt"
+      },
+      "场景五十七": {
+        "abstract": "",
+        "uid": 117,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 286,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 117,
+        "keywords": [],
+        "path": "世界书\\场景五十七.txt"
+      },
+      "场景五十八": {
+        "abstract": "",
+        "uid": 118,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 287,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 118,
+        "keywords": [],
+        "path": "世界书\\场景五十八.txt"
+      },
+      "场景五十九": {
+        "abstract": "",
+        "uid": 119,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 288,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 119,
+        "keywords": [],
+        "path": "世界书\\场景五十九.txt"
+      },
+      "场景六十": {
+        "abstract": "",
+        "uid": 120,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 289,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 120,
+        "keywords": [],
+        "path": "世界书\\场景六十.txt"
+      },
+      "场景六十一": {
+        "abstract": "",
+        "uid": 121,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 290,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 121,
+        "keywords": [],
+        "path": "世界书\\场景六十一.txt"
+      },
+      "场景六十二": {
+        "abstract": "",
+        "uid": 122,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 291,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 122,
+        "keywords": [],
+        "path": "世界书\\场景六十二.txt"
+      },
+      "场景六十三": {
+        "abstract": "",
+        "uid": 123,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 292,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 123,
+        "keywords": [],
+        "path": "世界书\\场景六十三.txt"
+      },
+      "场景六十四": {
+        "abstract": "",
+        "uid": 124,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 293,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 124,
+        "keywords": [],
+        "path": "世界书\\场景六十四.txt"
+      },
+      "场景六十五": {
+        "abstract": "",
+        "uid": 125,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 294,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 125,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 65)"
+          },
+          {
+            "file": "世界书\\场景六十五.yaml"
+          }
+        ]
+      },
+      "场景六十六": {
+        "abstract": "",
+        "uid": 126,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 295,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 126,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 66)"
+          },
+          {
+            "file": "世界书\\场景六十六.yaml"
+          }
+        ]
+      },
+      "场景六十七": {
+        "abstract": "",
+        "uid": 127,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 296,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 127,
+        "keywords": [],
+        "path": "世界书\\场景六十七.txt"
+      },
+      "场景六十八": {
+        "abstract": "",
+        "uid": 128,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 297,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 128,
+        "keywords": [],
+        "path": "世界书\\场景六十八.txt"
+      },
+      "场景六十九": {
+        "abstract": "",
+        "uid": 129,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 298,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 129,
+        "keywords": [],
+        "path": "世界书\\场景六十九.txt"
+      },
+      "场景七十": {
+        "abstract": "",
+        "uid": 130,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 299,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 130,
+        "keywords": [],
+        "path": "世界书\\场景七十.txt"
+      },
+      "场景七十一": {
+        "abstract": "",
+        "uid": 131,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 300,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 131,
+        "keywords": [],
+        "path": "世界书\\场景七十一.txt"
+      },
+      "场景七十二": {
+        "abstract": "",
+        "uid": 132,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 301,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 132,
+        "keywords": [],
+        "path": "世界书\\场景七十二.txt"
+      },
+      "场景七十三": {
+        "abstract": "",
+        "uid": 133,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 302,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 133,
+        "keywords": [],
+        "path": "世界书\\场景七十三.txt"
+      },
+      "场景七十四": {
+        "abstract": "",
+        "uid": 134,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 303,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 134,
+        "keywords": [],
+        "path": "世界书\\场景七十四.txt"
+      },
+      "场景七十五": {
+        "abstract": "",
+        "uid": 135,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 304,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 135,
+        "keywords": [],
+        "path": "世界书\\场景七十五.txt"
+      },
+      "场景七十六": {
+        "abstract": "",
+        "uid": 136,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 305,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 136,
+        "keywords": [],
+        "path": "世界书\\场景七十六.txt"
+      },
+      "场景七十七": {
+        "abstract": "",
+        "uid": 137,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 306,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 137,
+        "keywords": [],
+        "path": "世界书\\场景七十七.txt"
+      },
+      "场景七十八": {
+        "abstract": "",
+        "uid": 138,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 307,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 138,
+        "keywords": [],
+        "path": "世界书\\场景七十八.txt"
+      },
+      "场景七十九": {
+        "abstract": "",
+        "uid": 139,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 308,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 139,
+        "keywords": [],
+        "path": "世界书\\场景七十九.txt"
+      },
+      "场景八十": {
+        "abstract": "",
+        "uid": 140,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 309,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 140,
+        "keywords": [],
+        "path": "世界书\\场景八十.txt"
+      },
+      "场景八十一": {
+        "abstract": "",
+        "uid": 141,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 310,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 141,
+        "keywords": [],
+        "path": "世界书\\场景八十一.txt"
+      },
+      "场景八十二": {
+        "abstract": "",
+        "uid": 142,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 311,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 142,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 82)"
+          },
+          {
+            "file": "世界书\\场景八十二.yaml"
+          }
+        ]
+      },
+      "场景八十三": {
+        "abstract": "",
+        "uid": 143,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 312,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 143,
+        "keywords": [],
+        "path": "世界书\\场景八十三.txt"
+      },
+      "场景八十四": {
+        "abstract": "",
+        "uid": 144,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 313,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 144,
+        "keywords": [],
+        "path": "世界书\\场景八十四.txt"
+      },
+      "场景八十五": {
+        "abstract": "",
+        "uid": 145,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 314,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 145,
+        "keywords": [],
+        "path": "世界书\\场景八十五.txt"
+      },
+      "场景八十六": {
+        "abstract": "",
+        "uid": 146,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 315,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 146,
+        "keywords": [],
+        "path": "世界书\\场景八十六.txt"
+      },
+      "场景八十七": {
+        "abstract": "",
+        "uid": 147,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 316,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 147,
+        "keywords": [],
+        "path": "世界书\\场景八十七.txt"
+      },
+      "场景八十八": {
+        "abstract": "",
+        "uid": 148,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 317,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 148,
+        "keywords": [],
+        "path": "世界书\\场景八十八.txt"
+      },
+      "场景八十九": {
+        "abstract": "",
+        "uid": 149,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 318,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 149,
+        "keywords": [],
+        "path": "世界书\\场景八十九.txt"
+      },
+      "场景九十": {
+        "abstract": "",
+        "uid": 150,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 319,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 150,
+        "keywords": [],
+        "path": "世界书\\场景九十.txt"
+      },
+      "场景九十一": {
+        "abstract": "",
+        "uid": 151,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 320,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 151,
+        "keywords": [],
+        "path": "世界书\\场景九十一.txt"
+      },
+      "场景九十二": {
+        "abstract": "",
+        "uid": 152,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 321,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 152,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 92)"
+          },
+          {
+            "file": "世界书\\场景九十二.yaml"
+          }
+        ]
+      },
+      "场景九十三": {
+        "abstract": "",
+        "uid": 153,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 322,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 153,
+        "keywords": [],
+        "path": "世界书\\场景九十三.txt"
+      },
+      "场景九十四": {
+        "abstract": "",
+        "uid": 154,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 323,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 154,
+        "keywords": [],
+        "path": "世界书\\场景九十四.txt"
+      },
+      "场景九十五": {
+        "abstract": "",
+        "uid": 155,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 324,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 155,
+        "keywords": [],
+        "path": "世界书\\场景九十五.txt"
+      },
+      "场景九十六": {
+        "abstract": "",
+        "uid": 156,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 325,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 156,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 96)"
+          },
+          {
+            "file": "世界书\\场景九十六.yaml"
+          }
+        ]
+      },
+      "场景九十七": {
+        "abstract": "",
+        "uid": 157,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 326,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 157,
+        "keywords": [],
+        "path": "世界书\\场景九十七.txt"
+      },
+      "场景九十八": {
+        "abstract": "",
+        "uid": 158,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 327,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 158,
+        "keywords": [],
+        "path": "世界书\\场景九十八.txt"
+      },
+      "场景九十九": {
+        "abstract": "",
+        "uid": 159,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 328,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 159,
+        "keywords": [],
+        "path": "世界书\\场景九十九.txt"
+      },
+      "场景一百": {
+        "abstract": "",
+        "uid": 160,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 329,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 160,
+        "keywords": [],
+        "path": "世界书\\场景一百.txt"
+      },
+      "场景一百零一": {
+        "abstract": "",
+        "uid": 161,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 330,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 161,
+        "keywords": [],
+        "path": "世界书\\场景一百零一.txt"
+      },
+      "场景一百零二": {
+        "abstract": "",
+        "uid": 162,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 331,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 162,
+        "keywords": [],
+        "path": "世界书\\场景一百零二.txt"
+      },
+      "场景一百零三": {
+        "abstract": "",
+        "uid": 163,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 332,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 163,
+        "keywords": [],
+        "path": "世界书\\场景一百零三.txt"
+      },
+      "场景一百零四": {
+        "abstract": "",
+        "uid": 164,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 333,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 164,
+        "keywords": [],
+        "path": "世界书\\场景一百零四.txt"
+      },
+      "场景一百零五": {
+        "abstract": "",
+        "uid": 165,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 334,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 165,
+        "keywords": [],
+        "path": "世界书\\场景一百零五.txt"
+      },
+      "场景一百零六": {
+        "abstract": "",
+        "uid": 166,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 335,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 166,
+        "keywords": [],
+        "path": "世界书\\场景一百零六.txt"
+      },
+      "场景一百零七": {
+        "abstract": "",
+        "uid": 167,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 336,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 167,
+        "keywords": [],
+        "path": "世界书\\场景一百零七.txt"
+      },
+      "场景一百零八": {
+        "abstract": "",
+        "uid": 168,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 337,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 168,
+        "keywords": [],
+        "path": "世界书\\场景一百零八.txt"
+      },
+      "场景一百零九": {
+        "abstract": "",
+        "uid": 169,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 338,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 169,
+        "keywords": [],
+        "path": "世界书\\场景一百零九.txt"
+      },
+      "场景一百一十": {
+        "abstract": "",
+        "uid": 170,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 339,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 170,
+        "keywords": [],
+        "path": "世界书\\场景一百一十.txt"
+      },
+      "场景一百一十一": {
+        "abstract": "",
+        "uid": 171,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 340,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 171,
+        "keywords": [],
+        "path": "世界书\\场景一百一十一.txt"
+      },
+      "场景一百一十二": {
+        "abstract": "",
+        "uid": 172,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 341,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 172,
+        "keywords": [],
+        "path": "世界书\\场景一百一十二.txt"
+      },
+      "场景一百一十三": {
+        "abstract": "",
+        "uid": 173,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 342,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 173,
+        "keywords": [],
+        "path": "世界书\\场景一百一十三.txt"
+      },
+      "场景一百一十四": {
+        "abstract": "",
+        "uid": 174,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 343,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 174,
+        "keywords": [],
+        "path": "世界书\\场景一百一十四.txt"
+      },
+      "场景一百一十五": {
+        "abstract": "",
+        "uid": 175,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 344,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 175,
+        "keywords": [],
+        "path": "世界书\\场景一百一十五.txt"
+      },
+      "场景一百一十六": {
+        "abstract": "",
+        "uid": 176,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 345,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 176,
+        "keywords": [],
+        "path": "世界书\\场景一百一十六.txt"
+      },
+      "场景一百一十七": {
+        "abstract": "",
+        "uid": 177,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 346,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 177,
+        "keywords": [],
+        "path": "世界书\\场景一百一十七.txt"
+      },
+      "场景一百一十八": {
+        "abstract": "",
+        "uid": 178,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 347,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 178,
+        "keywords": [],
+        "path": "世界书\\场景一百一十八.txt"
+      },
+      "场景一百一十九": {
+        "abstract": "",
+        "uid": 179,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 348,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 179,
+        "keywords": [],
+        "path": "世界书\\场景一百一十九.txt"
+      },
+      "场景一百二十": {
+        "abstract": "",
+        "uid": 180,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 349,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 180,
+        "keywords": [],
+        "path": "世界书\\场景一百二十.txt"
+      },
+      "场景一百二十一": {
+        "abstract": "",
+        "uid": 181,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 350,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 181,
+        "keywords": [],
+        "path": "世界书\\场景一百二十一.txt"
+      },
+      "场景一百二十二": {
+        "abstract": "",
+        "uid": 182,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 351,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 182,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 122)"
+          },
+          {
+            "file": "世界书\\场景一百二十二.yaml"
+          }
+        ]
+      },
+      "场景一百二十三": {
+        "abstract": "",
+        "uid": 183,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 352,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 183,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && ((getvar('stat_data.mode', {defaults: null}) === 'pov' && getvar('stat_data.current_pov', {defaults: null}) === 'laff') || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 123)"
+          },
+          {
+            "file": "世界书\\场景一百二十三.yaml"
+          }
+        ]
+      },
+      "场景一百二十四": {
+        "abstract": "",
+        "uid": 184,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 353,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 184,
+        "keywords": [],
+        "path": "世界书\\场景一百二十四.txt"
+      },
+      "场景一百二十五": {
+        "abstract": "",
+        "uid": 185,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 354,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 185,
+        "keywords": [],
+        "path": "世界书\\场景一百二十五.txt"
+      },
+      "场景一百二十六": {
+        "abstract": "",
+        "uid": 186,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 355,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 186,
+        "keywords": [],
+        "path": "世界书\\场景一百二十六.txt"
+      },
+      "场景一百二十七": {
+        "abstract": "",
+        "uid": 187,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 356,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 187,
+        "keywords": [],
+        "path": "世界书\\场景一百二十七.txt"
+      },
+      "场景一百二十八": {
+        "abstract": "",
+        "uid": 188,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 357,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 188,
+        "keywords": [],
+        "path": "世界书\\场景一百二十八.txt"
+      },
+      "场景一百二十九": {
+        "abstract": "",
+        "uid": 189,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 358,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 189,
+        "keywords": [],
+        "path": "世界书\\场景一百二十九.txt"
+      },
+      "场景一百三十": {
+        "abstract": "",
+        "uid": 190,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 359,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 190,
+        "keywords": [],
+        "path": "世界书\\场景一百三十.txt"
+      },
+      "场景一百三十一": {
+        "abstract": "",
+        "uid": 191,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 360,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 191,
+        "keywords": [],
+        "path": "世界书\\场景一百三十一.txt"
+      },
+      "场景一百三十二": {
+        "abstract": "",
+        "uid": 192,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 361,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 192,
+        "keywords": [],
+        "path": "世界书\\场景一百三十二.txt"
+      },
+      "场景一百三十三": {
+        "abstract": "",
+        "uid": 193,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 362,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 193,
+        "keywords": [],
+        "path": "世界书\\场景一百三十三.txt"
+      },
+      "场景一百三十四": {
+        "abstract": "",
+        "uid": 194,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 363,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 194,
+        "keywords": [],
+        "path": "世界书\\场景一百三十四.txt"
+      },
+      "场景一百三十五": {
+        "abstract": "",
+        "uid": 195,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 364,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 195,
+        "keywords": [],
+        "path": "世界书\\场景一百三十五.txt"
+      },
+      "场景一百三十六": {
+        "abstract": "",
+        "uid": 196,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 365,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 196,
+        "keywords": [],
+        "path": "世界书\\场景一百三十六.txt"
+      },
+      "场景一百三十七": {
+        "abstract": "",
+        "uid": 197,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 366,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 197,
+        "keywords": [],
+        "path": "世界书\\场景一百三十七.txt"
+      },
+      "场景一百三十八": {
+        "abstract": "",
+        "uid": 198,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 367,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 198,
+        "keywords": [],
+        "path": "世界书\\场景一百三十八.txt"
+      },
+      "场景一百三十九": {
+        "abstract": "",
+        "uid": 199,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 368,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 199,
+        "keywords": [],
+        "path": "世界书\\场景一百三十九.txt"
+      },
+      "场景一百四十": {
+        "abstract": "",
+        "uid": 200,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 369,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 200,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 140)"
+          },
+          {
+            "file": "世界书\\场景一百四十.yaml"
+          }
+        ]
+      },
+      "场景一百四十一": {
+        "abstract": "",
+        "uid": 201,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 370,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 201,
+        "keywords": [],
+        "path": "世界书\\场景一百四十一.txt"
+      },
+      "场景一百四十二": {
+        "abstract": "",
+        "uid": 202,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 371,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 202,
+        "keywords": [],
+        "path": "世界书\\场景一百四十二.txt"
+      },
+      "场景一百四十三": {
+        "abstract": "",
+        "uid": 203,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 372,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 203,
+        "keywords": [],
+        "path": "世界书\\场景一百四十三.txt"
+      },
+      "场景一百四十四": {
+        "abstract": "",
+        "uid": 204,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 373,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 204,
+        "keywords": [],
+        "path": "世界书\\场景一百四十四.txt"
+      },
+      "场景一百四十五": {
+        "abstract": "",
+        "uid": 205,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 374,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 205,
+        "keywords": [],
+        "path": "世界书\\场景一百四十五.txt"
+      },
+      "场景一百四十六": {
+        "abstract": "",
+        "uid": 206,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 375,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 206,
+        "keywords": [],
+        "path": "世界书\\场景一百四十六.txt"
+      },
+      "场景一百四十七": {
+        "abstract": "",
+        "uid": 207,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 376,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 207,
+        "keywords": [],
+        "path": "世界书\\场景一百四十七.txt"
+      },
+      "场景一百四十八": {
+        "abstract": "",
+        "uid": 208,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 377,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 208,
+        "keywords": [],
+        "path": "世界书\\场景一百四十八.txt"
+      },
+      "场景一百四十九": {
+        "abstract": "",
+        "uid": 209,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 378,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 209,
+        "keywords": [],
+        "path": "世界书\\场景一百四十九.txt"
+      },
+      "场景一百五十": {
+        "abstract": "",
+        "uid": 210,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 379,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 210,
+        "keywords": [],
+        "path": "世界书\\场景一百五十.txt"
+      },
+      "[InitVar]请勿打开": {
+        "abstract": "",
+        "uid": 211,
+        "enabled": false,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 380,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 211,
+        "keywords": [],
+        "path": "世界书\\[InitVar]请勿打开.yaml"
+      },
+      "变量列表": {
+        "abstract": "",
+        "uid": 212,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 390,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 212,
+        "keywords": [],
+        "path": "世界书\\变量列表.txt"
+      },
+      "[mvu_update]变量更新规则": {
+        "abstract": "",
+        "uid": 213,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 400,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 213,
+        "keywords": [],
+        "path": "世界书\\[mvu_update]变量更新规则.yaml"
+      },
+      "[mvu_update]变量输出格式": {
+        "abstract": "",
+        "uid": 214,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 401,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 214,
+        "keywords": [],
+        "path": "世界书\\[mvu_update]变量输出格式.txt"
+      },
+      "玩家身份路由": {
+        "abstract": "",
+        "uid": 215,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 11
+        },
+        "display_index": 215,
+        "keywords": [],
+        "path": "世界书\\玩家身份路由.txt"
+      },
+      "开局场景路由": {
+        "abstract": "",
+        "uid": 216,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 12
+        },
+        "display_index": 216,
+        "keywords": [],
+        "path": "世界书\\开局场景路由.txt"
+      },
+      "玩家视点滤镜": {
+        "abstract": "",
+        "uid": 217,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 13
+        },
+        "display_index": 217,
+        "keywords": [],
+        "path": "世界书\\玩家视点滤镜.txt"
+      },
+      "角色阶段事实": {
+        "abstract": "",
+        "uid": 218,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 14
+        },
+        "display_index": 218,
+        "keywords": [],
+        "path": "世界书\\角色阶段事实.txt"
+      },
+      "还火事件_封存真相": {
+        "abstract": "",
+        "uid": 219,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 22
+        },
+        "display_index": 219,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if (getvar('stat_data.mode', {defaults: null}) === 'pov' && getvar('stat_data.current_pov', {defaults: null}) === 'laff' && (Number(getvar('stat_data.current_scene', {defaults: null}) ?? 0) >= 123 || getvar('stat_data.laff_knows_fire_truth', {defaults: false}) === true))"
+          },
+          {
+            "file": "世界书\\还火事件_封存真相.yaml"
+          }
+        ]
+      },
+      "手机上下文注入": {
+        "abstract": "",
+        "uid": 220,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 15
+        },
+        "display_index": 220,
+        "keywords": [],
+        "path": "世界书\\手机上下文注入.txt"
+      },
+      "年历": {
+        "abstract": "",
+        "uid": 221,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 50
+        },
+        "display_index": 221,
+        "keywords": [],
+        "path": "世界书\\年历.yaml"
+      },
+      "攻略难度": {
+        "abstract": "",
+        "uid": 232,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 200
+        },
+        "display_index": 232,
+        "keywords": [],
+        "path": "世界书\\攻略难度.txt"
+      },
+      "开放世界在场注入": {
+        "abstract": "",
+        "uid": 233,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 16
+        },
+        "display_index": 233,
+        "keywords": [],
+        "path": "世界书\\开放世界在场注入.txt"
+      },
+      "雪之下雪乃_二次解释": {
+        "abstract": "",
+        "uid": 234,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪乃",
+            "雪之下雪乃"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 412
+        },
+        "display_index": 234,
+        "keywords": [
+          "雪乃",
+          "雪之下雪乃"
+        ],
+        "contents": [
+          {
+            "content": "@@if ((getvar('stat_data.current_pov', {defaults: null}) === 'yukino') || ((!('雪之下雪乃' in getvar('stat_data.characters', {defaults: {}})) || getvar('stat_data.characters', {defaults: {}})['雪之下雪乃'].present === true)))"
+          },
+          {
+            "content": "---\n<character_rephrase character=\"雪之下雪乃\">"
+          },
+          {
+            "file": "世界书\\雪之下雪乃_二次解释.yaml"
+          },
+          {
+            "content": "</character_rephrase>"
+          }
+        ]
+      },
+      "比企谷八幡_二次解释": {
+        "abstract": "",
+        "uid": 235,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "八幡",
+            "比企谷八幡"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 411
+        },
+        "display_index": 235,
+        "keywords": [
+          "八幡",
+          "比企谷八幡"
+        ],
+        "contents": [
+          {
+            "content": "@@if ((getvar('stat_data.current_pov', {defaults: null}) === 'hachiman') || ((!('比企谷八幡' in getvar('stat_data.characters', {defaults: {}})) || getvar('stat_data.characters', {defaults: {}})['比企谷八幡'].present === true)))"
+          },
+          {
+            "content": "---\n<character_rephrase character=\"比企谷八幡\">"
+          },
+          {
+            "file": "世界书\\比企谷八幡_二次解释.yaml"
+          },
+          {
+            "content": "</character_rephrase>"
+          }
+        ]
+      },
+      "由比滨结衣_二次解释": {
+        "abstract": "",
+        "uid": 236,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "结衣",
+            "由比滨结衣"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 410
+        },
+        "display_index": 236,
+        "keywords": [
+          "结衣",
+          "由比滨结衣"
+        ],
+        "contents": [
+          {
+            "content": "@@if ((getvar('stat_data.current_pov', {defaults: null}) === 'yui') || ((!('由比滨结衣' in getvar('stat_data.characters', {defaults: {}})) || getvar('stat_data.characters', {defaults: {}})['由比滨结衣'].present === true)))"
+          },
+          {
+            "content": "---\n<character_rephrase character=\"由比滨结衣\">"
+          },
+          {
+            "file": "世界书\\由比滨结衣_二次解释.yaml"
+          },
+          {
+            "content": "</character_rephrase>"
+          }
+        ]
+      },
+      "DLC_错位的日常_演绎规则": {
+        "abstract": "",
+        "uid": 237,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 201
+        },
+        "display_index": 237,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_genderbend_hachiman'"
+          },
+          {
+            "file": "世界书\\DLC_错位的日常_演绎规则.yaml"
+          }
+        ]
+      },
+      "DLC_君的名字？_演绎规则": {
+        "abstract": "",
+        "uid": 238,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 202
+        },
+        "display_index": 238,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_body_swap_mrs_yukinoshita'"
+          },
+          {
+            "file": "世界书\\DLC_君的名字？_演绎规则.yaml"
+          }
+        ]
+      },
+      "DLC_错位的日常_开局锚点": {
+        "abstract": "",
+        "uid": 239,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 227,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 239,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_genderbend_hachiman' && matchChatMessages(['我选择扮演比企谷八幡，进入《错位的日常》。'], { start: -1 })"
+          },
+          {
+            "file": "世界书\\DLC_错位的日常_开局锚点.yaml"
+          }
+        ]
+      },
+      "DLC_君的名字？_开局锚点_八幡意识": {
+        "abstract": "",
+        "uid": 240,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 228,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 240,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_body_swap_mrs_yukinoshita' && getvar('stat_data.current_pov', { defaults: null }) === 'hachiman' && matchChatMessages(['我选择扮演比企谷八幡的意识，进入《君的名字？》。'], { start: -1 })"
+          },
+          {
+            "file": "世界书\\DLC_君的名字？_开局锚点_八幡意识.yaml"
+          }
+        ]
+      },
+      "DLC_君的名字？_开局锚点_夫人意识": {
+        "abstract": "",
+        "uid": 241,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 229,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 241,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_body_swap_mrs_yukinoshita' && getvar('stat_data.current_pov', { defaults: null }) === 'mrs_yukinoshita' && matchChatMessages(['我选择扮演雪之下夫人的意识，进入《君的名字？》。'], { start: -1 })"
+          },
+          {
+            "file": "世界书\\DLC_君的名字？_开局锚点_夫人意识.yaml"
+          }
+        ]
+      },
+      "存档续接路由": {
+        "abstract": "",
+        "uid": 242,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "before_character_definition",
+          "order": 11
+        },
+        "display_index": 242,
+        "keywords": [],
+        "path": "世界书\\存档续接路由.txt"
+      },
+      "DLC_main118_共同快照": {
+        "abstract": "",
+        "uid": 243,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 198
+        },
+        "display_index": 243,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if ['dlc_genderbend_hachiman', 'dlc_body_swap_mrs_yukinoshita'].includes(getvar('stat_data.campaign_id', { defaults: 'main' }))"
+          },
+          {
+            "file": "世界书\\DLC_main118_共同快照.yaml"
+          }
+        ]
+      },
+      "DLC_main118_八幡意识快照": {
+        "abstract": "",
+        "uid": 244,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 199
+        },
+        "display_index": 244,
+        "keywords": [],
+        "path": "世界书\\DLC_main118_八幡意识快照.txt"
+      },
+      "DLC_main118_夫人意识快照": {
+        "abstract": "",
+        "uid": 245,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 200
+        },
+        "display_index": 245,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_body_swap_mrs_yukinoshita' && getvar('stat_data.current_pov', { defaults: null }) === 'mrs_yukinoshita'"
+          },
+          {
+            "file": "世界书\\DLC_main118_夫人意识快照.yaml"
+          }
+        ]
+      },
+      "雪之下夫人_基础信息": {
+        "abstract": "",
+        "uid": 246,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下夫人",
+            "雪之下母亲"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 186
+        },
+        "display_index": 246,
+        "keywords": [
+          "雪之下夫人",
+          "雪之下母亲"
+        ],
+        "contents": [
+          {
+            "content": "@@if ((getvar('stat_data.current_pov', {defaults: null}) === 'mrs_yukinoshita') || ((!('雪之下夫人' in getvar('stat_data.characters', {defaults: {}})) || getvar('stat_data.characters', {defaults: {}})['雪之下夫人'].present === true)))"
+          },
+          {
+            "content": "---\n<character_basic character=\"雪之下夫人\">"
+          },
+          {
+            "file": "世界书\\雪之下夫人_基础信息.yaml"
+          },
+          {
+            "content": "</character_basic>"
+          }
+        ]
+      },
+      "雪之下夫人_性格调色盘": {
+        "abstract": "",
+        "uid": 247,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下夫人",
+            "雪之下母亲"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 187
+        },
+        "display_index": 247,
+        "keywords": [
+          "雪之下夫人",
+          "雪之下母亲"
+        ],
+        "path": "世界书\\雪之下夫人_性格调色盘.txt"
+      },
+      "雪之下夫人_三面性": {
+        "abstract": "",
+        "uid": 248,
+        "enabled": true,
+        "strategy": {
+          "type": "selective",
+          "keys": [
+            "雪之下夫人",
+            "雪之下母亲"
+          ]
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 188
+        },
+        "display_index": 248,
+        "keywords": [
+          "雪之下夫人",
+          "雪之下母亲"
+        ],
+        "path": "世界书\\雪之下夫人_三面性.txt"
+      },
+      "DLC_错位的日常_基础信息_八幡": {
+        "abstract": "",
+        "uid": 249,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 202
+        },
+        "display_index": 249,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_genderbend_hachiman'"
+          },
+          {
+            "file": "世界书\\DLC_错位的日常_基础信息_八幡.yaml"
+          }
+        ]
+      },
+      "尾声_八幡×雪乃": {
+        "abstract": "",
+        "uid": 250,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 402,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 250,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.mainline_completed', {defaults: false}) === true && getvar('stat_data.branch_choice', {defaults: null}) === '八幡×雪乃'"
+          },
+          {
+            "file": "世界书\\尾声_八幡×雪乃.yaml"
+          }
+        ]
+      },
+      "尾声_八幡×结衣": {
+        "abstract": "",
+        "uid": 251,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 403,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 251,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.mainline_completed', {defaults: false}) === true && getvar('stat_data.branch_choice', {defaults: null}) === '八幡×结衣'"
+          },
+          {
+            "file": "世界书\\尾声_八幡×结衣.yaml"
+          }
+        ]
+      },
+      "尾声_八幡×拉芙希妮": {
+        "abstract": "",
+        "uid": 252,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 404,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 252,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.mainline_completed', {defaults: false}) === true && getvar('stat_data.branch_choice', {defaults: null}) === '八幡×拉芙希妮'"
+          },
+          {
+            "file": "世界书\\尾声_八幡×拉芙希妮.yaml"
+          }
+        ]
+      },
+      "尾声_雪乃×结衣": {
+        "abstract": "",
+        "uid": 253,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 405,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 253,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.mainline_completed', {defaults: false}) === true && getvar('stat_data.branch_choice', {defaults: null}) === '雪乃×结衣'"
+          },
+          {
+            "file": "世界书\\尾声_雪乃×结衣.yaml"
+          }
+        ]
+      },
+      "尾声_雪乃×拉芙希妮": {
+        "abstract": "",
+        "uid": 254,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 406,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 254,
+        "keywords": [],
+        "path": "世界书\\尾声_雪乃×拉芙希妮.txt"
+      },
+      "尾声_拉芙希妮×结衣": {
+        "abstract": "",
+        "uid": 255,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 407,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 255,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.mainline_completed', {defaults: false}) === true && getvar('stat_data.branch_choice', {defaults: null}) === '拉芙希妮×结衣'"
+          },
+          {
+            "file": "世界书\\尾声_拉芙希妮×结衣.yaml"
+          }
+        ]
+      },
+      "尾声_姐妹和解": {
+        "abstract": "",
+        "uid": 256,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "at_depth",
+          "order": 408,
+          "role": "system",
+          "depth": 0
+        },
+        "display_index": 256,
+        "keywords": [],
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.mainline_completed', {defaults: false}) === true && getvar('stat_data.branch_choice', {defaults: null}) === '姐妹和解'"
+          },
+          {
+            "file": "世界书\\尾声_姐妹和解.yaml"
+          }
+        ]
+      }
+    }
+  },
+  "typeLists": {
+    "before_char": [],
+    "after_char": [],
+    "depth": []
+  },
+  "depth_defaults": {
+    "role": "system",
+    "depth": 0
+  },
+  "description": "",
+  "first_messages": [
+    "开场白\\0.txt"
+  ],
+  "creator": "",
+  "creator_notes": "v0.6.0：主线保留150场并新增场景1、33、36、80、83 CG；新增《错位的日常》《君的名字？》两条开放世界DLC开局、稳定玩家意识与身体状态；新增JSONL/便携存档恢复、时间转场和进度式CG画廊。剧情模式必须安装并启用酒馆助手的“提示词模板”插件，请使用默认开场界面选择战役与玩家视点。DLC专属剧情CG留待后续更新。",
+  "version": "0.6.0",
+  "create_date": "2026-07-25T06:53:23.427Z",
+  "extensions": {
+    "tavern_helper": {
+      "scripts": {
+        "MVU": {
+          "type": "script",
+          "enabled": true,
+          "id": "d0311ca6-5e9a-498e-a777-f74dc4dc6b12",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "重新处理变量",
+                "visible": true
+              },
+              {
+                "name": "重新读取初始变量",
+                "visible": true
+              },
+              {
+                "name": "快照楼层",
+                "visible": false
+              },
+              {
+                "name": "重演楼层",
+                "visible": false
+              },
+              {
+                "name": "重试额外模型解析",
+                "visible": false
+              },
+              {
+                "name": "清除旧楼层变量",
+                "visible": false
+              }
+            ]
+          },
+          "data": {},
+          "script_file": "脚本\\MVU.txt"
+        },
+        "Zod": {
+          "type": "script",
+          "enabled": true,
+          "id": "5b3b09af-35e3-4149-a0f7-2f08776ed6a1",
+          "info": "",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {},
+          "script_file": "脚本\\Zod.txt"
+        },
+        "开场白挂载": {
+          "type": "script",
+          "enabled": true,
+          "id": "2f001d6a-e38d-46c4-98fd-10d30996950e",
+          "info": "开场白界面挂载器：内嵌已验收单文件HTML+MVU原子提交校验+可见user开局消息+/trigger首条AI回复·不依赖运行时CDN fetch",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {},
+          "script_file": "脚本\\开场白挂载.txt"
+        },
+        "状态栏挂载": {
+          "type": "script",
+          "enabled": true,
+          "id": "a4d351d2-800e-4570-9f1d-cb707d1dee24",
+          "info": "Counterfeit 状态栏挂载器：内嵌已验收单文件HTML+AI楼层监听+API桥+懒加载+自动高度·不依赖运行时CDN fetch",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {},
+          "script_file": "脚本\\状态栏挂载.txt"
+        },
+        "CG挂载": {
+          "type": "script",
+          "enabled": true,
+          "id": "138072e9-7dd4-43d8-b9c6-78b40424d7ae",
+          "info": "Counterfeit CG挂载器：AI楼层MVU快照跨点揭示CG·第150幕由mainline_completed完成态解锁·图片与地图固定提交CDN·不写变量不依赖模型输出·回溯自动消失",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {},
+          "script_file": "脚本\\CG挂载.txt"
+        }
+      }
+    },
+    "talkativeness": "0.5",
+    "fav": false,
+    "world": "Counterfeit",
+    "depth_prompt": {
+      "prompt": "",
+      "depth": 4,
+      "role": "system"
+    }
+  },
+  "regex_scripts": {
+    "对AI隐藏变量更新": {
+      "id": "aa12731a-97c4-4450-ac2f-0bfe1d6a4f64",
+      "findRegex": "/<(update(?:variable)?)>(?:(?!.*<\\/\\1>)(?:(?!<\\1>).)*$|(?:(?!<\\1>).)*<\\/\\1?>)/gsi",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": false,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "变量更新中美化": {
+      "id": "b9d5f25b-a9d0-41bf-8a69-602d64bbde22",
+      "findRegex": "/<(update(?:variable)?)>(?!.*<\\/\\1>)\\s*((?:(?!<\\1>).)*)\\s*$/gsi",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null,
+      "replace_file": "正则\\变量更新中美化.txt"
+    },
+    "变量更新美化": {
+      "id": "92d49340-fe5e-4929-871f-43d110e5ec76",
+      "findRegex": "/<(update(?:variable)?)>\\s*((?:(?!<\\1>).)*)\\s*<\\/\\1>/gsi",
+      "trimStrings": [],
+      "placement": [
+        1,
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": false,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null,
+      "replace_file": "正则\\变量更新美化.txt"
+    },
+    "对AI隐藏开场白界面": {
+      "id": "7c3a1f2e-9b4d-4e8a-a6c1-2d5f8e0b1a01",
+      "findRegex": "<OpeningUI/>",
+      "replaceString": "",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": false,
+      "promptOnly": true,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null
+    },
+    "开场白界面": {
+      "id": "7c3a1f2e-9b4d-4e8a-a6c1-2d5f8e0b1a02",
+      "findRegex": "<OpeningUI/>",
+      "trimStrings": [],
+      "placement": [
+        2
+      ],
+      "disabled": false,
+      "markdownOnly": true,
+      "promptOnly": false,
+      "runOnEdit": true,
+      "substituteRegex": 0,
+      "minDepth": null,
+      "maxDepth": null,
+      "replace_file": "正则\\开场白界面.txt"
+    }
+  },
+  "avatar": "avatar.png"
+}

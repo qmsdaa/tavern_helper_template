@@ -1,0 +1,46 @@
+@@generate_before
+@@private
+<%_
+// 本条目负责"哪些事件/物件/称呼已经发生"的场景门槛（事实可用性）。人格成长不由 current_scene 决定——四主角阶段见 arc_milestones（更新规则"成长里程碑"段）。二者分工：本条目管世界事实，里程碑管人格
+const factMode = getvar('stat_data.mode', { defaults: null });
+const factCampaign = getvar('stat_data.campaign_id', { defaults: 'main' });
+const factPov = getvar('stat_data.current_pov', { defaults: null });
+const factScene = Number(getvar('stat_data.current_scene', { defaults: 1 }));
+const reedAllowed = Boolean(getvar('stat_data.laff_reed_authorized_yukino', { defaults: false }));
+// DLC 战役锚定 main:118 快照：current_scene=1 只是开放世界兼容占位，场景门槛一律改按锚点 118 求值，
+// 否则 DLC 开局丢失全部"截至场景118已成立"的事实（2026-08-16 实机：DLC 内 AI 不认识一色、不知平冢调离）
+const isDlcCampaign = factCampaign === 'dlc_genderbend_hachiman' || factCampaign === 'dlc_body_swap_mrs_yukinoshita';
+const effectiveScene = isDlcCampaign ? 118 : factScene;
+const facts = [];
+if (effectiveScene >= 11) facts.push('拉芙希妮已保存林间学校获得的蒲公英种子。');
+if (effectiveScene >= 25) facts.push('结衣送给拉芙希妮的发卡已经实际存在；此前不得倒推。');
+if (effectiveScene >= 45) facts.push('红丝带已由雪乃在发生过的互动中系到拉芙希妮左腕；此前只有烧焦丝带。');
+if (effectiveScene >= 49) facts.push('一色彩羽已经登场；此前不得让核心角色提前认识她。');
+if (effectiveScene >= 53) facts.push('一色彩羽已经当选学生会长。');
+if (effectiveScene >= 91) facts.push('平冢静已经调离总武高中；此前不得把调离当作完成事实。');
+if (effectiveScene >= 99) facts.push('拉芙希妮已将五件重要物品整理为可见的个人珍藏。');
+// 苇草称呼是场景135（锚点118之后）的授权事件；!isDlcCampaign 从结构上封死 DLC 存档变量污染/调试置位的泄露路径
+if (!isDlcCampaign && (reedAllowed || effectiveScene >= 135)) facts.push('拉芙希妮已经主动授予雪乃“苇草”称呼权限；权限只及雪乃，其他人不得沿用。');
+_%>
+<%_ if (isDlcCampaign) { _%>
+<stage_facts>
+连续性锚点: 本战役只继承已注入的 main:118 快照；current_scene=1 只是开放世界兼容占位，不代表主线场景1，也不得激活、复演或补齐场景1—118。
+知识边界: 共享世界事实与当前玩家意识的知识/关系基线必须分开使用。只允许当前 current_pov 对应的 player_snapshot 进入玩家内心；另一意识的私有认知不得交叉复制。
+推进方式: 从2014-07-12的战役开局与之后实际演绎的事实继续，未被快照或正文建立的未来主线事件均不存在。
+截至2014-07-12已经成立的后续阶段事实（与快照共同使用，不得倒推到更早时点）：
+<%_ for (const fact of facts) { _%>- <%- fact %>
+<%_ } _%>
+</stage_facts>
+<%_ } else if (factCampaign === 'main' && factMode === 'pov') { _%>
+<stage_facts>
+只把下列条目视为截至当前场景已经发生的连续性事实；未列出的未来物件、身份变化、称呼授权与关系结果不得提前调用。
+<%_ if (facts.length) { _%>
+<%_ for (const fact of facts) { _%>- <%- fact %>
+<%_ } _%>
+<%_ } else { _%>- 当前尚无需要补入的后续阶段事实。
+<%_ } _%>
+<%_ if ((factScene === 123 || factScene === 124) && factPov !== 'laff') { _%>
+- 当前为拉芙专属真相场景的非拉芙视角替代段：<user>只知道拉芙正在处理无法公开的家族事务或暂时失联。演绎日本侧可观察到的缺席、联络受限与关系反应，绝不披露保险报告、安保命令、责任链或爱布拉娜的签署事实；完成一个自然的外部视角收束后即可推进场景。
+<%_ } _%>
+</stage_facts>
+<%_ } _%>

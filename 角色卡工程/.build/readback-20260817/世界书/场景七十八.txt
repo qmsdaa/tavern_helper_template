@@ -1,0 +1,157 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 78)
+场景: 78
+幕: "第五幕·PTA→舞会"
+时间: "2014年2月21日 · 周五 · 三学期"
+索引日期: "2014-02-21"
+地点: "总武高中 · 特别栋 · 奉仕部活动室"
+人物: "拉芙希妮·都柏林、雪之下雪乃、比企谷八幡、由比滨结衣、平冢静（+ 提及：一色彩羽、雪之下母）"
+事件焦点:
+  类型: 群像
+  角色:
+    []
+
+# TRANSITION_RUNTIME_GUARD_START main:78
+# <%_ const __cfTransitionTarget78 = 78; _%>
+# <%_ const __cfTransitionCurrentScene78 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign78 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages78 = []; _%>
+# <%_ try { const __cfTransitionLastId78 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages78 = getChatMessages('0-' + __cfTransitionLastId78, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages78 = []; } _%>
+# <%_ const __cfTransitionSnapshots78 = (Array.isArray(__cfTransitionMessages78) ? __cfTransitionMessages78 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious78 = __cfTransitionSnapshots78.length ? __cfTransitionSnapshots78[__cfTransitionSnapshots78.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene78 = Number(__cfTransitionPrevious78 && __cfTransitionPrevious78.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign78 = (__cfTransitionPrevious78 && __cfTransitionPrevious78.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped78 = Math.max(0, __cfTransitionCurrentScene78 - __cfTransitionPreviousScene78 - 1); _%>
+# <%_ const __cfTransitionExpose78 = __cfTransitionCurrentCampaign78 === 'main' && __cfTransitionPreviousCampaign78 === 'main' && __cfTransitionCurrentScene78 === __cfTransitionTarget78 && Number.isInteger(__cfTransitionPreviousScene78) && __cfTransitionPreviousScene78 < __cfTransitionCurrentScene78; _%>
+# <%_ if (__cfTransitionExpose78) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped78 %>"
+  mode: date_only
+  visible_title: 二月下旬，新的委托
+  visible_lines:
+    - 情人节过去一周，包装纸和尴尬都退回普通上课日的背景。
+    - 平冢静带来的文件让活动室重新有了必须共同阅读的内容。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:78
+场景功能:
+  - ★平冢静带来PTA舞会委托——原方案被雪之下夫人全盘否决——"形式过于老旧，缺乏体现总武高精英气质的创新性"
+  - 一色彩羽夸下海口"学生会有备用方案"——实则把烂摊子甩给奉仕部
+  - 雪乃听到"PTA"瞬间防御——"奉仕部没有介入这种层级博弈的立场"
+  - 平冢静注意到拉芙希妮左腕的红绸带——克制而意味深长的目光
+  - ★平冢静说出"都柏林同学"——在拉芙希妮面前描述"被权威用宏大叙事施压"的模式——暗示她知道拉芙希妮的家庭处境
+  - 雪乃拒绝——"我们拒绝。奉仕部的原则是提供帮助，而不是代替完成"
+  - 平冢静放下牛皮纸信封——"看不看，接不接，那是你们的自由"
+
+进入状态:
+  已发生:
+    - 情人节结束
+    - PTA审核会议否决了初版舞会方案
+  当前局面:
+    - 平冢静站在活动室中
+    - 信封在桌上
+  未发生:
+    - 雪乃尚未同意接手
+    - 方案尚未被查阅
+
+世界推动:
+  - 三年级毕业典礼临近
+  - PTA审核流程的行政压力
+
+NPC动机:
+  平冢静:
+    - 此刻目标: 把舞会委托放在桌上——但不强迫接受
+    - 行为倾向: 说明PTA否决→提到一色彩羽的把戏→目光停在拉芙希妮红绸带上→描述"大人们的试炼"→放下信封离开
+    - 知情边界: 知道雪之下夫人的参与；知道拉芙希妮的家庭处境（暗示）
+    - 表达意图: "大人们总是喜欢用一些冠冕堂皇的理由，把那些原本应该由自己承担的重压，用'试炼'或者'期待'的名义包装起来，然后扔给更年轻的人。"
+  雪之下雪乃:
+    - 此刻目标: 拒绝介入——因为母亲在PTA背后
+    - 行为倾向: 听到"PTA"胃部收缩→用"奉仕部原则"拒绝→被平冢静放下信封后沉默
+
+信息边界:
+  公开: PTA否决方案的事实
+  局部: 平冢静对拉芙希妮红绸带的注视（雪乃注意到）
+  隐藏: 平冢静了解拉芙希妮家庭处境的程度
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - "周五部活——平冢静的目光在她左腕红绸带上停了一瞬，她抬起手腕把绸带理了理；听到'大人们总是喜欢用冠冕堂皇的理由'时，她的手指在桌上停了一下。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - "周五部活——她给平冢老师倒茶，没听懂'层级博弈'，但记住了信封；平冢静说那番话时，她看见雪乃手指在桌沿停了一下，把茶杯推了过去；散会后她问八幡'那个信封我们不拆吗'，八幡说'会有人拆的'；走廊上她拽住拉芙希妮袖子，小声问'那句话是说给你听的吗'，拉芙希妮说'是说过给所有人听的'。她哦了一声没再问。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - "周五部活——听到'PTA'两个字时胃部收缩了一下，她用'奉仕部原则'干净利落地拒绝了委托；信封留在桌上，她看了一会儿，没有碰。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - "周五部活——他坐在角落听平冢静说PTA的事，听到'雪之下夫人'时看了雪乃一眼；散会后他留在位置上，等雪乃开口，但她没有。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "周五部活——他坐在角落听平冢静说PTA的事，听到'雪之下夫人'时看了雪乃一眼；散会后他留在位置上，等雪乃开口，但她没有。"
+  yukino: "周五部活——听到'PTA'两个字时胃部收缩了一下，她用'奉仕部原则'干净利落地拒绝了委托；信封留在桌上，她看了一会儿，没有碰。"
+  yui: "周五部活——她给平冢老师倒茶，没听懂'层级博弈'，但记住了信封；平冢静说那番话时，她看见雪乃手指在桌沿停了一下，把茶杯推了过去；散会后她问八幡'那个信封我们不拆吗'，八幡说'会有人拆的'；走廊上她拽住拉芙希妮袖子，小声问'那句话是说给你听的吗'，拉芙希妮说'是说过给所有人听的'。她哦了一声没再问。"
+  laff: "周五部活——平冢静的目光在她左腕红绸带上停了一瞬，她抬起手腕把绸带理了理；听到'大人们总是喜欢用冠冕堂皇的理由'时，她的手指在桌上停了一下。"
+
+玩家控制边界:
+  - 雪乃POV：是否直接拒绝，拒绝的措辞——由玩家决定
+  - 拉芙希妮POV：对平冢静注视的反应——由玩家决定
+
+可用节拍:
+  - 平冢静宣布PTA否决
+  - 一色夸下海口的背景
+  - 雪乃拒绝
+  - 平冢静目光落在拉芙希妮红绸带上
+  - ★平冢静说"大人们总是喜欢……"——暗示拉芙希妮的家庭模式
+  - 雪乃看到拉芙希妮手指收紧
+  - "我们拒绝"
+  - 平冢静放下信封离开
+
+偏离处理:
+  - 若雪乃POV当场答应接手：允许——但平冢静会把信封往回收半寸并提醒"想清楚谁在审核席上"；答应的代价是她必须自己说出"母亲"两个字
+  - 若拉芙希妮POV对平冢静的暗示正面回应（承认家里在施压）：平冢静不追问，只说"我没有别的意思"——她不会在其他三人面前把话说破
+  - 若玩家追问平冢静"你知道多少"：她用点烟的动作和"教师的职权范围"挡回去，本场不交底
+  - 若结衣/八幡POV主动要求拆信封：可以拆，但雪乃会先离开活动室——接手与否的决定权仍在她手上，不因信封被拆而转移
+
+推进边界:
+  保持当前场景: 雪乃尚未表态接手
+  可以推进: 平冢静放下信封离开，部活时间结束
+  永久失效: 不适用——信封留在桌上，随时可回到这个决定
+
+完成后事实:
+  - PTA舞会委托摆在奉仕部面前
+  - 雪乃知道母亲在幕后——但尚未决定接手
+  - 平冢静暗示她知道拉芙希妮的家庭处境
+
+氛围锚点:
+  - 平冢静"目光里有一种克制——知情者与旁观者混合在一起"
+  - "大人们总是喜欢用一些冠冕堂皇的理由……"——平冢静说这句话时语速放得很慢，每一个词都像有着特定的指向
+
+禁止提前: 舞会方案的最终通过

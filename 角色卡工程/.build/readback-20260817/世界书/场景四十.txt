@@ -1,0 +1,193 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 40)
+场景: 40
+幕: "第三幕·二学期"
+时间: "2013年11月中旬 · 修学旅行出发日清晨"
+索引日期: "2013-11-14"
+地点: "千叶站 → 东京站 → 新干线（开往京都）"
+人物: "拉芙希妮·都柏林、雪之下雪乃、比企谷八幡、由比滨结衣"
+事件焦点:
+  类型: 角色
+  角色:
+    - "拉芙希妮·都柏林"
+
+# TRANSITION_RUNTIME_GUARD_START main:40
+# <%_ const __cfTransitionTarget40 = 40; _%>
+# <%_ const __cfTransitionCurrentScene40 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign40 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages40 = []; _%>
+# <%_ try { const __cfTransitionLastId40 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages40 = getChatMessages('0-' + __cfTransitionLastId40, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages40 = []; } _%>
+# <%_ const __cfTransitionSnapshots40 = (Array.isArray(__cfTransitionMessages40) ? __cfTransitionMessages40 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious40 = __cfTransitionSnapshots40.length ? __cfTransitionSnapshots40[__cfTransitionSnapshots40.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene40 = Number(__cfTransitionPrevious40 && __cfTransitionPrevious40.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign40 = (__cfTransitionPrevious40 && __cfTransitionPrevious40.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped40 = Math.max(0, __cfTransitionCurrentScene40 - __cfTransitionPreviousScene40 - 1); _%>
+# <%_ const __cfTransitionExpose40 = __cfTransitionCurrentCampaign40 === 'main' && __cfTransitionPreviousCampaign40 === 'main' && __cfTransitionCurrentScene40 === __cfTransitionTarget40 && Number.isInteger(__cfTransitionPreviousScene40) && __cfTransitionPreviousScene40 < __cfTransitionCurrentScene40; _%>
+# <%_ if (__cfTransitionExpose40) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped40 %>"
+  mode: date_only
+  visible_title: 十一月，修学旅行出发
+  visible_lines:
+    - 文化祭结束后的半个月里，校内装饰被拆下，课桌上换成京都行程表。
+    - 清晨集合把平日分散的同学重新放进同一列车时刻里。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:40
+场景功能:
+  - 修学旅行启程——场景转换到京都
+  - 拉芙希妮反常地提前二十分钟到达——对长途离开熟悉锚点的焦虑
+  - 结衣以自然到不带怜悯的方式递给拉芙希妮温热的易拉罐
+  - 雪乃对拉芙希妮提前到达感到意外——计算误差，但未追问
+  - 旅程中拉芙希妮盯着远去的海岸线——离奉仕部日常越远，离家族监控网络的震荡越近
+
+进入状态:
+  已发生:
+    - 修学旅行今日出发
+    - 奉仕部已确定对户部委托的"先观察"方针
+    - 拉芙希妮对长途离家有已知的抵触（林间学校经历）
+  当前局面:
+    - 千叶站检票口前人声嘈杂——拉杆箱、扩音喇叭、熙攘的学生
+    - 拉芙希妮独自站在方形立柱旁——制服严丝合缝，指尖反复摩挲右腕旧丝带
+  未发生:
+    - 其他三人尚未到达
+    - 尚未进入新干线
+
+世界推动:
+  - 修学旅行全年级统一出发，无法缺席
+  - 千叶→东京→京都的移动路线已确定
+  - 家族监控网络可能在长途移动中被触发
+
+NPC动机:
+  无独立NPC
+
+信息边界:
+  公开:
+    - 拉芙希妮提前二十分钟到达
+    - 四人按时集合并出发
+  局部:
+    - 拉芙希妮摩挲右腕旧丝带的频率和指尖无意识的动作
+    - 结衣塞给拉芙希妮的易拉罐——还带着自动贩卖机余温
+    - 雪乃对拉芙希妮竟然提前到达的逻辑预判偏差
+  隐藏:
+    - 家族监控网络是否已在千叶-东京-京都线上触发
+    - 拉芙希妮在电车靠窗位置看海岸线时内心的具体焦虑内容
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - 你和结衣几乎同时从下层电梯走上中央大厅
+      - 拉芙希妮站在方形立柱旁——制服穿得严丝合缝，比其他所有学生都紧张
+      - 你看到她指尖在右腕旧丝带上反复摩挲
+      - 你只需要抛出干瘪的早安，然后把目光移向检票口上方的电子屏
+      - 雪乃在集合前三分钟拖着黑色旅行包走来——你对她的精确度心里有数
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - 你拉着极简的黑色旅行包走向集合点
+      - 远远就看到拉芙希妮已经站在立柱旁——这不符合你的逻辑预判
+      - 她对长途离家敏感，理应是最后一个踩着底线出现的人
+      - 但这阵动摇没有突破你面部表情的管理防线
+      - 你抬头看电子屏上的数字——说还剩两分钟，既然人齐了就进站
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - 你和八幡几乎同时从下层电梯走上来
+      - 你一眼就看到了拉芙希妮——独自站在立柱旁，制服一丝不苟
+      - 你快步穿过人群走到她身边，很自然地站在她和人流之间
+      - 你没有问她为什么早到，也没有评价她的脸色——从口袋里掏出还温热的易拉罐直接塞进她手里
+      - 八幡跟在后面只说了干瘪的早安
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - 你是最先抵达的人——早于集合时间将近二十分钟
+      - 人流的嘈杂声让你感到失控的压迫感
+      - 你的指尖无意识地搭在右腕旧丝带上反复摩挲
+      - 结衣的声音穿透噪音网——她快步走到你身边，站在你和人流之间
+      - 她从口袋掏出一个温热的易拉罐直接塞进你另一只空着的手里
+      - 她没有问任何问题
+      - 八幡看了你绷紧的肩膀一眼，只说了早安就把目光移开
+      - 雪乃在集合前三分钟走来——看到她你意识到自己的提前出现是一个异常信号
+      - 在电车上你坐在靠窗位置——看着海岸线远去
+      - 每次站点掠过都意味着离奉仕部日常更远一步
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "修学旅行出发的清晨——他和结衣几乎同时从电梯走上中央大厅，看见拉芙希妮站在方形立柱旁，制服严丝合缝，指尖反复摩挲右腕旧丝带；他抛出一个干瘪的早安，然后把目光移向电子屏。"
+  yukino: "出发的清晨——她远远看到拉芙希妮已经站在立柱旁，这不符合她的逻辑预判——对长途离家敏感的人理应最后踩着底线出现；但这阵动摇没有突破她面部表情的管理防线。"
+  yui: "出发的清晨——她快步穿过人群走到拉芙希妮身边，很自然地站在她和人流之间，从口袋里掏出还温热的易拉罐直接塞进她手里，什么也没问。"
+  laff: "主场轨道，见可用节拍，不变。"
+
+玩家控制边界:
+  - 拉芙希妮：由玩家决定提前到达后的等待方式；决定对结衣塞来的易拉罐如何回应；决定在电车上的状态
+  - 雪乃：由玩家决定是否对拉芙希妮的提前到达做出言语反应
+  - 结衣：由玩家决定塞易拉罐时说什么/不说什么
+  - 八幡：由玩家决定对拉芙希妮的紧绷状态给出什么程度的反应
+
+可用节拍:
+  - 千叶站现场——嘈杂拥挤的出发氛围
+  - 拉芙希妮独自站在立柱旁提前二十分钟——反常的早到
+  - 结衣和八幡从下层电梯上来——结衣直接走向立柱，站在拉芙希妮和人群之间
+  - 结衣塞易拉罐——不问任何问题
+  - 八幡扫过拉芙希妮绷紧的肩膀——只抛出一个干瘪的早安
+  - 雪乃提前三分钟抵达——看到已到齐的拉芙希妮产生微小的计算误差
+  - 雪乃压制表情变化：还剩两分钟，准备进站
+  - 千叶→东京电车上拉芙希妮靠窗看海岸线
+  - 东京站换乘新干线——车厢闭合，乘务员广播京都站预估时间
+
+偏离处理:
+  - 如果拉芙希妮像往常一样最后到：雪乃的逻辑预判得到验证，但拉芙希妮的焦虑特质在此场景无法展现
+  - 如果结衣追问拉芙希妮为什么早到：拉芙希妮会进入防御模式——易拉罐的温暖效果大打折扣
+  - 如果雪乃追问拉芙希妮的状态：拉芙希妮被迫解释，但雪乃的性格决定她不会问
+
+推进边界:
+  保持当前场景:
+    - 千叶站出发→东京站换乘→新干线上
+  可以推进:
+    - →场景41：抵达京都、旅馆入住、第一晚晚餐
+    - →新干线上的四人互动
+  永久失效:
+    - 列车已离开千叶——物理上无法回头
+    - 拉芙希妮提前抵达的异常已被雪乃和八幡分别观察到（虽然两人都未言语）
+
+完成后事实:
+  - 四人启程前往京都修学旅行
+  - 拉芙希妮在长途移动中表现出预期内的焦虑——被结衣用物理温暖无声消解
+  - 易拉罐的温度贴在她掌心——一个沉默的锚点
+  - 新干线正向京都驶去——家族监控网络是否被触发尚未可知
+
+氛围锚点:
+  - 拉杆箱碾过地砖的钝响与扩音喇叭被放大的喊声交织成的噪音网
+  - 结衣的易拉罐带着自动贩卖机余温塞进拉芙希妮掌心
+  - 拉芙希妮在电车靠窗位置一眨不眨盯着远去的海岸线
+  - 新干线车门闭合的沉闷声响
+
+禁止提前:
+  - 禁止让任何家族监控网络在此场景触发（仅通过拉芙希妮的内心暗示存在的可能性）
+  - 禁止让结衣追问拉芙希妮为什么早到
+  - 禁止让雪乃对拉芙希妮的状态发表评价
+  - 禁止让八幡说出超过一个干瘪早安的内容

@@ -1,0 +1,996 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "campaign_id": {
+      "$ref": "#/$defs/__schema0"
+    },
+    "campaign_revision": {
+      "$ref": "#/$defs/__schema1"
+    },
+    "mode": {
+      "$ref": "#/$defs/__schema2"
+    },
+    "current_pov": {
+      "$ref": "#/$defs/__schema3"
+    },
+    "custom_protagonist": {
+      "$ref": "#/$defs/__schema4"
+    },
+    "difficulty": {
+      "$ref": "#/$defs/__schema5"
+    },
+    "current_scene": {
+      "$ref": "#/$defs/__schema6"
+    },
+    "campaign_completed": {
+      "$ref": "#/$defs/__schema7"
+    },
+    "mainline_completed": {
+      "$ref": "#/$defs/__schema8"
+    },
+    "identity_state": {
+      "$ref": "#/$defs/__schema9"
+    },
+    "collection": {
+      "$ref": "#/$defs/__schema10"
+    },
+    "world": {
+      "$ref": "#/$defs/__schema11"
+    },
+    "player": {
+      "$ref": "#/$defs/__schema12"
+    },
+    "characters": {
+      "$ref": "#/$defs/__schema13"
+    },
+    "Ω_resonance": {
+      "$ref": "#/$defs/__schema14"
+    },
+    "hammer_thunder_1": {
+      "$ref": "#/$defs/__schema15"
+    },
+    "hammer_tea_1": {
+      "$ref": "#/$defs/__schema16"
+    },
+    "hammer_tea_2": {
+      "$ref": "#/$defs/__schema17"
+    },
+    "hammer_teddy_1": {
+      "$ref": "#/$defs/__schema18"
+    },
+    "hammer_thunder_2": {
+      "$ref": "#/$defs/__schema19"
+    },
+    "hammer_outcast_1": {
+      "$ref": "#/$defs/__schema20"
+    },
+    "hammer_teddy_2": {
+      "$ref": "#/$defs/__schema21"
+    },
+    "hammer_outcast_2": {
+      "$ref": "#/$defs/__schema22"
+    },
+    "hammer_tea_3": {
+      "$ref": "#/$defs/__schema23"
+    },
+    "laff_knows_fire_truth": {
+      "$ref": "#/$defs/__schema24"
+    },
+    "laff_reed_authorized_yukino": {
+      "$ref": "#/$defs/__schema25"
+    },
+    "dalloway_pen_used": {
+      "$ref": "#/$defs/__schema26"
+    },
+    "arc_milestones": {
+      "$ref": "#/$defs/__schema27"
+    },
+    "iroha_milestones": {
+      "$ref": "#/$defs/__schema28"
+    },
+    "branch_choice": {
+      "$ref": "#/$defs/__schema29"
+    },
+    "phone": {
+      "$ref": "#/$defs/__schema30"
+    }
+  },
+  "$defs": {
+    "__schema0": {
+      "default": "main",
+      "type": "string",
+      "enum": [
+        "main",
+        "dlc_genderbend_hachiman",
+        "dlc_body_swap_mrs_yukinoshita"
+      ]
+    },
+    "__schema1": {
+      "default": 1,
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "__schema2": {
+      "default": null,
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "pov",
+            "custom",
+            "free"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "__schema3": {
+      "default": null,
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "hachiman",
+            "yukino",
+            "yui",
+            "laff",
+            "mrs_yukinoshita"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "__schema4": {
+      "default": null,
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "default": "",
+              "type": "string"
+            },
+            "gender": {
+              "default": "",
+              "type": "string"
+            },
+            "className": {
+              "default": "",
+              "type": "string"
+            },
+            "identity": {
+              "default": "",
+              "type": "string"
+            },
+            "past": {
+              "default": "",
+              "type": "string"
+            },
+            "personality": {
+              "default": "",
+              "type": "string"
+            },
+            "appearance": {
+              "default": "",
+              "type": "string"
+            },
+            "participation": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "track": {
+                      "type": "string",
+                      "enum": [
+                        "member",
+                        "classmate",
+                        "outsider"
+                      ]
+                    },
+                    "note": {
+                      "default": "",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "track"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "__schema5": {
+      "default": null,
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "简单",
+            "普通",
+            "困难"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "__schema6": {
+      "default": 1,
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "__schema7": {
+      "default": false,
+      "type": "boolean"
+    },
+    "__schema8": {
+      "default": false,
+      "type": "boolean"
+    },
+    "__schema9": {
+      "default": null,
+      "anyOf": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "transformation"
+                },
+                "current_body": {
+                  "default": "hachiman",
+                  "type": "string",
+                  "const": "hachiman"
+                },
+                "presentation": {
+                  "default": "female",
+                  "type": "string",
+                  "const": "female"
+                },
+                "legal_identity": {
+                  "default": "比企谷八幡",
+                  "type": "string",
+                  "const": "比企谷八幡"
+                },
+                "self_naming": {
+                  "default": "八幡",
+                  "type": "string",
+                  "const": "八幡"
+                },
+                "cause_status": {
+                  "default": "unknown",
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "investigating",
+                    "explained",
+                    "resolved"
+                  ]
+                },
+                "disclosure": {
+                  "default": {},
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "body_swap"
+                },
+                "occupants": {
+                  "type": "object",
+                  "properties": {
+                    "body_hachiman": {
+                      "type": "string",
+                      "enum": [
+                        "hachiman",
+                        "mrs_yukinoshita"
+                      ]
+                    },
+                    "body_mrs_yukinoshita": {
+                      "type": "string",
+                      "enum": [
+                        "hachiman",
+                        "mrs_yukinoshita"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "body_hachiman",
+                    "body_mrs_yukinoshita"
+                  ]
+                },
+                "body_locations": {
+                  "default": {
+                    "body_hachiman": "比企谷家·八幡房间",
+                    "body_mrs_yukinoshita": "雪之下家本邸·夫人卧室"
+                  },
+                  "type": "object",
+                  "properties": {
+                    "body_hachiman": {
+                      "default": "比企谷家·八幡房间",
+                      "type": "string"
+                    },
+                    "body_mrs_yukinoshita": {
+                      "default": "雪之下家本邸·夫人卧室",
+                      "type": "string"
+                    }
+                  }
+                },
+                "swap_phase": {
+                  "default": "swapped",
+                  "type": "string",
+                  "enum": [
+                    "self",
+                    "swapped"
+                  ]
+                },
+                "last_swap_date": {
+                  "default": "2014-07-12",
+                  "type": "string"
+                },
+                "disclosure": {
+                  "default": {},
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {}
+                },
+                "verification_evidence": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "shared_notes": {
+                  "default": [],
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "kind",
+                "occupants"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "__schema10": {
+      "default": {
+        "version": 1,
+        "cg_unlocks": {},
+        "ending_unlocks": {}
+      },
+      "type": "object",
+      "properties": {
+        "version": {
+          "default": 1,
+          "type": "number",
+          "const": 1
+        },
+        "cg_unlocks": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "ending_unlocks": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "__schema11": {
+      "default": {
+        "current_date": "2013-05-20",
+        "current_location": "未确认",
+        "time_slot": null
+      },
+      "type": "object",
+      "properties": {
+        "current_date": {
+          "default": "2013-05-20",
+          "type": "string"
+        },
+        "current_location": {
+          "default": "未确认",
+          "type": "string"
+        },
+        "time_slot": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "早晨",
+                "上午",
+                "午休",
+                "放课后",
+                "傍晚",
+                "晚间"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "__schema12": {
+      "default": {
+        "cash": null,
+        "carried_items": []
+      },
+      "type": "object",
+      "properties": {
+        "cash": {
+          "default": null,
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "carried_items": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "__schema13": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "display_name": {
+            "default": "",
+            "type": "string"
+          },
+          "present": {
+            "default": false,
+            "type": "boolean"
+          },
+          "known": {
+            "default": false,
+            "type": "boolean"
+          },
+          "relationship": {
+            "default": {
+              "bond": 0,
+              "romance": 0,
+              "commitment": "未确认",
+              "intimate_memory": "",
+              "intimate_sexual_memory": ""
+            },
+            "type": "object",
+            "properties": {
+              "bond": {
+                "default": 0,
+                "type": "number"
+              },
+              "romance": {
+                "default": 0,
+                "type": "number"
+              },
+              "commitment": {
+                "default": "未确认",
+                "type": "string",
+                "enum": [
+                  "未确认",
+                  "仅朋友",
+                  "恋人"
+                ]
+              },
+              "intimate_memory": {
+                "default": "",
+                "type": "string"
+              },
+              "intimate_sexual_memory": {
+                "default": "",
+                "type": "string"
+              }
+            }
+          },
+          "latest_user_memory": {
+            "default": {
+              "memory": "",
+              "inner_thought": ""
+            },
+            "type": "object",
+            "properties": {
+              "memory": {
+                "default": "",
+                "type": "string"
+              },
+              "inner_thought": {
+                "default": "",
+                "type": "string"
+              }
+            }
+          },
+          "outfit": {
+            "default": {
+              "outerwear": "未确认",
+              "inner_layer": "未确认",
+              "bottoms": "未确认",
+              "socks": "未确认",
+              "underwear": "未确认",
+              "shoes": "未确认"
+            },
+            "type": "object",
+            "properties": {
+              "outerwear": {
+                "default": "未确认",
+                "type": "string"
+              },
+              "inner_layer": {
+                "default": "未确认",
+                "type": "string"
+              },
+              "bottoms": {
+                "default": "未确认",
+                "type": "string"
+              },
+              "socks": {
+                "default": "未确认",
+                "type": "string"
+              },
+              "underwear": {
+                "default": "未确认",
+                "type": "string"
+              },
+              "shoes": {
+                "default": "未确认",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "__schema14": {
+      "default": 0,
+      "type": "number"
+    },
+    "__schema15": {
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
+    },
+    "__schema16": {
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
+    },
+    "__schema17": {
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
+    },
+    "__schema18": {
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
+    },
+    "__schema19": {
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
+    },
+    "__schema20": {
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
+    },
+    "__schema21": {
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
+    },
+    "__schema22": {
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
+    },
+    "__schema23": {
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
+    },
+    "__schema24": {
+      "default": false,
+      "type": "boolean"
+    },
+    "__schema25": {
+      "default": false,
+      "type": "boolean"
+    },
+    "__schema26": {
+      "default": false,
+      "type": "boolean"
+    },
+    "__schema27": {
+      "default": {
+        "hachiman": {
+          "asked_before_self_sacrifice": false,
+          "accepted_shared_cost": false,
+          "stated_personal_desire": false
+        },
+        "yukino": {
+          "offered_resources_without_deciding": false,
+          "admitted_personal_wish": false,
+          "separated_self_from_family_standard": false
+        },
+        "yui": {
+          "voiced_disagreement_publicly": false,
+          "did_not_retract_after_conflict": false,
+          "admitted_selfish_wish": false
+        },
+        "laff": {
+          "expressed_preference": false,
+          "refused_without_explanation": false,
+          "chose_against_group_expectation": false,
+          "accepted_consequence_without_withdrawing_choice": false
+        }
+      },
+      "type": "object",
+      "properties": {
+        "hachiman": {
+          "default": {
+            "asked_before_self_sacrifice": false,
+            "accepted_shared_cost": false,
+            "stated_personal_desire": false
+          },
+          "type": "object",
+          "properties": {
+            "asked_before_self_sacrifice": {
+              "default": false,
+              "type": "boolean"
+            },
+            "accepted_shared_cost": {
+              "default": false,
+              "type": "boolean"
+            },
+            "stated_personal_desire": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        },
+        "yukino": {
+          "default": {
+            "offered_resources_without_deciding": false,
+            "admitted_personal_wish": false,
+            "separated_self_from_family_standard": false
+          },
+          "type": "object",
+          "properties": {
+            "offered_resources_without_deciding": {
+              "default": false,
+              "type": "boolean"
+            },
+            "admitted_personal_wish": {
+              "default": false,
+              "type": "boolean"
+            },
+            "separated_self_from_family_standard": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        },
+        "yui": {
+          "default": {
+            "voiced_disagreement_publicly": false,
+            "did_not_retract_after_conflict": false,
+            "admitted_selfish_wish": false
+          },
+          "type": "object",
+          "properties": {
+            "voiced_disagreement_publicly": {
+              "default": false,
+              "type": "boolean"
+            },
+            "did_not_retract_after_conflict": {
+              "default": false,
+              "type": "boolean"
+            },
+            "admitted_selfish_wish": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        },
+        "laff": {
+          "default": {
+            "expressed_preference": false,
+            "refused_without_explanation": false,
+            "chose_against_group_expectation": false,
+            "accepted_consequence_without_withdrawing_choice": false
+          },
+          "type": "object",
+          "properties": {
+            "expressed_preference": {
+              "default": false,
+              "type": "boolean"
+            },
+            "refused_without_explanation": {
+              "default": false,
+              "type": "boolean"
+            },
+            "chose_against_group_expectation": {
+              "default": false,
+              "type": "boolean"
+            },
+            "accepted_consequence_without_withdrawing_choice": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "__schema28": {
+      "default": {
+        "rejected_profitable_solution": false,
+        "made_uncalculated_request": false,
+        "stated_desire_without_performance": false
+      },
+      "type": "object",
+      "properties": {
+        "rejected_profitable_solution": {
+          "default": false,
+          "type": "boolean"
+        },
+        "made_uncalculated_request": {
+          "default": false,
+          "type": "boolean"
+        },
+        "stated_desire_without_performance": {
+          "default": false,
+          "type": "boolean"
+        }
+      }
+    },
+    "__schema29": {
+      "default": null,
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "共同线",
+            "八幡×雪乃",
+            "八幡×拉芙希妮",
+            "八幡×结衣",
+            "雪乃×拉芙希妮",
+            "雪乃×结衣",
+            "拉芙希妮×结衣",
+            "姐妹和解"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "__schema30": {
+      "default": {
+        "version": 2,
+        "contacts": {},
+        "threads": {},
+        "messages": {},
+        "forum": {
+          "posts": []
+        },
+        "context": {
+          "active_snapshot": null,
+          "manual_queue": [],
+          "ingest_records": {},
+          "facts": [],
+          "appointments": []
+        }
+      },
+      "type": "object",
+      "properties": {
+        "version": {
+          "default": 1,
+          "anyOf": [
+            {
+              "type": "number",
+              "const": 1
+            },
+            {
+              "type": "number",
+              "const": 2
+            }
+          ]
+        },
+        "contacts": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        },
+        "threads": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        },
+        "messages": {
+          "default": {},
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {}
+        },
+        "forum": {
+          "default": {
+            "posts": []
+          },
+          "type": "object",
+          "properties": {
+            "posts": {
+              "default": [],
+              "type": "array",
+              "items": {}
+            }
+          },
+          "additionalProperties": {}
+        },
+        "context": {
+          "default": {
+            "active_snapshot": null,
+            "manual_queue": [],
+            "ingest_records": {},
+            "facts": [],
+            "appointments": []
+          },
+          "type": "object",
+          "properties": {
+            "active_snapshot": {
+              "default": null,
+              "anyOf": [
+                {},
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "manual_queue": {
+              "default": [],
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "ingest_records": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            },
+            "facts": {
+              "default": [],
+              "type": "array",
+              "items": {}
+            },
+            "appointments": {
+              "default": [],
+              "type": "array",
+              "items": {}
+            }
+          },
+          "additionalProperties": {}
+        },
+        "wallpaper": {}
+      },
+      "additionalProperties": {}
+    }
+  }
+}

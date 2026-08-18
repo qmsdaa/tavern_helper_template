@@ -1,0 +1,881 @@
+{
+ "sheet_romance_target": {
+  "uid": "sheet_romance_target",
+  "name": "恋爱对象表",
+  "sourceData": {
+   "note": "恋爱对象表：记录可攻略角色的详细信息。",
+   "ddl": "CREATE TABLE romance_targets (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  name TEXT, -- 姓名\n  gender TEXT, -- 性别\n  age TEXT, -- 年龄\n  appearance TEXT, -- 外貌特征\n  outfit_text TEXT, -- 穿着打扮\n  base_attributes TEXT, -- 基础属性\n  special_attributes TEXT, -- 特有属性\n  location_name TEXT, -- 所在地点\n  presence_status TEXT, -- 在场状态\n  current_thought TEXT, -- 当下想法\n  past_experience TEXT, -- 过往经历\n  intimacy_count TEXT, -- 性爱次数\n  interaction_options TEXT -- 交互选项\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "姓名",
+    "性别",
+    "年龄",
+    "外貌特征",
+    "穿着打扮",
+    "基础属性",
+    "特有属性",
+    "所在地点",
+    "在场状态",
+    "当下想法",
+    "过往经历",
+    "性爱次数",
+    "交互选项"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "恋爱对象表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "恋爱对象表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 1
+ },
+ "sheet_important_characters": {
+  "uid": "sheet_important_characters",
+  "name": "重要角色表",
+  "sourceData": {
+   "note": "重要角色表：记录非恋爱线重要NPC。",
+   "ddl": "CREATE TABLE important_characters (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  name TEXT, -- 姓名\n  gender TEXT, -- 性别\n  age TEXT, -- 年龄\n  appearance TEXT, -- 外貌特征\n  outfit_text TEXT, -- 穿着打扮\n  base_attributes TEXT, -- 基础属性\n  special_attributes TEXT, -- 特有属性\n  location_name TEXT, -- 所在地点\n  presence_status TEXT, -- 在场状态\n  relation_text TEXT, -- 人际关系\n  past_experience TEXT, -- 过往经历\n  interaction_options TEXT -- 交互选项\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "姓名",
+    "性别",
+    "年龄",
+    "外貌特征",
+    "穿着打扮",
+    "基础属性",
+    "特有属性",
+    "所在地点",
+    "在场状态",
+    "人际关系",
+    "过往经历",
+    "交互选项"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "重要角色表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "重要角色表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 2
+ },
+ "sheet_relation_network": {
+  "uid": "sheet_relation_network",
+  "name": "关系网络表",
+  "sourceData": {
+   "note": "关系网络表：记录阵营与关系网络。",
+   "ddl": "CREATE TABLE relation_network (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  network_name TEXT, -- 网络名称\n  stance TEXT, -- 当前立场\n  presence TEXT, -- 存在状态\n  linked_characters TEXT, -- 关联角色\n  relationship_desc TEXT, -- 关系说明\n  influence_on_romance TEXT -- 对恋爱线影响\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "网络名称",
+    "当前立场",
+    "存在状态",
+    "关联角色",
+    "关系说明",
+    "对恋爱线影响"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "关系网络表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "关系网络表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 3
+ },
+ "sheet_memo": {
+  "uid": "sheet_memo",
+  "name": "备忘录",
+  "sourceData": {
+   "note": "备忘录：记录待办与悬念。",
+   "ddl": "CREATE TABLE memo (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  memo_title TEXT, -- 备忘标题\n  memo_type TEXT, -- 类型\n  related_character TEXT, -- 相关角色\n  detail_desc TEXT, -- 详细内容\n  current_status TEXT, -- 当前状态\n  due_time TEXT, -- 相关时间\n  importance TEXT, -- 重要程度\n  result_note TEXT -- 后续结果\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "备忘标题",
+    "类型",
+    "相关角色",
+    "详细内容",
+    "当前状态",
+    "相关时间",
+    "重要程度",
+    "后续结果"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "备忘录",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "备忘录-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 4
+ },
+ "sheet_chronicle": {
+  "uid": "sheet_chronicle",
+  "name": "纪要表",
+  "sourceData": {
+   "note": "纪要表：每轮交互后插入一条记录。",
+   "ddl": "CREATE TABLE chronicle (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  code_index TEXT, -- 编码索引\n  time_span TEXT, -- 时间跨度\n  summary TEXT, -- 纪要\n  key_dialogue TEXT -- 重要对话\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "编码索引",
+    "时间跨度",
+    "纪要",
+    "重要对话"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "纪要表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "纪要表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 5
+ },
+ "sheet_romance_diary": {
+  "uid": "sheet_romance_diary",
+  "name": "恋爱日记表",
+  "sourceData": {
+   "note": "恋爱日记表：角色视角的恋爱事件日记。",
+   "ddl": "CREATE TABLE romance_diary (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  writer TEXT, -- 写作角色\n  related_char TEXT, -- 关联角色\n  related_am_code TEXT, -- 关联AM码\n  diary_content TEXT, -- 日记内容\n  time TEXT, -- 发生时间\n  event_type TEXT, -- 事件类型\n  impact TEXT -- 影响判断\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "写作角色",
+    "关联角色",
+    "关联AM码",
+    "日记内容",
+    "发生时间",
+    "事件类型",
+    "影响判断"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "恋爱日记表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "恋爱日记表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 6
+ },
+ "sheet_director_plan": {
+  "uid": "sheet_director_plan",
+  "name": "导演规划表",
+  "sourceData": {
+   "note": "导演规划表：剧情大纲与AI写作指导。",
+   "ddl": "CREATE TABLE director_plan (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  plot TEXT, -- 剧情走向\n  outline TEXT, -- 大纲\n  instruction TEXT -- AI指导\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "剧情走向",
+    "大纲",
+    "AI指导"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "导演规划表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "导演规划表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 7
+ },
+ "sheet_readable_08": {
+  "uid": "sheet_readable_08",
+  "name": "全局数据表",
+  "sourceData": {
+   "note": "全局数据表：来自全局可读数据表（ReadableDataTable）。",
+   "ddl": "CREATE TABLE global_data (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  story_state TEXT, -- 全局状态\n  current_location TEXT, -- 当前详细地点\n  current_minor_region TEXT, -- 当前次要地区\n  current_major_region TEXT, -- 当前主要地区\n  prev_scene_time TEXT, -- 上轮场景时间\n  elapsed_time TEXT, -- 经过的时间\n  cur_time TEXT -- 当前时间\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "全局状态",
+    "当前详细地点",
+    "当前次要地区",
+    "当前主要地区",
+    "上轮场景时间",
+    "经过的时间",
+    "当前时间"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "全局数据表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "全局数据表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 8
+ },
+ "sheet_readable_09": {
+  "uid": "sheet_readable_09",
+  "name": "世界地图点",
+  "sourceData": {
+   "note": "世界地图点：来自全局可读数据表（ReadableDataTable）。",
+   "ddl": "CREATE TABLE world_map (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  location_name TEXT, -- 详细地点\n  minor_region TEXT, -- 次要地区\n  major_region TEXT, -- 主要地区\n  location_type TEXT, -- 地点类型\n  environment_desc TEXT, -- 环境描述\n  importance TEXT, -- 重要度\n  unlock_stage TEXT -- 解锁阶段\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "详细地点",
+    "次要地区",
+    "主要地区",
+    "地点类型",
+    "环境描述",
+    "重要度",
+    "解锁阶段"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "世界地图点",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "世界地图点-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 9
+ },
+ "sheet_readable_10": {
+  "uid": "sheet_readable_10",
+  "name": "主角信息表",
+  "sourceData": {
+   "note": "主角信息表：来自全局可读数据表（ReadableDataTable）。",
+   "ddl": "CREATE TABLE protagonist_info (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  name TEXT, -- 姓名\n  gender TEXT, -- 性别\n  age TEXT, -- 年龄\n  appearance TEXT, -- 外貌特征\n  identity_text TEXT, -- 身份\n  current_condition TEXT, -- 近况\n  location_name TEXT, -- 所在地点\n  base_attributes TEXT, -- 基础属性\n  special_attributes TEXT, -- 特有属性\n  belongings TEXT -- 随身财物\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "姓名",
+    "性别",
+    "年龄",
+    "外貌特征",
+    "身份",
+    "近况",
+    "所在地点",
+    "基础属性",
+    "特有属性",
+    "随身财物"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "主角信息表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "主角信息表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 10
+ },
+ "sheet_readable_11": {
+  "uid": "sheet_readable_11",
+  "name": "才艺技能表",
+  "sourceData": {
+   "note": "才艺技能表：来自全局可读数据表（ReadableDataTable）。",
+   "ddl": "CREATE TABLE skills (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  skill_name TEXT, -- 名称\n  skill_category TEXT, -- 分类\n  proficiency TEXT, -- 熟练度\n  skill_description TEXT -- 说明\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "名称",
+    "分类",
+    "熟练度",
+    "说明"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "才艺技能表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "才艺技能表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 11
+ },
+ "sheet_readable_12": {
+  "uid": "sheet_readable_12",
+  "name": "物品表",
+  "sourceData": {
+   "note": "物品表：来自全局可读数据表（ReadableDataTable）。",
+   "ddl": "CREATE TABLE inventory (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  item_name TEXT, -- 物品名称\n  item_type TEXT, -- 类型\n  quantity TEXT, -- 数量\n  emotional_weight TEXT, -- 情感分量\n  quality TEXT, -- 品质\n  description TEXT -- 描述\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "物品名称",
+    "类型",
+    "数量",
+    "情感分量",
+    "品质",
+    "描述"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "物品表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "物品表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 12
+ },
+ "sheet_readable_13": {
+  "uid": "sheet_readable_13",
+  "name": "装扮表",
+  "sourceData": {
+   "note": "装扮表：来自全局可读数据表（ReadableDataTable）。",
+   "ddl": "CREATE TABLE outfits (\n  row_id INTEGER PRIMARY KEY, -- 行号\n  owner_role TEXT, -- 所属角色\n  outfit_name TEXT, -- 装扮名称\n  outfit_type TEXT, -- 类型\n  current_status TEXT, -- 当前状态\n  appearance_desc TEXT, -- 外观描述\n  obtained_from TEXT, -- 来源\n  scene_meaning TEXT, -- 场景及寓意\n  interaction_options TEXT -- 交互选项\n);",
+   "initNode": "剧情初始化时按需插入条目。",
+   "deleteNode": "禁止删除，除非剧情明确需要。",
+   "updateNode": "对应信息发生变化时更新。",
+   "insertNode": "出现新记录需求时插入。"
+  },
+  "content": [
+   [
+    "row_id",
+    "所属角色",
+    "装扮名称",
+    "类型",
+    "当前状态",
+    "外观描述",
+    "来源",
+    "场景及寓意",
+    "交互选项"
+   ]
+  ],
+  "updateConfig": {
+   "uiSentinel": -1,
+   "contextDepth": 4,
+   "updateFrequency": -1,
+   "batchSize": 4,
+   "skipFloors": -1
+  },
+  "exportConfig": {
+   "enabled": false,
+   "splitByRow": false,
+   "entryName": "装扮表",
+   "entryType": "constant",
+   "keywords": "",
+   "preventRecursion": true,
+   "injectionTemplate": "",
+   "extraIndexEnabled": false,
+   "extraIndexEntryName": "装扮表-索引",
+   "extraIndexColumns": [],
+   "extraIndexColumnModes": {},
+   "extraIndexInjectionTemplate": "",
+   "entryPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10000
+   },
+   "extraIndexPlacement": {
+    "position": "at_depth_as_system",
+    "depth": 10000,
+    "order": 10010
+   },
+   "fixedEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99983
+   },
+   "fixedIndexPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99984
+   }
+  },
+  "orderNo": 13
+ },
+ "mate": {
+  "type": "chatSheets",
+  "version": 1,
+  "updateConfigUiSentinel": -1,
+  "globalInjectionConfig": {
+   "readableEntryPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99981
+   },
+   "wrapperPlacement": {
+    "position": "before_char",
+    "depth": 2,
+    "order": 99980
+   }
+  }
+ }
+}

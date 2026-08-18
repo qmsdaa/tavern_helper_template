@@ -1,0 +1,120 @@
+{
+ "seq": 1,
+ "entryId": "v2_msuj85jx_4sej8kb0",
+ "createdAt": 1786807793949,
+ "source": "group_fill",
+ "targetMessageIndex": 4,
+ "aiFloor": 3,
+ "filledSheetKeys": [
+  "sheet_global_data",
+  "sheet_world_map",
+  "sheet_protagonist",
+  "sheet_escyvvs2u",
+  "sheet_romance_targets",
+  "sheet_important_non_romance",
+  "sheet_factions",
+  "sheet_inventory",
+  "sheet_outfits",
+  "sheet_memo",
+  "sheet_summary",
+  "sheet_romance_diary",
+  "sheet_bwxtt33d5"
+ ],
+ "changedSheetKeys": [
+  "sheet_bwxtt33d5",
+  "sheet_summary",
+  "sheet_global_data",
+  "sheet_memo",
+  "sheet_protagonist",
+  "sheet_romance_diary",
+  "sheet_romance_targets",
+  "sheet_world_map"
+ ],
+ "groupKeys": [
+  "sheet_global_data",
+  "sheet_world_map",
+  "sheet_protagonist",
+  "sheet_escyvvs2u",
+  "sheet_romance_targets",
+  "sheet_important_non_romance",
+  "sheet_factions",
+  "sheet_inventory",
+  "sheet_outfits",
+  "sheet_memo",
+  "sheet_summary",
+  "sheet_romance_diary",
+  "sheet_bwxtt33d5"
+ ],
+ "operations": [
+  {
+   "kind": "sql_batch",
+   "statements": [
+    "UPDATE global_state SET prev_scene_time = '2013-05-20 08:35', elapsed_time = '10分', cur_time = '2013-05-20 08:45' WHERE row_id = 1",
+    "UPDATE world_map_points SET unlock_stage = '故事已发生' WHERE location_name = '总武高中中庭'",
+    "UPDATE protagonist_info SET current_condition = '略显荒谬，正试图维持得体', location_name = '总武高中中庭' WHERE row_id = 1",
+    "UPDATE romance_targets SET relation_state = '拉芙希妮·都柏林:认识', current_thought = '竟然真的问这种物理问题……看来不仅冒失，还有点嘴硬，并不打算乖乖被校规束缚呢。', location_name = '总武高中中庭' WHERE name = '雪之下雪乃'",
+    "UPDATE memo SET current_status = '进行中', result_note = '在课间中庭通过关于诗集和加速度的干燥吐槽，与雪乃进行了第一次非正式的逻辑交锋，对方给出了认真的物理学解答。' WHERE memo_title = '物理课本风波'",
+    "INSERT INTO chronicle (row_id, code_index, time_span, summary, chronicle_text, key_dialogue) VALUES ((SELECT MAX(row_id)+1 FROM chronicle), 'AM0002', '2013-05-20 10:45 ~ 2013-05-20 10:55', '中庭的诗句与物理辩论', '第二节课间，拉芙希妮在中庭树下翻阅诗集，遇见经过的雪之下雪乃。拉芙希妮主动发难，面无表情地询问翻开诗集能否计算出加速度。雪乃并未感到被冒犯，反而以极其严谨的物理逻辑回答了这项实验在现实中的误差，并提醒拉芙希妮上课时间将至。随后两人一前一后保持社交距离返回教学楼，确立了最初的互动基调。', '拉芙希妮：翻开这本诗集，能计算出加速度吗，雪之下同学？\\n雪之下雪乃：如果只是作为重物来进行自由落体实验……误差会非常大。我不建议你用它来做这种缺乏效率的尝试。')",
+    "INSERT INTO romance_diary (row_id, writer, related_char, related_am_code, summary, time, event_type, impact) VALUES ((SELECT COALESCE(MAX(row_id), 0) + 1 FROM romance_diary), '雪之下雪乃', '拉芙希妮·都柏林', 'AM0002', '那个转学生刚才在树下问了我一个关于诗集和加速度的问题。明明语气听起来那么认真，内容却充满了荒谬的违和感。也许她是想挽回早上的失误？真是个奇怪的人。不过，她提到那本诗集原价三十英镑时的表情，似乎透出了一点除了“优等生”面具之外的东西。误差极大的自由落体实验吗……说不定，她本身就是那个最大的误差项。', '2013-05-20 11:00', '日常互动', '中性')",
+    "INSERT OR REPLACE INTO check_suggestions (row_id, display_text, dice_command) VALUES\n(1, '在回教室的路上，主动询问雪乃关于“奉仕部”的传闻', '检定 <user> 观察'),\n(2, '顺着刚才的物理话题，继续和雪乃讨论空气阻力的计算', '对抗 <user> 理智 vs 雪之下雪乃 逻辑反杀'),\n(3, '保持两米的距离，安静地观察雪乃走路时脊背的线条', '检定 <user> 观察先行'),\n(4, '在进入教室前，再次用冷淡的英式幽默化解尴尬的气氛', '检定 <user> 外交辞令'),\n(5, '快进到午休，看看雪乃是否会再次独自出现在中庭', '无')"
+   ]
+  }
+ ],
+ "baseRevision": "runtime-v1:{\"scopeKey\":\"Counterfeit - 2026-08-15@22h51m25s478ms::default::runtime\",\"all\":false,\"global\":2,\"allRevision\":1,\"sheets\":{\"sheet_bwxtt33d5\":2,\"sheet_escyvvs2u\":2,\"sheet_factions\":2,\"sheet_global_data\":2,\"sheet_important_non_romance\":2,\"sheet_inventory\":2,\"sheet_memo\":2,\"sheet_outfits\":2,\"sheet_protagonist\":2,\"sheet_romance_diary\":2,\"sheet_romance_targets\":2,\"sheet_summary\":2,\"sheet_world_map\":2}}",
+ "parentRevision": null,
+ "commitRevision": "1:v2_msuj85jx_4sej8kb0",
+ "writeSet": [
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_global_data"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_world_map"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_protagonist"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_escyvvs2u"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_romance_targets"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_important_non_romance"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_factions"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_inventory"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_outfits"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_memo"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_summary"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_romance_diary"
+  },
+  {
+   "kind": "sheet",
+   "sheetKey": "sheet_bwxtt33d5"
+  }
+ ]
+}

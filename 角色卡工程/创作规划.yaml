@@ -1,0 +1,576 @@
+# Counterfeit · 创作规划
+# 由结构化材料提取 · 粗略规划模式 · 2026-07-25 全量落盘
+# 2026-08-14 压缩：150 场景条目清单规则化为幕表（逐条注册以 tavern-cards-state.json 为唯一运行时来源）· 其余保留实质
+
+project:
+  name: Counterfeit
+  worldbookName: Counterfeit
+  form: charactercard
+  mvu: true
+
+runtime_contract_v046:
+  prompt_template_plugin:
+    required_for: 剧情模式
+    reason: 世界书场景依赖 @@if mode/current_scene 条件门控；插件缺失时酒馆不会解释条件语句
+    user_warning: 剧情模式必须安装并启用“提示词模板”插件，未安装时不得开始生成
+    scene_policy: 保持150个场景条目及其 enabled 状态不变，不用禁用场景来替代插件
+    first_import_guard: 所有状态清单中的 @@if 条件必须先用 typeof mode !== "undefined" 短路保护整条原表达式；MVU尚未初始化时静默返回false，初始化后保持原门控语义
+  opening:
+    registered_first_message: 开场白/0.txt
+    unregistered_source_backup: 开场白/1.txt
+    commit_order: 等待MVU就绪 → await写入楼层0与chat → 校验初始关系 → 替换OpeningUI → 创建可见user楼层 → /trigger
+  portraits:
+    chip_asset: 512x512 WebP头像，lazy-load
+    modal_asset: GitHub固定提交上的原分辨率立绘，仅弹窗打开后lazy-load，object-fit contain
+
+release_assets_v060:
+  mainline_cg:
+    new_scenes: [1, 33, 36, 80, 83]
+    manifest_total_after_import: 42
+    source_directory: 图片素材/CG
+    rule: 五张均进入固定提交的CG清单、压缩资产、画廊与解包回读；场景83不得遗漏
+  portraits:
+    genderbend_hachiman:
+      source: 图片素材/角色立绘/全角色立绘/性转比企谷八幡.png
+      asset_key: genderbend_hachiman
+      usage: 《错位的日常》开局选择与女性化身体视觉
+    mrs_yukinoshita:
+      source: 图片素材/角色立绘/全角色立绘/雪之下夫人.png
+      asset_key: mrs_yukinoshita
+      usage: 《君的名字？》身体视觉与雪之下夫人角色详情
+  dlc_cg:
+    status: deferred
+    reason: 两条DLC是开放世界开局，本版没有固定剧情场景，不添加占位CG；留待后续更新按已发生的稳定发现制作
+    release_blocking: false
+  asset_commit: 打包前以包含本批WebP的GitHub固定提交回填
+
+runtime_hotfix_v060:
+  opening_self_contained:
+    trigger: 实机出现“Counterfeit 开场白加载失败”，看门狗检测到8秒内 #app 未挂载
+    root_cause: 卡内虽已内嵌开场HTML，但生产HTML仍从jsDelivr运行时加载Vue与Pinia；外部模块访问受限时入口模块无法求值
+    requirement:
+      - 开场生产构建必须内联Vue、Pinia、Zod等执行依赖，不得含远程module-import或远程script src
+      - 字体、图标、CG与立绘属于非阻塞视觉资源，加载失败不得阻止 #app 挂载
+      - 打包回归检查必须同时验证挂载器不下载HTML、内嵌HTML不下载执行模块
+    release_action: 重建开场生产HTML与开场白挂载脚本，另发v0.6.0热修候选并完成解包回读
+  scene_player_route_graceful_block:
+    trigger: 实机场景149在current_pov为空或非法时执行玩家入口throw，导致整次提示词模板渲染中断
+    root_cause: 150场玩家入口把“源码缺少某条合法视点分支”和“运行时聊天快照尚未初始化视点”混用同一个throw处理
+    requirement:
+      - 四条合法玩家入口仍须由构建器静态验证完整覆盖，禁止回退事件焦点
+      - 运行时current_pov为空或非法时渲染唯一unavailable入口，不得抛出EJS异常、不得擅自选择玩家视点
+      - unavailable入口只允许提示返回开场重新选择视点或读取含合法视点的存档，不得继续剧情
+      - 150场源文件、生成索引、场景验证器与回归测试必须同步
+    release_action: 批量迁移150场玩家入口守卫并另发v0.6.0 hotfix2，完成打包与解包回读
+
+
+runtime_hotfix_v060_followup_20260816:
+  dlc_timeline_facts:
+    trigger: DLC实机中AI不能正确认识主线已发生事件（不认识一色彩羽、不知平冢静调离、退化为套用原著）
+    root_cause: 角色阶段事实DLC分支只注入元说明，且DLC的current_scene=1占位使8条场景门槛事实全部不求值；三份main:118注入快照仅7条概要，大事件结果对AI不可见
+    fix:
+      - 角色阶段事实DLC分支改按锚点118求值门槛并全量列出（苇草称呼仍受场景135/授权门槛控制，DLC不注入）；主线分支语义不变
+      - main-118-shared/hachiman/mrs_yukinoshita三份注入条目补大事件脉络/亲历事件（只写公共可观察结果与亲历，不写任何角色私有内心）
+      - main-118-snapshot.yaml权威源同步扩写，重新生成generated/campaign-snapshots/main-118.json
+    regression: 迷你EJS渲染器断言五种形态（DLC双战役7条事实+苇草排除/主线POV场景50门槛不漂移/场景123非拉芙替代段保留/free模式静默）；build_scene_index --check与verify_v060_contracts全过
+  save_table_migration:
+    gap: 旧档迁移只提交stat_data；shujuku(ACU)表格存于chat_metadata.TavernDB_ACU_InternalSheetGuide/ScopedConfig，迁移后归零
+    fix: 解析侧提取ACU两键（不携带__chatId旧绑定）→便携存档格式state.table_sheets可选字段（版本不升，缺失等价旧格式）→commit写入SillyTavern.chatMetadata并将__chatId改写为新聊天ID→saveMetadata落盘→存在性校验→失败时内存级回滚（落盘失败不升级为回滚失败）
+    ui: 迁移预览新增“数据库表格”行；修复SaveImportScreen三级stretch链（.save-import补align-items:flex-start、.import-card补height:fit-content、footer补align-items:center），按钮恢复胶囊形、不再出现竖椭圆/正圆畸变
+    tests: save.test.ts新增3例（jsonl提取不含绑定键/迁移写入+chatId改写+失败回滚/无metadata-deps降级兼容），连同存量14例全过；手机shujuku桥12例回归全过
+  save_table_migration_metadata_hotfix:
+    bug: 迁移旧档在部分酒馆环境报 `Cannot read properties of undefined (reading 'TavernDB_ACU_InternalSheetGuide')`，迁移完全失败
+    root_cause: SaveImportScreen 传 `getChatMetadata: () => st.chatMetadata`，而 `SillyTavern.chatMetadata` 在部分版本/时机下为 undefined；resumeCommit 的 `meta[key]`（快照/写入/校验/回滚四处）均未防空，直接抛 TypeError
+    fix:
+      - resumeCommit 统一走 readMetadata() 空安全读取；getChatMetadata 返回 undefined/null 时与"未提供 deps"同等对待（canMigrateTables=false），stat_data 迁移不受影响，不崩溃，console.warn 说明表格未迁移
+      - SaveImportScreen 元数据来源加固：优先 `st.chatMetadata`，缺失时回退 `st.getContext?.()?.chatMetadata`（酒馆扩展通用取值路径），两者皆空则省略表格 deps
+    tests: save.test.ts 新增2例（getChatMetadata 返回 undefined+tableSheets 存在→优雅跳过表格且 stat_data 照常写入/不做任何 mutator 调用崩溃；getChatMetadata 返回 undefined 且表格迁移成功路径不变），连同存量全过
+    deploy: 前端工程推送 tavern_helper_template 后更新开场白/状态栏 CDN pinned commit（开场白挂载.js/.template.js），重新 configure+pack 出包
+  save_table_migration_checkpoint_hotfix:
+    bug: 数据库表格仍无法迁移——旧档 sqlite/消息持久化模式下 chat_metadata 的 InternalSheetGuide 只有模板表头，真实数据行在楼层消息的 TavernDB_ACU_IsolatedData[''].storageFrame.checkpoint.data；且迁移写入 chat_metadata 后插件运行时不会自动重载，手机端看不到表
+    root_cause: 解析侧只提取 chat_metadata（guide 无数据行）；提交侧只写 chat_metadata（sqlite 模式不读）；插件提交模型要求存在 AI 楼层，迁移期无 AI 消息无法直接持久化
+    fix:
+      - 解析侧新增 extractCheckpointSheetData：倒序扫消息取最新 storageFrame.checkpoint.data（插件格式 mate+sheet_*），并入 tableSheets 新键 TavernDB_ACU_SheetData（便携存档兼容，版本不升）
+      - 提交侧新增 importTables 通道（best-effort 不阻断）：SaveImportScreen 解析 window.top.AutoCardUpdaterAPI，调 importTableAsJson 持久化导入，失败降级 {mode:'restore'} 保证运行时立即可见；chat_metadata 双写兜底 native 模式
+      - 挂载器新增延迟持久化：commit-done 携带 tableSheets，首条 AI 回复落地后（/trigger 完成后轮询 AI 楼层）调 importTableAsJson(persist) 正式持久化，CHAT_CHANGED 取消暂存
+    tests: save.test.ts 新增3例（checkpoint 提取/插件格式转换优先级/importTables 通道调用与失败容忍），连同存量全过；shujuku 回归全过
+    deploy: 前端工程推送后更新 CDN pinned commit，重新嵌入+pack 出 hotfix10
+    deployed: |
+      hotfix10 已出包（Counterfeit-v0.6.0-hotfix10-20260817.png，11.98MB）。
+      状态栏 src/config 已于 2026-08-17 由用户侧改为自包含构建（webpack.statusbar.config.ts externals=undefined），
+      本次嵌入的状态栏为新构建（281KB）；clone 已暂存 5 个 dist 变更待推送，推完更新 .template.js 的 pinned commit。
+    deployed: |
+      已完成 hotfix9 出包（Counterfeit-v0.6.0-hotfix9-20260817.png）。
+      前端工程 fork 的 Actions 未启用（runs=0），bundle.yaml 不会自动重建 dist → 本机 pnpm build 后手动推送 dist。
+      推送历史：源码修复 862e39ed（3 文件）→ dist 重建 752499d4（含修复、通用构建）→ 自包含 dist 5c35fa12（专用配置重建 opening/phone）。
+      开场白/状态栏 .template.js 的 CDN pinned commit 已更新为 5c35fa12。
+      后续构建注意：开场白/手机必须用专用配置（webpack.opening.config.ts 清 externals 保证自包含、webpack.phone.config.ts 内联 zod），
+      通用 pnpm build 会把 pinia/zod 外部化到 CDN，pack_embedded_frontends.py 的结构校验会拦截（Remote execution）。
+  dlc_worldbook_architecture:
+    question: DLC是否拆为独立世界书、开场白界面选择绑定
+    decision: 不拆。酒馆没有按变量运行时切换绑定世界书的机制；单书+@@if campaign_id门控即“逻辑上的两本书”，为酒馆生态标准做法
+    revisit_if: 条目总数超出管理承载时再评估”主线书内嵌+DLC书作附加书手动绑定”的纯管理收益方案
+
+
+ensemble_rebalance_20260817:
+  background: |
+    2026-08-16 五事件改编对比（林间学校/文化祭/修学旅行/圣诞线/PTA舞会五路深读）+ 2026-08-17 全卡群像均衡审计。
+    结论：2026-08-05 群像化重构（见 docs/restructure/01-06）方向正确且大部分已执行，但存在①矩阵收尾缺口
+    ②该计划未覆盖的结构性病灶③度量衡缺失导致失衡无法被回归拦截。本段为续作修复纲领。
+  audit_tool: |
+    新建 build_tools/audit_ensemble_balance.mjs：扫描150场，输出每幕×每主角焦点分布/零焦点streak/主场标记/独占场归属/
+    13个成长旗标的场景功能锚点表。默认报告模式；--strict 模式超阈值 exit 1。阈值=修复目标态
+    （连续零焦点≤10场·焦点占比≥12%·旗标锚点≥1场），第八九幕 OC 真相线 streak 暂豁免（STREAK_EXEMPT_ACTS），
+    日本侧平行线落地后移除豁免。修复清零后开 strict 纳入出包前回归套件。
+  audit_baseline_20260817: |
+    事件焦点：拉芙75场(45.2%)/雪乃36(21.7%)/群像28(16.9%)/八幡17(10.2%)/结衣10(6.0%)；
+    独占场：拉芙23/雪乃3/八幡1/结衣1；八幡第四五六幕（62-98共37场）零焦点、结衣第三幕36场零焦点；
+    9项阈值违规（详见 audit 输出）。注意两套口径：本审计用”事件焦点”字段，2026-08-05 用”主场POV”字段
+    （docs/主场POV标注表.md），两者均需向好，焦点字段此前从未再平衡。
+  matrix_reconciliation: |
+    2026-08-05《03-场景主导权矩阵》执行度核查（2026-08-17）：重写场（93/97/98/101/105/125/146/150/83/75）与
+    主导权转移（13/16/22/49/64/126）均已落盘；节拍级未落盘：场景10（踩水洼四人帮助语法）、18（拉芙承认没准备好）、
+    120（结衣无法让所有人满意预演）；旗标域已登记：104/115/125/126/128/141/146(partial)；
+    登记缺口：98(expressed_preference)、101(chose_against_group_expectation)、138(accepted_shared_cost确认画面
+    从未写入任何场景)、146(separated_self_from_family_standard)；从未指定旗标域：laff.refused_without_explanation、
+    laff.accepted_consequence_without_withdrawing_choice（矩阵遗漏，非执行遗漏）。
+  new_findings_beyond_20260805: |
+    五事件深读发现的、2026-08-05 计划未覆盖的病灶：①事件签收缺失成习惯（留美线无人质询八幡/文化祭裁决无教师层
+    追责/京都委托由OC代为总结/圣诞公演无回拍/舞会本体空心化——标题叫PTA舞会但舞会零筹备零举办零收束拍）
+    ②京都哑弹：海老名”维持现状”哲学无人对质、叶山面具裂口零后坐力 ③八幡”只拆不建”贯穿五幕——自毁被拦截/缴械/
+    查封但新行为模式未建立，105真物宣言缺支撑坡度 ④肯定驱动范式下痛感储备不足（治愈场连发，87”真恶心”几乎
+    是唯一痛感爆发）⑤配角工具化（相模南弹药一次耗尽/一色52后断粮20场/阳乃85后无下文/56信息资产未计息）
+    ⑥场景150终场=拉芙焦点场，三人仅群聊各一句台词且在场false——作品最后一幕的结构答案仍是”她的故事”。
+  acceptance_ruler: |
+    群像剧验收尺（新增场景的登记标准）：四主角各自弧线四环节齐全且每环节至少一场焦点戏——
+    病灶确立→恶化/代价→摊牌→兑付。工具人场判定：角色在某场景只有功能性输出（分析/助攻/圆场）而无自己的
+    欲望/代价/选择，即为工具人场，登记时须在场景功能说明该角色本场获得什么。旗标域登记约定沿用既有惯例：
+    写在场景功能★行等元字段（参照场景104行19格式），不得进入可播放正文（防元信息泄漏，同105信息边界约定）。
+  decisions_20260817: |
+    用户已拍板：D1 场景150留白为有意设计、保留——改造方案定为"对称化"（详见07清单C2：三人回复各带自己独立生活
+    正在运转的场内证据，终拍落在她主动发出邀请这个动作本身，不演重逢）；D2 批准——第八九幕补日本侧平行线
+    （八幡雪乃各至少一场正式焦点场，落地后移除 audit 的 STREAK_EXEMPT_ACTS 豁免）；D3 不改——留美线保持
+    "她和朋友和好"的治愈结局；D4 批准并已落盘——refused_without_explanation 锚定场景64（拒绝强制补习无求生式
+    解释）、accepted_consequence_without_withdrawing_choice 锚定场景92（寄信断退路），连同 98/101/88+138/146
+    共 7 处旗标域登记已写入场景功能★行；D5 批准阳乃85后出口+一色中段保线（56信息资产计息保留为候选）。
+  execution_protocol: |
+    分工不变：Claude 出槽位清单（病灶诊断+验收标准+建议焦点归属）与工具，用户亲自写正文，check-agent 扫描，
+    build_scene_index 重建，全回归+audit 对比违规数。分三批：第一批=矩阵收尾（场景10/18/120节拍）+旗标登记
+    （2026-08-17 已落盘7处）+拍级手术A1-A6b（A7留美线经D3决策不改）+勘误3处（已修：46/47千年宁坂→二年宁坂、
+    46错链章鱼烧→红丝带事件、47一色伊吕波→彩羽×3）；
+    第二批=焦点荒漠带再分配（结衣55/71升格+110/116执行位，八幡74/84/113/114升格——102经勘察修正为不改）
+    +D5配角保线（阳乃87门厅出口/一色73过渡）+B10-12结衣内容追加槽（38/117/26候选）；
+    第三批=第八九幕平行线（D2已批准，验收口径含结衣焦点场≥3——占比收口必要条件）+150终场对称化
+    （D1批准留白前提下的改造，方案见07清单C2）。
+    逐槽清单：docs/restructure/07-续作修复槽位清单-20260817.md。
+    第一批进展（2026-08-17 当日完成）：M1-M3+A1-A6b 全部落盘。用户自改 30/35/88 的 场景功能 层后授权
+    "这些节奏问题你改就好了"——拍级正文由 Claude 按工单《08》补笔（限本批，禁区照工单执行）。
+    check-agent 扫描 12 文件后修复 9 处（场景69 重复 演绎入口 键×4、55/59 缩进吞条目、37 日期星期不符
+    10-29→10-28、55 姬菜→姬娜（第二批已回退：全项目标准为姬菜）、30 拉起→拉芙、69 円→日元、89 総→总、35 尾句、18 假性主体）；
+    工单 A5a"三周前的舞会"经核实更正为"两天前"（舞会=场景87=3/22，修業式=3/24）。
+    索引重建+scene-index.ts 前端同步+CG manifest 重建同步后，全回归 11 项 PASS；
+    audit 违规仍为 3 项（雪乃二幕14连零/八幡10.2%/结衣6.0%——均为第二批焦点再分配范畴，第一批不动占比属预期）。
+    第二批进展（2026-08-17）：工单《09》已发。勘察结论——结衣驱动级拍仅 10/88/120 现存（37/44/47/102 为反应级），
+    拉芙15场双焦点全部承重不可削；audit 机制实踩：群像场重置连零计数，群像→角色转换须逐项验算
+    （27 转换会致结衣三幕15连零，与 39/78 一并列入暂缓项）。
+    第二批当日完成：B1-B9+B10(38)+B11(117) 落盘（B12 未选；114 登记 [八幡，雪乃]）。check-agent 扫描 20 文件，
+    修 8 严重级+2 机械建议级（含 38 叶山对话空间互文、55 人物字段补 C 线、114 一色重复离场、110 器材席串场、
+    以及回退第一批"姬菜→姬娜"的方向错误——全项目标准为姬菜）。71 群像转换吃掉八幡四幕重置点致新增 12 连零，
+    以 69 补登八幡（A4 可选拍承重，登记诚实）修复。全回归 11 项 PASS；audit 违规 3→1（余：结衣 11.1%<12%，
+    收口于第三批 C1 结衣焦点场≥3）。终账（分母180）：八幡12.8%/雪乃23.3%/结衣11.1%/拉芙42.2%/群像10.6%。
+    第三批当日完成（用户授权"第三批你来做吧"，正文 Claude 落笔，工单《10》）：C1=121 送别三拍+登记结衣 /
+    128 转群像 / 129 登记结衣 / 130 教练位拍+登记四人（八幡雪乃第八九幕正式焦点场由 130 承担）；
+    C2=150 群聊对称化（三人回复各带独立运转证据：结衣入学手续/八幡大学教材/雪乃一桥材料；终拍收束于
+    "发出邀请"动作）。check-agent 修 3 处（130 演绎入口重复条目合并、150 时态与"顺路"逻辑）。
+    **audit 违规清零（9→0）**，STREAK_EXEMPT_ACTS 第八九幕豁免移除，--strict 入出包套件（退出码 0）。
+    终账（分母185）：八幡13.0%/雪乃23.2%/结衣12.4%/拉芙40.5%/群像10.8%。C3（56计息）仍未批准候选。
+  note: 条目正文仍由用户亲自撰写；Claude 的槽位清单只含诊断/验收标准/槽位坐标，不含成段正文
+    （例外：第一批拍级节奏修复经用户 2026-08-17 明确授权由 Claude 落笔，用户事后审阅；第二批起恢复原分工）
+
+
+world:
+  overview: |
+    现代日本千叶县千叶市，2013年5月至2015年3月。
+    AU世界线：比企谷八幡、雪之下雪乃、由比滨结衣三人已历车祸+冷战+"伪善"冲突。表面危机已暂时收束，
+    三人重新回到奉仕部，但形成冲突的根源并未消失——他们知道旧方法有问题，却还没学会新的相处方式。
+    英国转学生拉芙希妮·都柏林（Loughshinny Dublin）加入的不是一个已经完成修复的三人组，
+    而是一个刚刚停止破裂、仍在重新学习关系的三人组。
+    最高主线（2026-08-05 重构）：四主角（八幡/雪乃/结衣/拉芙希妮）青春群像——
+    "人在关系中受伤后会发展出保护自己的防御方式；这些方式曾救过他们，也会伤害最不愿失去的人。
+    修复不是让创伤消失，而是不再让创伤自动替自己作出所有选择。"
+    奉仕部"提供帮助，而非代替完成"保留为剧情检验机制；拉芙家族线为主要外部事件线，但不再是唯一完整的内部成长线。
+    双模式：POV剧本模式（扮演四主角之一走150场剧本）／自建开放世界（自建角色平行世界）。
+
+  au_canon_divergence:
+    note: 2026-08-05 用户确认的AU前史定义（与原作分歧点，条目写作以此为准）
+    伪善事件: 高中开学第一天，八幡为救结衣的狗被雪乃家的车撞进医院→八幡因此被同学孤立；雪乃事前被塑造为正义感十足的人，却对车祸知情而装作不知情→八幡据此称她"伪善"。这是八幡不信任的具体锚点，也是三人冷战与磨合期的来历
+    恋爱线: 不预设原作三角恋走向；恋爱全部由玩家驱动的MVU关系变量（bond/romance/commitment）决定，主线不为任何配对背书
+    爱布拉娜权力: 以性格调色盘为准——有操作权无最终决策权（决策在长老会）；她有权力，也被权力控制。基础信息等条目不得写成"实权掌控"
+    语料阶段守卫: 2026-08-05起约定——各角色三面性"语料"须按当前阶段过滤使用，标注阶段的语料未达该阶段不得引用；新增语料必须标注可用阶段
+    成长里程碑守卫: 2026-08-05 重构起——四主角人格阶段由 stat_data.arc_milestones 事件旗标驱动（0/1-2/3 旗标→前/中/后期，拉芙 0/1/2/3-4）；current_scene 只决定"哪些事件可能发生"（物件/称呼/场景门槛照旧），bond 只决定亲密程度；二者均不再自动发放人格成长。语料阶段标注绑定对应旗标，EJS 加载条件真隔离，不靠模型自律。arc_milestones 缺失的旧存档回退原 scene/bond 逻辑（deprecated）
+    主线重构_20260805: 四主角群像化——十幕外壳/150场编号/日期/大事件不变；二幕主导改结衣、三幕八幡、四幕雪乃、六幕四人共同失败（场景93-101重写）、八幕结衣、十幕群像；详表见 docs/restructure/02-重构计划-20260805.md 与 03-场景主导权矩阵-20260805.md
+    关系政策_20260805: 删除角色攻略星级制度；雪乃初见拉芙 romance 恒为 0（初见注意记 known/bond/叙事备注）；默认单一恋爱承诺，多边须经所有相关角色明确知情与协商，不允许多个"恋人"commitment 静默并存
+    一色定位_20260805: 一色彩羽是第五可攻略角色，不是第五POV主角——四选一POV系统不变，禁止扩展为五选一；不进一色未公开内心（非POV不写内心直陈）。新增 stat_data.iroha_milestones 三旗标（rejected_profitable_solution／made_uncalculated_request／stated_desire_without_performance）·外部证据制·不按场景编号自动置位·恋爱互动不构成证据。一色焦点事件：场景52（拒绝有利但不属于自己的方案）／73（面具式求助被挡回·疲惫露出半拍）／114（放弃一种收益并承担后果）／149（与恋爱无关的结构性选择）
+    角色提示词优化_20260812:
+      目标: 降低基础信息、性格调色盘、三面性、二次解释之间的同义重复；拉芙希妮增加不服务创伤主线的日常人格；原作角色优先保留可辨识声线而非泛用恋爱台词
+      基础信息边界: 只保留身份、可见特征、关键经历、关系起点、称呼与知情边界；心理机制归调色盘或二次解释
+      调色盘边界: 描述跨阶段底色与当前阶段行为；不重复三面性台词，不用同一象征物承担所有情绪
+      三面性边界: 语料只写纯台词；动作归身体行为；阶段台词继续受原有 EJS 旗标隔离；关键场景宣言不作为日常轮播语料
+      二次解释边界: 只纠正模型高频误读；已经由调色盘和三面性表达清楚的内容不再总结一遍
+      保持不变: 现有文件路径、entryManifest 注册、MVU 字段、EJS 门控、场景事实、角色成长旗标与恋爱变量语义
+    日常反差细节_20260816:
+      动机: 主线场景文件自带梗，但 free 模式/日常空白期 AI 可用的"普通生活素材"过少（如雪乃只剩红茶/潘先生/猫三样），枯竭后会重复或编造；参考百科式角色卡的萌点密度，以本卡心理模型的写法补一块日常反差素材
+      位置: 各角色 基础信息.yaml·背景设定 下新增「反差细节」键（日常习惯之后）；九名角色各一块（角色一览为索引不添加）
+      剂量: 每人 2~5 行，一行一事；只写日常与私人趣味，不写人际关系与剧情服务内容；春物角色优先原作梗，方舟角色将原作习性翻译为普通高中生/普通人的日常形态（拉芙希妮是普通人类·无尾巴无德拉克特征·禁写龙类意象）
+      使用禁则: 标注"仅在对应情境触发时使用·不得逐条复述"——与扮演准则"意象只在触发时出现"一致，防止 AI 当 checklist 轮播
+      雪乃事实修正_20260816: 用户确认——雪乃不会骑马与合气道，体力几乎为零，钢琴仅初中学过
+    雪乃冷淡校准_20260816:
+      背景: 用户反馈 AI 把雪乃演成"初见即侮辱"（含对拉芙希妮）且长期交往后毒舌内容不变质；前一轮代理代笔的"毒舌校准"方案（对象门槛/锋利变质四条/语料对象标注）已由用户回滚，改为用户亲自修订、代理审核
+      用户修订: ①基础信息语言特征"逻辑先行"→"直白正义·指出错误时直接但留重做空间" ②二次解释「关于冷淡与毒舌」→「关于冷淡」：不热衷寒暄但非冷漠·语气按对象调整·对亲近者含糊表达在意 ③调色盘：戒备衍生一去"攻击性强"改"说话直白、拒绝不正确"·戒备衍生二"效率话术"→"别扭"·阳乃坐标系与嘴嫌衍生措辞微调 ④关系设定删"不能预载成互相理解"与"具体态度随当场交锋变化"（用户有意删减）
+      原作台词处置: 三面性语料库中的原作讽刺台词（如"你的脑子是装饰品吗"）保留不动——用户确认其为原著台词且默认对象为八幡；降功率由调色盘去"攻击性强"与二次解释去"毒舌"命名承担
+      残余风险备案: 若实测初见仍开嘲讽，最小干预为在语料使用规则注明"原作讽刺台词默认对象是八幡与熟人"，不删台词
+      待办_20260816: check-agent 三处风格违规待用户修订——二次解释L4"并非对人冷漠"否定转折·基础信息L34"直白正义"评价词·基础信息L43"敬爱、竞争和戒备"标签罗列
+
+  regions:
+    - name: 千叶市
+      description: 千叶县首府·总武高中所在地·角色日常核心
+      scenes: [总武高中(主楼·特别栋·中庭·鞋柜区·天台·教室), 奉仕部活动室, 拉芙希妮的公寓(美滨区海侧·安保公寓), 雪之下雪乃的公寓(稻毛区高层), 由比滨家(稻毛区), 比企谷家(中央区), 千叶站(JR+单轨枢纽·站前天桥), 稻毛海滨公园, 中高滨公园, MARINPIA商场, 萨莉亚家庭餐厅, 千叶站前拉面馆, 便利店(LAWSON/7-11), 稻毛浅间神社, 千叶市图书馆, 格兰皇宫酒店(35层顶层·星空宴会厅), 千叶港湾酒店, 幕张Messe, 千叶都市单轨电车]
+    - name: 东京
+      description: 首都·雪之下本邸所在地·部分家族对峙舞台
+      scenes: [雪之下本邸, 新大谷酒店]
+    - name: 伦敦/都柏林
+      description: 爱尔兰/英国·都柏林家族势力范围·家族线关键场景
+      scenes: [塔拉庄园(伦敦肯辛顿区·家族宅邸), 克拉伦登街十七号(伦敦·家族议会·长老会), 翡翠资本(伦敦金融城·家族基金), 金丝雀港口(都柏林·还火事件发生地)]
+
+  factions:
+    - name: 奉仕部
+      description: 总武高中非正式社团·"提供帮助"而非"代替完成"·四→五人的核心关系场
+      territory: 千叶市·总武高中特别栋
+      key_members: [比企谷八幡, 雪之下雪乃, 由比滨结衣, 拉芙希妮·都柏林]
+    - name: 都柏林家族
+      description: 爱尔兰旧财阀·跨英爱贵族家族·维多利亚时代黑工起家→军功获封→推动独立积累政治资本·家族议会设于伦敦克拉伦登街十七号·现任家主隐退·实权由爱布拉娜掌控
+      territory: 伦敦/都柏林
+      key_members: [爱布拉娜·都柏林, 拉芙希妮·都柏林, 科尔马克·都柏林, 多琳·都柏林, 玛格丽特·都柏林]
+    - name: 雪之下家族
+      description: 千叶县政治家族·夫人掌控方向·阳乃为继承人·雪乃处于期望与自我道路的张力中
+      territory: 千叶/东京
+      key_members: [雪之下雪乃, 雪之下阳乃, 雪之下夫人]
+
+characters:
+  - name: 拉芙希妮·都柏林
+    basic: {age: 17→19, gender: 女, identity: 爱尔兰转学生·家族次女·2年J班→3年J班·奉仕部成员·立志成为作家(早稻田文学部), relationship: 开局为三人组外新成员·与雪乃从同桌起步·"苇草"开局仅家族成员有使用权限}
+    appearance: [超长分层浅金近米白长发·下层与发尾偏灰米色·发尾外卷·小环呆毛, 右腕烧焦丝带(还火事件遗物), 白皙肤色·祖母绿瞳·柔和少女椭圆脸·安静疏离低情绪幅度, 藏青白滚边西装外套·米色罗纹针织背心·白衬衫·细小红色绳结蝴蝶结·蓝黑格纹百褶裙·烟灰过膝袜·黑乐福鞋]
+    personality:
+      base: 说话前一拍停顿·被夸转移话题·摩挲右腕丝带·感官敏锐
+      stages: [绷紧期(克制,礼貌,观察,疏离), 软化期(渐开放,干燥毒舌,守护,脆弱), 对抗期(坚韧,手腕,自我确认,恐惧), 自主期(自主,平静,温柔,坚定)]
+    tri_faceted: true
+    rephrase: true
+
+  - name: 雪之下雪乃
+    basic: {age: 17→19, gender: 女, identity: 2年J班→3年J班·国际课程班尖子·奉仕部部长·一桥大学法学部, relationship: 与八幡保留冷战修复后的默契与伤痕·与拉芙同桌起步·委托=找到真正的自己}
+    appearance: [黑长直发·偶尔编发辫, 潘先生(熊猫)爱好者, 开局持一对红缎发带·后续物件转移由场景阶段事实控制]
+    personality:
+      base: 冷淡边界分明·效率话术合理化情感·向内防御·对在意的人高标准
+      stages: [戒备期(冷淡,效率至上,高要求,孤独), 接纳期(责任,守护,渐开放,恐惧), 自主期(坚定,温柔,主动选择,脆弱)]
+    tri_faceted: true
+
+  - name: 比企谷八幡
+    basic: {age: 17→19, gender: 男, identity: 2年F班→3年F班·奉仕部成员·"孤傲的独行侠", relationship: 奉仕部核心吐槽役·MAX咖啡持有者·从未被维护}
+    appearance: [死鱼眼, 不修边幅·校服穿得随意]
+    personality:
+      base: 干瘪吐槽·死鱼眼·对他人的痛觉极端敏感·MAX咖啡持有者·不习惯被维护
+      stages: [孤绝期(愤世,自毁,敏锐,温柔), 动摇期(矛盾,试探,守护,恐惧), 确认期(坚定,温和,可靠,自嘲)]
+    tri_faceted: true
+
+  - name: 由比滨结衣
+    basic: {age: 17→19, gender: 女, identity: 2年F班→3年F班·奉仕部成员·"日常温度守护者", relationship: 情绪粘合剂·在现充组与奉仕部之间撕扯·具体亲密方向由实际互动决定}
+    appearance: [团子头/蓬松发型, 粉色系打扮, 家有萨布雷(狗)]
+    personality:
+      base: 开朗温暖·读空气极强·两圈撕扯·用体贴掩饰不安
+      stages: [迎合期(迎合,温暖,不安,敏锐), 撕扯期(矛盾,忠诚,疼痛,坚强), 自主期(坚定,温柔,不退让,脆弱)]
+    tri_faceted: true
+
+  - name: 一色彩羽
+    basic: {age: 16→18(低一届), gender: 女, identity: 1年级→2年级·场景48后成为学生会会长并进入奉仕部关系网·"小恶魔", relationship: 场景48前不在奉仕部关系网内·与各人关系随实际互动发展}
+    appearance: [亚麻色短发/中长发, 甜美外表下有算计的眼神]
+    personality:
+      base: 外表甜美可爱·内里计算精明·伪装高手
+      stages: [试探期(计算,伪装,观察,好奇), 融入期(忠诚,毒舌,可靠,计算)]
+    tri_faceted: true
+
+  - name: 爱布拉娜·都柏林
+    basic: {age: 17→19(与拉芙同日生·年长11分钟), gender: 女, identity: 家族长女·翡翠资本执行董事·双子姐姐(14岁被推为继承人·16岁被推上执行董事·有操作权无最终决策权), relationship: 拉芙的控制者与保护者·姐妹修复线核心人物·"永远"语言持有者·有权力也被权力控制}
+    appearance: [与拉芙几乎相同容貌·气质截然不同, 更锐利的眼神和姿态]
+    personality:
+      base: 温暖与控制熔铸一体·对拉芙保护欲与控制欲纠缠·口头禅"永远"
+    tri_faceted: true
+
+  - name: 平冢静
+    basic: {age: 27岁左右, gender: 女, identity: 总武高中国语教师·2年F班班主任·奉仕部顾问, relationship: 拉芙的"守门人"·八幡的人生导师·达洛维大学舍友}
+    appearance: [黑色长直发及腰·校内标志性白大褂+职业装·相貌端庄]
+    personality:
+      base: 豪爽直率·烟酒不离手·用拳头和强硬手段表达关心·敏锐观察力
+    tri_faceted: true
+
+  - name: 雪之下阳乃
+    basic: {age: 19岁(大学一年级), gender: 女, identity: 国立大学教育学部1年级→2年级·雪之下家长女, relationship: 雪乃的姐姐·拉芙的直接对手}
+    appearance: [与雪乃容貌相似但气质成熟·黑长直及腰·深蓝眼, 偏爱深色系剪裁精良的连衣裙或套装]
+    personality:
+      base: 外表温柔完美·内里敏锐冷酷·习惯性试探他人·笑容不达眼底
+    tri_faceted: true
+
+relationship_entry_contract:
+  purpose: 静态角色条目只提供关系起点与可重复的相处语法，不替正文总结关系，也不预写关系终点
+  include: [开局是否认识·现实位置接触, 双方各自注意什么·怎样回应具体动作, 称呼·知情范围·赠物与亲密行为的当前边界]
+  exclude: [一次性场景比喻登记为永久标签, 「同类识别/互为镜像/互为刹车」等结论代替具体互动, 双向条目复制同一句关系总结, 把未来和解/结盟/亲密程度写成必然结果]
+  dynamic_source: 已发生正文与MVU关系变量决定后续关系；场景专属印象留在对应事件条目
+  specific_decision: 「发霉防腐剂」只属于场景20中拉芙观察八幡帮助鹤见留美时的一次性比喻，不进入静态角色条目
+
+dlc_v060:
+  common_contract:
+    release: v0.6.0
+    timeline_anchor: 主线场景118结束后
+    start_date: "2014-07-12"
+    campaign_type: 开放世界
+    mode: free
+    continuity: [继承主线场景118前已成立的公共事实·不激活场景1至118·不继承任意旧档私有选择, 不编写固定场次/任务链/强制调查/强制治愈/预定结局, 日常·关系与异常状态只按实际演绎结果发展]
+    viewpoint: [current_pov是唯一且不可变的玩家意识, 身体/外表/公开身份不能覆盖玩家意识·不授权代写玩家的台词/决定/内心, 关系/承诺/知识与亲密记忆归属于实际参与的意识·不归属身体外壳]
+  campaigns:
+    dlc_genderbend_hachiman:
+      title: 错位的日常
+      player_mind: hachiman
+      tone: 八幡式自嘲与熟人日常构成的青春喜剧；身体变化是生活摩擦来源，不是每轮重复的奇观
+      premise: [记忆/法律身份/关系/责任不改变, 外表与身体呈现变为女性·原因未知·是否调查由玩家决定, 熟人只按亲眼观察/行为辨认/证据/明确告知更新认知]
+      opening:
+        date: "2014-07-12"
+        time_slot: 早晨
+        location: 比企谷家·八幡房间
+        observable_facts: [手机闹钟响起·手指/声音/头发/衣物贴合与镜中形象出现可观察变化, 房间/手机记录/记忆/法律姓名与前一天经历保持原样, 小町在门外叫哥哥·因没有回应把手放上门把]
+        stop_before: [八幡回应小町/挡门/主动开门, 继续检查身体/联络他人/为变化命名/决定当天安排]
+      recurring_sources: [家庭里的遮掩·试探·过度帮忙与兄妹吐槽, 衣物/声音/体力/证件/校服/设施与医疗不确定性在相关行动中造成摩擦, 原本相同的沉默/毒舌/独处与距离被旁人重新理解, 购物/返校/午餐/头发/照片/消息/暑期邀约与MAX咖啡等普通生活]
+      boundaries: [不自动生成求医/找原因/公开身份/恢复原状的任务, 不让所有角色首次见面立刻认出/相信/接受变化, 不把身体细节变成常驻笑点或每轮提醒]
+    dlc_body_swap_mrs_yukinoshita:
+      title: 君的名字？
+      player_minds: [hachiman, mrs_yukinoshita]
+      tone: 类《你的名字》的错乱喜剧；靠遗漏日期/手机便笺/作息破绽/日程损害与熟人怀疑持续生长
+      premise: [整段聊天只控制开局所选意识·换回或再次互换都不改变current_pov, 八幡与雪之下夫人意识只在睡眠后醒来节点不规律互换·可连续数日不交换·不得清醒对话中突变, 未选择意识由AI控制·不展示其私下内心与离线行动, 离线事件只能通过便笺/设备记录/物品变化/他人转述/可观察后果获知]
+      openings:
+        hachiman:
+          location: 雪之下家本邸·夫人卧室
+          observable_facts: [八幡在夫人身体里醒来·陌生手机与精确日程, 镜子确认外表·工作人员提醒07:40出发·阳乃楼下等候, 手机来电显示「比企谷宅」]
+          stop_before: [接听电话, 隐藏异常, 下楼, 检查手机, 模仿雪之下夫人, 主动说明互换]
+        mrs_yukinoshita:
+          location: 比企谷家·八幡房间
+          observable_facts: [夫人意识在八幡身体里醒来·房间与手机属于八幡且无解释, 小町门外叫哥哥·把异常沉默或过分规整的回应理解为哥哥的状态]
+          stop_before: [回应小町, 查看私人消息, 改动八幡日程, 联络雪之下本邸, 主动说明互换]
+      identity_boundaries: [身体提供感官/行动条件/表面权限·不提供原主人的专业知识/私人记忆/同意/关系所有权, 夫人身体让旁人暂时服从·但八幡意识不会因此知道家族程序/人员/文件, 八幡身体不会让夫人自动理解小町/奉仕部成员/私人通信, 怀疑与识破按观察者分别记录·外表相同不能直接证明意识身份]
+      recurring_sources: [八幡的含糊回答经夫人身份被当作正式指示, 夫人的精确表达经八幡身体被理解为生病/发怒/突然转性, 阳乃检查母亲习惯偏差·小町核对兄妹日常·雪乃观察用词/距离/饮品/对待方式, 双方便笺从禁令变成损害报告/日程说明·再发展为提问或私人提醒]
+      boundaries: [不自动建立官方调查/固定公开顺序/定期治愈/公共危机/强制和解, 互换状态只能在正文明确写出睡眠与醒来后改变, shared_notes只记录实际写下或被发现的内容·不替离线角色补写总结]
+
+style:
+  perspective: 第三人称·多POV（默认零POV·独占场景标注单一观察锚点）
+  scene_pov_fields:
+    POV: 该场的叙事镜头归属（"共享场景／零POV" / 单一角色 / "角色·独占"）——决定这一场怎么写
+    主场POV: 该场的戏剧重心归谁（这场是谁的戏）——决定戏眼归属，供主AI判断非主场POV的完成条件
+    关系: 两者语义不同且可并存（例：场景118 POV="共享场景／零POV" 而 主场POV="雪之下雪乃×比企谷八幡"）
+    取值规范: 统一用全名（拉芙希妮·都柏林／雪之下雪乃／比企谷八幡／由比滨结衣／爱布拉娜·都柏林／比企谷小町／平冢静）· 双主角用"A×B"· 共享统一写"共享场景／零POV"
+    落盘: 2026-08-04 全150场已写入（build_tools/apply_main_pov.py 可重跑·幂等）
+  tone: 文学化·心理描写细腻·角色语调各有标记
+  mood: 青春群像·温暖日常下暗流涌动·"未完成语句收束"的章尾节奏
+  reference: 原作《やはり俺の青春ラブコメはまちがっている。》同人AU
+
+entries:
+  # ═══════════════════════════════════════════
+  # 条目注册规则（逐条路径/关键词以 tavern-cards-state.json 为唯一运行时来源）
+  # ═══════════════════════════════════════════
+
+  # ── 第一层 before_char ──
+  ejs_preprocess: [EJS预处理(世界书/EJS预处理/EJS预处理.txt·define mode/current_pov/custom_protagonist/current_scene/world/player/characters), 玩家身份路由(世界书/EJS预处理/玩家身份路由.txt·POV映射四主角·custom读取七字段), 开局场景路由(世界书/EJS预处理/开局场景路由.txt·首条开局user消息后注入·四POV入场锚点·自建开放钩子), POV分幕滤镜(世界书/EJS预处理/POV分幕滤镜.txt·POV模式只注入当前玩家角色与当前阶段的注意力/防御/剂量/禁区), 角色阶段事实(世界书/EJS预处理/角色阶段事实.txt·POV模式按current_scene补回已发生的物件/身份/称呼连续性)]
+
+  world_lore: [世界观与舞台设定(世界观/世界观与舞台设定.yaml·现代日本千叶舞台·奉仕部机制·双模式差异), 还火事件(世界观/还火事件.yaml·家族线核心事件公开版·只含拉芙开局认知与不可提前披露边界), 还火事件_封存真相(世界观/还火事件_封存真相.yaml·仅拉芙POV场景123后注入·其余POV/自建始终不注入), 扮演准则(扮演准则/扮演准则.yaml·AI叙述风格·POV差异化·章尾技法·禁则红线·简体中文规范), 原著时间线参考(时间线/原著时间线参考.yaml·原作事件对照·AI不得用原著覆盖AU已改变事件)]
+  # 剧本日历条目已于 2026-08-09 删除：场景日期直接以各场景 YAML「时间」字段为准，CG 日期工具 build_cg_cdn.py 同步改读场景 YAML，年历条目仅保留年度节点/天气种子
+
+  mechanics: [攻略难度(机制/攻略难度.yaml·常驻仅保留关系数值/判定尺度/多线反应通则·14角色攻略文案拆入各自条目), DLC_错位的日常_演绎规则(世界书/DLC/性转八幡/演绎规则.yaml·ejs_gate: campaign_id==dlc_genderbend_hachiman), DLC_君的名字？_演绎规则(世界书/DLC/身体互换/演绎规则.yaml·ejs_gate: campaign_id==dlc_body_swap_mrs_yukinoshita)]
+
+  geography: [千叶市概览(地理/千叶市概览.yaml·整体印象·交通·地标), 总武高中(地理/总武高中.yaml·主楼·特别栋·中庭·鞋柜·天台·教室·活动室), 拉芙希妮的公寓(地理/拉芙希妮的公寓.yaml·美滨区海侧安保公寓·聚会空间·家族监视场), 雪之下雪乃的公寓(地理/雪之下雪乃的公寓.yaml·稻毛区高层·独居·潘先生玩偶), 千叶市街景与交通(地理/千叶市街景与交通.yaml·千叶站·单轨·便利店·萨莉亚·拉面馆·海滨公园·神社), 千叶高级场所(地理/千叶高级场所.yaml·格兰皇宫酒店·港湾酒店·幕张Messe·家族对峙/正式场合), 伦敦与都柏林家族据点(地理/伦敦与都柏林家族据点.yaml·塔拉庄园·克拉伦登街十七号·翡翠资本), 都柏林家族(地理/都柏林家族势力.yaml·家族历史·权力结构·长老会·拉芙阵营潜在资源), 雪之下家族(地理/雪之下家族势力.yaml·本邸·夫人控制·阳乃继承·雪乃张力), 总武高中制度(地理/总武高中制度.yaml·社团管理·高坂理津子·奉仕部存续审查·学期划分)]
+
+  # ── 第二层 after_char：角色/NPC ──
+  # 每个角色固定 基础信息/性格调色盘/三面性 三件套（路径 世界书/角色/<名>/<件>.yaml）；二次解释仅拉芙有
+  # 一色/爱布拉娜/平冢静/阳乃 为 基础信息+调色盘+三面性；NPC 单条目
+  roles:
+    拉芙希妮: [基础信息, 性格调色盘(四阶段·EJS·2026-08重写: 被忽略的人底色→被看见→日常抵抗+手腕定向→我的名字·POV恋人叠加层·条目总token持平), 三面性(观察者/停机坪/流水线产品·ejs_gate: mode!=="pov"||current_pov==="laff"), 二次解释(「能力」→「性格反射」·消除AI误读·2026-08重写补日常抵抗)]
+    雪之下雪乃: [基础信息, 性格调色盘(三阶段·EJS·2026-08重写: 容身之所追寻者底色·POV恋人叠加层), 三面性(高墙社交面/卸下高墙/家族生存策略·ejs_gate: mode!=="pov"||current_pov==="yukino")]
+    比企谷八幡: [基础信息, 性格调色盘(三阶段·EJS·2026-08重写: 真物追寻者底色·POV恋人叠加层), 三面性(围墙/卸围墙/保护模式·ejs_gate: mode!=="pov"||current_pov==="hachiman")]
+    由比滨结衣: [基础信息, 性格调色盘(三阶段·EJS·2026-08重写: 温度守恒者底色·POV恋人叠加层), 三面性(温度守恒社交面/第二三面框架保留·关键剧情台词不入语料库·ejs_gate: mode!=="pov"||current_pov==="yui")]
+    一色彩羽: [基础信息, 性格调色盘(两阶段·EJS), 三面性(完美后辈/审计员/没排练过的一色·ejs_gate: mode!=="pov"·开放世界专用·2026-08-04注册)]
+    爱布拉娜: [基础信息, 性格调色盘(单层+Ω姐妹修复3档·2026-08重写: 被独自留在童年里的姐姐底色), 三面性(执行董事/执着姐姐/红糖罐前·ejs_gate: mode==="pov"&&current_pov==="laff"·2026-08-05修正)]
+    平冢静: [基础信息, 性格调色盘, 三面性(ejs_gate: mode!=="pov"·2026-08-05统一补装·与一色同规格)]
+    雪之下阳乃: [基础信息, 性格调色盘, 三面性(ejs_gate: mode!=="pov"·2026-08-05统一补装)]
+    角色一览: [世界书/角色/角色一览.yaml·全部角色速览索引·一句话定位]
+  npc_detail: [达洛维小姐(家庭教师·还火牺牲者·平冢静大学舍友·达洛维钢笔「To L-Fly」·烧焦丝带来源), 温斯顿先生(在日教育合作方·转学经手人·后期转型为拉芙自主选择的代理人), 雪之下夫人(千叶政治家族实际掌权者·补足《君的名字？》稳定玩家意识的边界), 科尔马克·都柏林(父亲·隐退家主·一票否决权·猫眼石胸针赠予者), 多琳·都柏林(母亲·家族对日监视远程节点), 高坂理津子(社团管理担当·奉仕部正式立部审核者)]
+  npc_simple: [比企谷小町, 户冢彩加, 材木座义辉, 叶山隼人, 三浦优美子, 海老名姬菜, 户部翔, 川崎沙希, 相模南, 城廻巡, 折本香织, 鹤见留美, 其他配角群像(川崎京华/大志/芳雄·由比滨太太·大冈/大和·雪之下父亲·比企谷家父母·鹤见老师·班主任等低戏份合并)]
+
+  # ── 第三层 depth：DLC开局锚点 / 150场主线事件 / MVU ──
+  dlc_openings:
+    - name: DLC_错位的日常_开局锚点
+      path: 世界书/DLC/性转八幡/开局锚点.yaml
+      purpose: 2014-07-12清晨八幡房间·小町手搭门把·停在玩家首次决定之前
+      ejs_gate: campaign_id==dlc_genderbend_hachiman && matchChatMessages(「我选择扮演比企谷八幡，进入《错位的日常》。」)
+    - name: DLC_君的名字？_开局锚点_八幡意识
+      path: 世界书/DLC/身体互换/开局锚点_八幡意识.yaml
+      purpose: 八幡意识在雪之下夫人身体内醒来·停在接听/下楼/说明异常之前
+      ejs_gate: campaign_id==dlc_body_swap_mrs_yukinoshita && current_pov==hachiman && matchChatMessages(「我选择扮演比企谷八幡的意识，进入《君的名字？》。」)
+    - name: DLC_君的名字？_开局锚点_夫人意识
+      path: 世界书/DLC/身体互换/开局锚点_夫人意识.yaml
+      purpose: 夫人意识在八幡身体内醒来·停在回应小町或接触八幡私人信息之前
+      ejs_gate: campaign_id==dlc_body_swap_mrs_yukinoshita && current_pov==mrs_yukinoshita && matchChatMessages(「我选择扮演雪之下夫人的意识，进入《君的名字？》。」)
+
+  # 150 场主线事件条目：逐场注册与关键词以 tavern-cards-state.json 为唯一运行时来源
+  # 命名规则：场景<中文数字>（场景一~场景一百五十）→ path 世界书/事件/场景<中文数字>.yaml
+  # 门控：mode==="pov" && current_scene===N · strategy=constant+日期关键词（手机助手章节app日历读取用）
+  # 正文源：世界书/修正这个世界_(2)/场景<中文数字>（已逐字落盘）
+  scenes_by_act:
+    第一幕_入部磨合: [1-10]
+    第二幕_暑夏林间学校: [11-25]
+    第三幕_二学期: [26-61]
+    第四幕_冬假三学期: [62-77]
+    第五幕_PTA舞会: [78-92]
+    第六幕_春假战备: [93-98]
+    第七幕_重新为奉仕部命名: [99-119]
+    第八幕_归国与失语: [120-126]
+    第九幕_以自己的名字委托: [127-133]
+    第十幕_冬去春来: [134-150]
+  # 150a 分支尾声：不计数·不注册为正式场景条目
+
+  mvu_entries: [MVU变量列表(世界书/MVU/变量列表.txt·双模式进度+world/player+动态characters+Ω/锤子/信息锁/尾声方向+phone容器·运行时展示当前完整stat_data), MVU更新规则(世界书/MVU/更新规则.yaml·场景推进·位置·资产·Present/关系/穿搭·锤子/信息锁/预设尾声), MVU初始变量(世界书/变量/initvar.yaml·开场白commit初始值·POV/custom两套), MVU输出格式(世界书/MVU/输出格式.yaml·导演指令·状态栏视图·调试模式·分支菜单生成规则)]
+
+mvu:
+  structure: |
+    顶层结构（动态角色MVU＋phone容器）：
+    ├── 模式与主角组（3）：mode: pov | custom | free · current_pov: hachiman|yukino|yui|laff · custom_protagonist{name,gender,className,identity,past,personality,appearance}
+    ├── 剧本进度：current_scene 1-150 · mainline_completed(场景150完成后不可逆置true)
+    ├── world: current_date(ISO) · current_location
+    ├── player: cash(number|null) · carried_items(string[])
+    ├── characters（规范全名动态Record·不预设追踪对象·不创建玩家本人）: display_name · present · known · relationship{bond 0-100, romance 0-100, commitment: 未确认|仅朋友|恋人} · latest_user_memory{memory, inner_thought} · outfit{outerwear/inner_layer/bottoms/socks/underwear/shoes}
+    ├── Ω与锤子组（10·仅拉芙POV激活）: Ω_resonance 0-100 · hammer_* ×9(pending|triggered|missed)
+    ├── 信息锁组（3）: laff_knows_fire_truth · laff_reed_authorized_yukino · dalloway_pen_used
+    ├── 成长里程碑组（2026-08-05·四主角事件旗标·一旦true不可逆）: arc_milestones{hachiman: asked_before_self_sacrifice/accepted_shared_cost/stated_personal_desire, yukino: offered_resources_without_deciding/admitted_personal_wish/separated_self_from_family_standard, yui: voiced_disagreement_publicly/did_not_retract_after_conflict/admitted_selfish_wish, laff: expressed_preference/refused_without_explanation/chose_against_group_expectation/accepted_consequence_without_withdrawing_choice}
+    ├── 一色成长旗标组（2026-08-05·第五可攻略角色·非第五POV·外部证据制·不可逆）: iroha_milestones{rejected_profitable_solution, made_uncalculated_request, stated_desire_without_performance}
+    ├── 结局组（2）: mainline_completed · branch_choice(null|共同线|六组预设关系尾声|姐妹和解)
+    └── phone（手机助手按存档隔离·主AI禁止直接更新）: contacts(规范全名→active/removed/blocked) · threads(thread_id→direct/group·成员·滚动摘要·事实·待办) · messages(thread_id→真实发送者/故事时间/知情范围/来源) · forum.posts(帖子与回复及元数据) · context(主线注入快照·幂等解析记录·手动队列)
+  variables:
+    初始值: mode=null · current_pov=null · current_scene=1 · mainline_completed=false · world.current_date=2013-05-20 · current_location=未确认 · player.cash=null · carried_items=[] · characters={} · Ω_resonance=0 · phone={version:2, contacts:{}, threads:{}, messages:{}, forum:{posts:[]}, context:{active_snapshot:null, manual_queue:[], ingest_records:{}, facts:[], appointments:[]}} · arc_milestones/iroha_milestones=旗标全false
+    更新要点: current_scene 由主AI结合场景条目/已发生正文/玩家行动判断·默认不动·核心功能完成或原定事件被永久否定并替代收束后+1·不得按轮数推进·自建模式不更新 · mainline_completed 仅场景150核心功能完成时不可逆置true · characters 主AI按实际登场动态创建 · phone 主AI不得输出JSONPatch修改 · arc_milestones 仅由正文实际发生的可归属行为证据置true·scene/bond不再发放成长
+  # 锤子9个·信息锁3个·结局1个 → 保持顶层；角色关系改由characters动态承载
+
+ejs:
+  generate_before: [campaign_id, mode, current_pov, custom_protagonist, current_scene, mainline_completed, world.current_date, world.current_location, player, characters, Ω_resonance]
+  entries:
+    - name: DLC_错位的日常_演绎规则/开局锚点
+      condition: campaign_id==dlc_genderbend_hachiman（开局锚点另需紧邻可见开局标记）
+    - name: DLC_君的名字？_演绎规则/双开局锚点
+      condition: campaign_id==dlc_body_swap_mrs_yukinoshita（锚点按 current_pov 分流·不暴露未选择意识的离线动作）
+    - name: 全部场景条目（场景一~场景一百五十）
+      complexity: 条目显隐
+      condition: "mode === 'pov' && current_scene === N（逐场对应）"
+      purpose: POV剧本模式仅激活当前场·自建模式全关·strategy=constant+日期关键词仅作元数据（手机助手章节app日历读取用）
+    - name: 家族暗线组（爱布拉娜/温斯顿/家政/科尔马克/多琳/达洛维相关/中庭肖像画等）
+      condition: "mode === 'pov'（自建模式禁用剧透内容）"
+    - name: 四主角_性格调色盘
+      complexity: 段落控制
+      stages: [拉芙希妮: 绷紧期/软化期/对抗期/自主期, 雪乃: 戒备期/接纳期/自主期, 八幡: 孤绝期/动摇期/确认期, 结衣: 迎合期/撕扯期/自主期]
+    - name: 玩家身份路由
+      condition: "mode === 'pov' || mode === 'custom'（将current_pov或custom_protagonist转换为<user>身份与叙事分工）"
+    - name: 开局场景路由
+      condition: 本局唯一user消息含开局可见句（我选择扮演/我将以自建角色）——2026-08-05起弃用<counterfeit_opening>尖括号标记（被酒馆消息清洗剥除，曾致首条回复中止）
+      purpose: 只在第一轮生成时提供可参与的开局落点·不替玩家角色说话或下内心结论
+    - name: POV分幕滤镜
+      condition: "mode === 'pov'（按current_pov与current_scene选取单一观察滤镜·同一意象和招牌动作不得连续复读）"
+    - name: 角色阶段事实
+      condition: "mode === 'pov'（只发送截至current_scene已发生的未来物件/身份/称呼事实）"
+    - name: 还火事件_封存真相
+      condition: "mode === 'pov' && current_pov === 'laff' && (current_scene >= 123 || laff_knows_fire_truth)（防真相在自建/其他POV/未查证时进入上下文）"
+    - name: 手机上下文注入
+      condition: phone.context.active_snapshot.text 非空（D0隐藏system条目·只在下一次主线生成时发送已准备快照·重生成复用·私聊群聊严格按参与者限制知情）
+    - name: 四主角_三面性（POV锁门控）
+      condition: "mode !== 'pov' || current_pov === 对应角色（POV剧本模式只注入当前视点主角·其余三人声线由场景条目NPC动向承担·自建/开放世界全开）"
+    - name: 爱布拉娜_三面性（拉芙POV限定门控）
+      condition: "mode === 'pov' && current_pov === 'laff'（家族暗线内心条目·与还火封存真相同级保密·2026-08-05由mode==='pov'修正）"
+    - name: 一色彩羽_三面性（开放世界专用门控）
+      condition: "mode !== 'pov'（一色非四主角·POV剧本模式声线由场景条目NPC动向承担·2026-08-04注册并门控）"
+    - name: 平冢静/雪之下阳乃_三面性（开放世界专用门控）
+      condition: "mode !== 'pov'（与一色同规格·2026-08-05统一补装）"
+
+opening_ui:
+  registration:
+    state_key: 开场白挂载
+    embedded_script: 脚本/开场白挂载.js
+    frontend_source: tavern_helper_template/dist/Counterfeit/界面/开场白/index.html
+  delivery:
+    mode: 角色卡脚本内嵌已验收的单文件HTML
+    source_ref: 1d7e4d9
+    reason: 不在酒馆运行时fetch开场白CDN·避免网络/CSP失败后只剩黑色空楼层
+
+status_bar:
+  registration:
+    state_key: 状态栏挂载
+    embedded_script: 脚本/状态栏挂载.js
+    frontend_artifact: tavern_helper_template/dist/Counterfeit/界面/状态栏/index.html
+  rendering:
+    canonical: 酒馆助手脚本监听AI楼层并挂载独立前端状态栏
+    delivery: 角色卡脚本内嵌已验收的单文件HTML·不在运行时fetch CDN
+    legacy_ejs: 世界书/EJS预处理/状态栏渲染.txt仅保留为历史文件·不再注册进角色卡·避免与前端状态栏重复渲染
+
+phone_assistant:
+  registration:
+    mode: standalone（2026-08-05 D10分离·开发期独立安装·不随卡打包）
+    artifact: 项目根目录酒馆助手脚本-手机助手-Counterfeit.json
+    delivery: 独立脚本JSON（加载器+内嵌HTML+API桥）·酒馆助手单独导入即用·专用webpack.phone.config.ts隔离构建
+    build_guard: 打包同步前拒绝未解析的defineStore/createPinia及Vue响应式API裸调用
+    embed_ready: build_tools/sync_phone_artifacts.py --embed 可重内嵌回卡（最终分发形态待定）
+  persona:
+    sources: 新卡角色/NPC条目的基础信息、性格调色盘与三面性；若有精简[手机]专用条目也可追加读取
+    legacy_policy: 不迁入旧233条目世界书中的30个[手机]条目（年级漂移/旧称呼/能力式表述）
+    fallback: 边缘角色允许使用规范全名与可见上下文生成·实际需要时再新增精简条目
+  data_model:
+    storage: stat_data.phone·聊天存档级·版本2
+    contacts: 与characters.known分离·仅明确交换号码/群聊保存/第三方转交/身份预设添加·active/removed/blocked
+    removal: 删除联系人为软删除·聊天保留不自动退群·屏蔽才禁私聊·清空聊天是独立操作
+    threads: direct/group原生分离·群成员与私聊联系人独立·群聊由手机LLM一次调用统一决定谁回复或沉默
+    messages: 每条保存thread_id/sender/story_time/participants/visibility/source·聊天次数不得机械修改关系变量
+    migration: 旧版按角色名sessions迁移为规范全名联系人＋direct thread·旧消息标记为已进入主线的历史数据
+  llm_tasks:
+    isolated: [direct_reply, group_reply, mainline_ingest, context_digest, proactive_message, forum_batch]
+    memory: 每会话最近10条左右原始消息＋独立滚动摘要＋重要事实＋未完成约定＋知情范围
+    embedding: 第一版不使用
+  mainline_sync:
+    modes: [auto, manual, off]
+    default: auto
+    ingest: 按主线消息ID和正文指纹幂等记录·编辑/删除/重生成时撤销旧解析再重做
+    injection: 手机互动不直接发送主线、不写输入框·写入prepared snapshot并由D0隐藏system条目伴随下一次玩家输入
+    lifecycle: 新主线user消息建立快照·主线成功后只标记其中新消息已消费但保留快照供重生成·下一条user消息再生成新快照
+  forum:
+    independence: 只同步日期/学期/季节/公开校园事实·不读取私聊群聊或主线隐私·不得反向修改主线/关系/结局
+    ecology: [夸张标题, 高讨论话题, 求助, 失物招领, 学习, 树洞, 投票, 交易, 灌水, 校园传闻]
+    persistence: 刷新追加批次而不抹除旧帖·帖子和回复保存版块/类型/时间/热度/状态
+  content_director_prompt:
+    storage: localStorage·设备级设置·不写入MVU或主线上下文
+    applies_to: [NPC主动来信, 论坛批量发帖, 论坛回复链]
+    excludes: [玩家主动私聊回复, 主线生成, 关系变量更新]
+    priority: 仅调整题材、语气与侧重·不得覆盖角色资料、已发生事实、知情范围、论坛独立性、禁止剧透和结构化输出格式
+    migration: 首次读取时兼容迁移旧NPC设置中的extraPrompt·之后使用独立存储键
+
+first_messages:
+  - format: 叙事式
+    word_count: 800~1200
+    output_path: 开场白/0.txt
+    scene: 开场白UI→模式选择→第一场景
+    opening_situation: |
+      玩家进入开场白UI，选择POV模式（四选一扮演）或自建模式。
+      POV模式：四主角选择页面 + 简短角色预览。
+      自建模式：七字段表单（姓名/性别/班级/身份/过去/性格/外貌）。
+      commit后写入MVU初始变量，并创建本局第一条user消息后自动触发主AI回复。
+      POV模式user消息：声明玩家选择扮演的角色，酒馆用户名不构成额外世界内角色。
+      自建模式user消息：完整发送七字段原始设定，作为AI实际收到的开局角色声明。
+      玩家始终控制所扮演角色的言行、选择与内心；主AI演绎环境及其他角色。
+      仅开场白/0.txt注册为正式开场；开场白/1.txt保留为源码备份但不得作为alternate greeting，避免绕过模式commit。

@@ -1,0 +1,38 @@
+@@generate_before
+@@private
+<%_
+const filterCampaign = getvar('stat_data.campaign_id', { defaults: 'main' });
+const filterMode = getvar('stat_data.mode', { defaults: null });
+const filterPov = getvar('stat_data.current_pov', { defaults: null });
+const filterScene = Number(getvar('stat_data.current_scene', { defaults: 1 }));
+const phase = filterScene <= 25 ? '建立关系' : filterScene <= 61 ? '关系受压' : filterScene <= 98 ? '主动选择' : '承担结果';
+const filters = {
+  hachiman: '优先捕捉话语漏洞、群体压力与他人承担的代价；内心声线=干瘪吐槽与自贬式推理，可以把结论想得又快又刻薄，但不代玩家决定是否说出口或是否自爆。',
+  yukino: '优先捕捉规则是否自洽、责任由谁承担与边界是否被侵犯；内心声线=效率话术包着的自我否定，允许在心里替自己找合理化说法，但不代玩家决定是否出手纠正。',
+  yui: '优先捕捉房间里的情绪分布、关系距离和被话语掩盖的不安；内心声线=读完空气后的犹豫与自我排后，允许在心里承认不安，但不代玩家决定迎合、缓和还是坚持。',
+  laff: '优先捕捉空间距离、声音、气味、触感和家族措辞留下的条件反射；内心声线=停顿与事后复盘，允许在心里翻译他人措辞，但不把观察写成超能力，也不代玩家决定是否伪装、坦白或介入。',
+  mrs_yukinoshita: '优先捕捉称谓、礼仪、日程、权限与他人期待中的偏差；内心声线=克制、精确、先评估后措辞，允许承认判断失灵，但不代玩家决定是否动用身份、试探他人或公开异常。',
+};
+const campaignFilters = {
+  dlc_genderbend_hachiman: '外观变化只改变当下可观察条件，不重写八幡的记忆、责任和关系。日常误读、熟人反应与现实摩擦按因果出现，不把身体差异变成每轮固定笑点。',
+  dlc_body_swap_mrs_yukinoshita: '先核对稳定意识、所在身体、旁人眼中的身份与已知证据。只写玩家意识能观察到的内容；另一意识的离屏行为必须经由便签、设备、证词或后果显现。',
+};
+_%>
+<%_ if (filterCampaign === 'main' && filterMode === 'pov' && filters[filterPov]) { _%>
+<player_viewpoint_filter>
+主线关系阶段: <%- phase %>（场景<%- filterScene %>）
+玩家视点观察滤镜: <%- filters[filterPov] %>
+执行边界: 每轮最多选择一个主要观察锚点；同一比喻、标志动作或口头禅不得连续两轮复用。事件焦点只提供剧情运动方向，绝不改变玩家视点。
+</player_viewpoint_filter>
+<%_ } else if (campaignFilters[filterCampaign] && filters[filterPov]) { _%>
+<player_viewpoint_filter>
+开放世界玩家视点滤镜: <%- filters[filterPov] %>
+战役观察边界: <%- campaignFilters[filterCampaign] %>
+本战役没有场景编号或分幕阶段；不得为推进感虚构任务清单、固定治愈流程或预定终点。
+</player_viewpoint_filter>
+<%_ } else if (filterCampaign === 'main' && filterMode === 'free' && filters[filterPov]) { _%>
+<player_viewpoint_filter>
+开放世界玩家视点滤镜: <%- filters[filterPov] %>
+这是未继承主线事件的自由沙盒；只按玩家所处日期、地点、在场者与已发生互动演绎。
+</player_viewpoint_filter>
+<%_ } _%>

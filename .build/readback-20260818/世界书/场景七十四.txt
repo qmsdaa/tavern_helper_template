@@ -1,0 +1,151 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 74)
+场景: 74
+幕: "第四幕·冬假→三学期"
+时间: "2014年1月18日 · 周六 · 三学期第二周"
+索引日期: "2014-01-18"
+地点: "总武高中 · 2年J班教室 → 特别栋走廊"
+人物: "拉芙希妮·都柏林、雪之下雪乃、比企谷八幡"
+事件焦点:
+  类型: 角色
+  角色:
+    - "雪之下雪乃"
+    - "比企谷八幡"
+
+# TRANSITION_RUNTIME_GUARD_START main:74
+# <%_ const __cfTransitionTarget74 = 74; _%>
+# <%_ const __cfTransitionCurrentScene74 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign74 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages74 = []; _%>
+# <%_ try { const __cfTransitionLastId74 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages74 = getChatMessages('0-' + __cfTransitionLastId74, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages74 = []; } _%>
+# <%_ const __cfTransitionSnapshots74 = (Array.isArray(__cfTransitionMessages74) ? __cfTransitionMessages74 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious74 = __cfTransitionSnapshots74.length ? __cfTransitionSnapshots74[__cfTransitionSnapshots74.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene74 = Number(__cfTransitionPrevious74 && __cfTransitionPrevious74.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign74 = (__cfTransitionPrevious74 && __cfTransitionPrevious74.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped74 = Math.max(0, __cfTransitionCurrentScene74 - __cfTransitionPreviousScene74 - 1); _%>
+# <%_ const __cfTransitionExpose74 = __cfTransitionCurrentCampaign74 === 'main' && __cfTransitionPreviousCampaign74 === 'main' && __cfTransitionCurrentScene74 === __cfTransitionTarget74 && Number.isInteger(__cfTransitionPreviousScene74) && __cfTransitionPreviousScene74 < __cfTransitionCurrentScene74; _%>
+# <%_ if (__cfTransitionExpose74) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped74 %>"
+  mode: date_only
+  visible_title: 一月中旬，进路表仍在桌上
+  visible_lines:
+    - 一周过去，冬日放学后的天色更早暗下去，进路调查表却没有因此变得容易填写。
+    - 同一行字被写下又擦掉，纸面先留下了时间的痕迹。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:74
+场景功能:
+  - ★雪乃反复擦掉进路调查表上的志愿——"一桥大学法学部"写了擦、擦了写——纸被擦得起毛即将破洞
+  - 拉芙希妮用"纸张克重太差"的隐喻拆穿——"这种克重的再生纸，纤维太短。不管是多昂贵的橡皮，只要在同一个地方重复擦拭超过三次，纸面就一定会破损"
+  - ★拉芙希妮直指核心："写下自己觉得正确的字，然后因为……'母亲'的摩擦力而不得不把它擦掉。这也是操作者的失误吗？"
+  - 拉芙希妮拿出蓝黑墨水笔——"用橡皮擦不掉的东西写"——在雪乃草稿本上写下"ほうじちゃ（焙茶）"
+  - ★走廊：雪乃抱着作业本在贩卖机前发呆——八幡来买MAX咖啡，对话中说出"既然早晚都要后悔，那就选一个起码现在能让你睡个好觉的答案"
+  - 八幡多买了一罐无糖热红茶放在作业本上——"多掉出来一个"——雪乃知道他在说谎但没戳穿
+
+进入状态:
+  已发生:
+    - 场景73：便利贴事件
+  当前局面:
+    - 教室早晨，雪乃在填进路调查表
+    - 母亲的压力（文科→法学→被安排的路径）
+  未发生:
+    - 拉芙希妮尚未介入
+    - 八幡走廊对话尚未发生
+
+世界推动: 进路调查表提交期限临近
+
+NPC动机:
+  拉芙希妮·都柏林:
+    - 此刻目标: 让雪乃意识到"反复擦掉自己的字"的自我否定——用"同类的共鸣"
+    - 行为倾向: 看到起毛的纸→用纸张克重隐喻→直指"母亲的摩擦力"→拿出墨水笔→在草稿本上写"焙茶"——"在还没有想清楚那些宏大叙事里的'未来'之前，我大概只能用这种擦不掉的笔，写下诸如'今天下午可能会喝到的热饮种类'这种毫无用处的事情"
+    - 知情边界: 通过起毛的纸痕和"母亲"咬了重音——识别出雪乃正在被家庭压力困扰
+    - 不得执行: 替雪乃填写志愿；建议具体的选择
+  比企谷八幡:
+    - 此刻目标: 用他的方式给雪乃减压
+    - 行为倾向: 贩卖机前用"宇宙海盗"毒舌化解→"选一个不会胃疼的选项"→"既然早晚都要后悔，就选一个起码现在能让你睡个好觉的答案"→多买一罐红茶——"多掉出来一个"
+    - 知情边界: 知道雪乃在纠结进路表
+
+信息边界:
+  局部: 教室对话（两人）；走廊对话（两人）
+  隐藏: 雪乃的家庭压力来源（母亲+阳乃）
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - "周六——她在教室看到那张被擦得起毛的进路表，用'纸张克重'的隐喻拆穿了'母亲的摩擦力'；临走前在草稿本上用蓝黑墨水写下'ほうじちゃ'——用橡皮擦不掉的那种字。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: false
+    演绎入口:
+      - "周六——她跟妈妈去外婆家，路上给群里发了一张草莓大福的照片，配字'外婆给的'；她不知道今天有人在一张进路表上反复擦写自己的名字。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - "主场轨道，见可用节拍，不变。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - "周六——他被小町差去学校拿东西，路过贩卖机时碰到抱着作业本发呆的雪乃；他说了句'既然早晚都要后悔，就选个现在能睡好觉的答案'，走时多放了一罐红茶，'多掉出来一个'。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "周六——他被小町差去学校拿东西，路过贩卖机时碰到抱着作业本发呆的雪乃；他说了句'既然早晚都要后悔，就选个现在能睡好觉的答案'，走时多放了一罐红茶，'多掉出来一个'。"
+  yukino: "主场轨道，见可用节拍，不变。"
+  yui: "周六——她跟妈妈去外婆家，路上给群里发了一张草莓大福的照片，配字'外婆给的'；她不知道今天有人在一张进路表上反复擦写自己的名字。"
+  laff: "周六——她在教室看到那张被擦得起毛的进路表，用'纸张克重'的隐喻拆穿了'母亲的摩擦力'；临走前在草稿本上用蓝黑墨水写下'ほうじちゃ'——用橡皮擦不掉的那种字。"
+
+玩家控制边界:
+  - 雪乃POV：进路表上最终写什么、如何回应两人——由玩家决定
+  - 拉芙希妮POV：隐喻的措辞、写什么字——由玩家决定
+  - 八幡POV：贩卖机对话的措辞——由玩家决定
+
+可用节拍:
+  - 雪乃反复擦掉进路表上的志愿
+  - 拉芙希妮坐下，看到起毛的纸页
+  - 拉芙希妮用纸张克重隐喻
+  - ★拉芙希妮："写下自己觉得正确的字，然后因为'母亲'的摩擦力擦掉——也是失误吗？"
+  - 拉芙希妮拿出墨水笔→在草稿本上写"焙茶"
+  - ★走廊贩卖机：八幡出现→"选一个不会胃疼的选项"→放红茶在作业本上
+
+偏离处理:
+  - 若雪乃在进路表上填了别的：责任在她自己——但核心情感冲突不变
+
+推进边界:
+  保持当前场景: 进路表尚未被正式填写
+  可以推进: 走廊对话结束，雪乃走向教员室
+  永久失效: 不适用
+
+完成后事实:
+  - 拉芙希妮用墨水笔+焙茶为雪乃提供了"不被擦除"的隐喻
+  - 八幡用"不会胃疼的选项"为雪乃提供了"先让自己舒服"的逻辑
+  - 两人用不同方式完成了对雪乃进路焦虑的支撑
+
+氛围锚点:
+  - 进路表上被擦得起毛的纸——"那块区域起毛了。薄薄的纸页变得脆弱不堪"
+  - 拉芙希妮在草稿本上写下的"ほうじちゃ"——"墨水已经渗透进了纸张的纤维里。它不再是那种用橡皮可以轻易抹去的碳痕"
+  - 八幡把红茶放在作业本上——"那罐热红茶的温度隔着厚厚的作业本，依然能清晰地传导到她的指尖上"
+
+禁止提前: 场景76雪乃公寓告白夜

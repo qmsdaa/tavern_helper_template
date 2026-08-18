@@ -1,0 +1,155 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 86)
+场景: 86
+幕: "第五幕·PTA→舞会"
+时间: "2014年3月21日 · 周五（春分の日）· 19:40"
+索引日期: "2014-03-21"
+地点: "拉芙希妮公寓"
+人物: "拉芙希妮·都柏林、雪之下雪乃、比企谷八幡"
+事件焦点:
+  类型: 角色
+  角色:
+    - "拉芙希妮·都柏林"
+
+# TRANSITION_RUNTIME_GUARD_START main:86
+# <%_ const __cfTransitionTarget86 = 86; _%>
+# <%_ const __cfTransitionCurrentScene86 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign86 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages86 = []; _%>
+# <%_ try { const __cfTransitionLastId86 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages86 = getChatMessages('0-' + __cfTransitionLastId86, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages86 = []; } _%>
+# <%_ const __cfTransitionSnapshots86 = (Array.isArray(__cfTransitionMessages86) ? __cfTransitionMessages86 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious86 = __cfTransitionSnapshots86.length ? __cfTransitionSnapshots86[__cfTransitionSnapshots86.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene86 = Number(__cfTransitionPrevious86 && __cfTransitionPrevious86.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign86 = (__cfTransitionPrevious86 && __cfTransitionPrevious86.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped86 = Math.max(0, __cfTransitionCurrentScene86 - __cfTransitionPreviousScene86 - 1); _%>
+# <%_ const __cfTransitionExpose86 = __cfTransitionCurrentCampaign86 === 'main' && __cfTransitionPreviousCampaign86 === 'main' && __cfTransitionCurrentScene86 === __cfTransitionTarget86 && Number.isInteger(__cfTransitionPreviousScene86) && __cfTransitionPreviousScene86 < __cfTransitionCurrentScene86; _%>
+# <%_ if (__cfTransitionExpose86) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped86 %>"
+  mode: date_only
+  visible_title: 三月下旬，舞会前夜
+  visible_lines:
+    - 十二天里，名单、座次和场地确认把舞会从纸面推到明晚。
+    - 正式场合需要的衣物已经备好，仍有人要在镜前学会怎样面对它。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:86
+场景功能:
+  - 舞会前夜——雪乃为拉芙希妮化妆
+  - 八幡在沙发上翻书旁观——吐槽橘调vs珊瑚红
+  - ★拉芙希妮在化妆中平静宣布："平冢老师明天之后就要调走了"——"校方关于外籍学生的住宿担保一直是平冢老师在利用职权做隐性背书。一旦调离名单公示，这项背书就会失效……一封退学建议函，我就必须回英国了"
+  - 雪乃口红擦过拉芙希妮锁骨——留下一道红痕——"看来，我确实不太适合这种颜色"
+  - 雪乃用拇指抹去红痕——"在明天的舞会结束之前，你依然是总武高2年J班的学生。我不接受任何在流程结束前的'认命'"
+  - 雪乃提出用平冢老师最后的职权做担保文件——八幡去倒水——"水开了。你们最好快点"
+
+进入状态:
+  已发生:
+    - 场景85：本邸聚餐
+    - 舞会明天举行
+  当前局面:
+    - 拉芙希妮公寓梳妆台前
+    - 雪乃正在给拉芙希妮化妆
+  未发生:
+    - 平冢老师调职尚未正式宣布
+    - 退学建议函尚未发出
+
+世界推动: 舞会前夜的准备；平冢静调职在即
+
+NPC动机:
+  拉芙希妮·都柏林:
+    - 此刻目标: 在舞会前夜告知真相——不是求助，是提前告别
+    - 行为倾向: 在化妆中突然宣布平冢调职→述说退学危机→"如果找不到新的担保人……我必须回英国"——语气像陈述天气
+    - 知情边界: 知道爱布拉娜在动用行政手段
+  雪之下雪乃:
+    - 此刻目标: 不接受"认命"——在明天舞会结束前找到解决方案
+    - 行为倾向: 口红擦出红痕→用拇指粗暴抹去→提出担保文件方案→"在明天的舞会结束之前，你依然是总武高2年J班的学生"
+  比企谷八幡:
+    - 此刻目标: 倒水——用日常行动掩盖情绪
+
+信息边界:
+  局部: 三人对话
+  隐藏: 退学机制的具体运作
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - "主场轨道，见可用节拍，不变。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: false
+    演绎入口:
+      - "舞会前夜——在家对着镜子试明天的裙子，换到第三套才满意，拍照发群里，等了一会儿没人回；她把裙子挂好，想着明天要早到。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - "舞会前夜——带着化妆包来拉芙希妮的公寓，把口红按色号排了一排；听完那句平静得像陈述天气的宣告，口红擦过对方锁骨又用拇指抹掉，多余的话一个字没说。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - "舞会前夜——坐在拉芙希妮公寓的沙发上翻书，负责对化妆品的色号发表无用意见；听到'退学'两个字时他站起来说去倒水，在厨房里站了很久。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "舞会前夜——坐在拉芙希妮公寓的沙发上翻书，负责对化妆品的色号发表无用意见；听到'退学'两个字时他站起来说去倒水，在厨房里站了很久。"
+  yukino: "舞会前夜——带着化妆包来拉芙希妮的公寓，把口红按色号排了一排；听完那句平静得像陈述天气的宣告，口红擦过对方锁骨又用拇指抹掉，多余的话一个字没说。"
+  yui: "舞会前夜——在家对着镜子试明天的裙子，换到第三套才满意，拍照发群里，等了一会儿没人回；她把裙子挂好，想着明天要早到。"
+  laff: "主场轨道，见可用节拍，不变。"
+
+玩家控制边界:
+  - 拉芙希妮POV：何时、如何宣布退学消息——由玩家决定
+  - 雪乃POV：听到后的第一反应——由玩家决定
+  - 所有POV：不得在场景86中解决退学危机——这只是宣告
+
+可用节拍:
+  - 雪乃为拉芙希妮化妆——八幡吐槽
+  - ★拉芙希妮突然宣布退学危机
+  - 雪乃口红擦过锁骨——红痕
+  - 雪乃拇指抹去红痕——"擦掉。然后抬起头"
+  - 雪乃提出担保文件方案
+  - 八幡去倒水——"水开了"
+
+偏离处理:
+  - 若拉芙希妮POV选择不宣布（把消息压到舞会后）：不允许拖过本场——化妆间隙的沉默会被雪乃直接追问出来（她已从"平冢老师最近在整理办公室"察觉）；宣布的措辞和时机可变，宣布本身不可跳过
+  - 若雪乃POV情绪外露（提高音量、追问细节、当场打电话）：允许——但她仍会回到"在明天舞会结束之前你还是2年J班的学生"这一句上；情绪可以变，界限不变
+  - 若玩家试图在本场解决退学危机（当场找到担保人、打通关系）：不允许（见玩家控制边界）——最多推进到"明天去问平冢老师"
+  - 若八幡POV选择留在原地不去倒水：允许——那他必须承接一句话的重量，说什么由玩家决定，但不得给出承诺型台词
+  - 口红红痕与拇指抹去可替换为等价的身体接触，但必须留下一个"被雪乃亲手擦掉"的动作
+
+推进边界:
+  保持当前场景: 妆未画完
+  可以推进: 水烧开、妆成，三人各自散去准备明天
+  永久失效: 不适用——担保方案在场景87后续跟进
+
+完成后事实:
+  - 拉芙希妮向雪乃和八幡坦白了退学危机
+  - 雪乃计划用平冢老师最后的职权做担保
+  - 但雪乃知道这可能不够
+
+氛围锚点:
+  - 拉芙希妮宣布时——"声音很轻……像是在陈述窗外刚刚驶过了一辆电车那样普通"
+  - 口红擦过锁骨——"一道极浅、极细的红色印记，像是尖锐的瓷器裂纹"
+  - 雪乃抹去红痕——"大拇指的指腹直接压在了那个红色的印记上，顺着皮肤的纹理，用力地向下抹去"
+
+禁止提前: 舞会当天（场景87）

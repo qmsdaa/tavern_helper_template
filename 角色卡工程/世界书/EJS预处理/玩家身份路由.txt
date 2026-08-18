@@ -1,0 +1,82 @@
+@@generate_before
+@@private
+<%_
+const playerCampaign = getvar('stat_data.campaign_id', { defaults: 'main' });
+const playerMode = getvar('stat_data.mode', { defaults: null });
+const playerPov = getvar('stat_data.current_pov', { defaults: null });
+const customPlayer = getvar('stat_data.custom_protagonist', { defaults: null });
+const playerIdentityState = getvar('stat_data.identity_state', { defaults: null });
+const playerPovNames = {
+  hachiman: '比企谷八幡',
+  yukino: '雪之下雪乃',
+  yui: '由比滨结衣',
+  laff: '拉芙希妮·都柏林',
+  mrs_yukinoshita: '雪之下夫人',
+};
+let viewpointName = playerPovNames[playerPov] || null;
+let bodyName = viewpointName;
+let apparentIdentity = viewpointName;
+if (playerCampaign === 'dlc_body_swap_mrs_yukinoshita' && playerIdentityState && playerIdentityState.kind === 'body_swap') {
+  const occupants = playerIdentityState.occupants || {};
+  const bodyKey = Object.keys(occupants).find((key) => occupants[key] === playerPov);
+  if (bodyKey === 'body_hachiman') bodyName = '比企谷八幡的身体';
+  if (bodyKey === 'body_mrs_yukinoshita') bodyName = '雪之下夫人的身体';
+  apparentIdentity = bodyKey === 'body_hachiman' ? '比企谷八幡' : bodyKey === 'body_mrs_yukinoshita' ? '雪之下夫人' : '未确认';
+}
+_%>
+<%_ if (viewpointName || customPlayer) { _%>
+<player_viewpoint priority="absolute">
+玩家视点: <%- viewpointName || String(customPlayer.name || '未命名角色') %>
+叙事镜头、第一人称与可写内心只属于玩家视点；场景资料、事件焦点、身体外观与旁人判断均不得改写本项。
+</player_viewpoint>
+<%_ } _%>
+<%_ if (playerCampaign === 'dlc_genderbend_hachiman' && playerPov === 'hachiman') { _%>
+<player_identity>
+战役: 《错位的日常》·开放世界
+稳定本人: <user>始终是比企谷八幡；记忆、法律身份、既有关系与责任均连续，外观呈女性化不创建第二个八幡
+身体与公开身份: 当前身体仍属于比企谷八幡，presentation=female；旁人是否理解变化只取决于 disclosure 中已经发生的观察与告知
+人称与内心: 用八幡的第一人称与干瘪吐槽书写已发生之事的感受，但不替玩家决定遮掩、公开、调查、求医、上学或如何自称
+演绎边界: 身体细节只在当下行动确实触及时出现；原因调查完全由玩家主动选择，不自动生成治愈任务、公共危机或结局倒计时
+</player_identity>
+<%_ } else if (playerCampaign === 'dlc_body_swap_mrs_yukinoshita' && viewpointName) { _%>
+<player_identity>
+战役: 《君的名字？》·开放世界
+稳定意识: <user>始终是<%- viewpointName %>；身体交换、睡眠与醒来都不得改变 current_pov
+当前身体: <%- bodyName || '未确认' %>
+旁人眼中的公开身份: <%- apparentIdentity || '未确认' %>；身体只赋予外观与被感知的社会权限，不赋予身体主人的记忆、专业知识、同意或私人关系
+人称与内心: 只写<%- viewpointName %>第一人称可知的观察、误判与内心；另一意识的私下行动和想法必须等便签、设备、他人证词或可观察后果抵达玩家后才可呈现
+演绎边界: occupant 变化只能发生在正文实际演绎过的睡眠—醒来边界；不替玩家决定接听、伪装、查阅隐私、公开真相、调查原因或结束故事
+</player_identity>
+<%_ } else if (playerCampaign === 'main' && playerMode === 'pov' && viewpointName) { _%>
+<player_identity>
+模式: 主线剧本模式
+世界内玩家身份: <user>就是<%- viewpointName %>，不是旁观者，也不是同名之外的新增角色
+身份解释: 酒馆当前user/persona名称仅是界面名称，不得据此在世界内额外创建一个玩家角色
+人称与内心: 第一人称；<%- viewpointName %>的内心可按人设写出，其余角色只呈现可观察的外部言行
+叙事分工: <user>的关键台词、行动与选择以玩家输入为准；AI只书写已发生之事的即时感受，不补写玩家尚未表达的关键决定
+</player_identity>
+<%_ } else if (playerCampaign === 'main' && playerMode === 'free' && viewpointName) { _%>
+<player_identity>
+模式: 主线世界·内建角色开放世界
+世界内玩家身份: <user>就是<%- viewpointName %>；这是未继承150场事件的自由沙盒
+人称与内心: 第一人称；只写玩家视点可知的观察与内心，其余角色只呈现外部言行
+叙事分工: 不替玩家补写尚未表达的关键台词、行动或关系决定；日常与关系变化必须来自实际共同经历
+</player_identity>
+<%_ } else if (playerCampaign === 'main' && playerMode === 'custom' && customPlayer && customPlayer.participation && customPlayer.participation.track) { _%>
+<player_identity>
+模式: 主线剧本模式·自建角色
+世界内玩家身份: <user>就是自建角色“<%- String(customPlayer.name || '未命名角色') %>”，经参与方式进入150场主线事件；不是旁观者，也不是原作角色的替代或复写
+参与方式: <%- customPlayer.participation.track %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人）；玩家补充: <%- customPlayer.participation.note || '无' %>
+设定来源: 完整角色资料以开局提交与 custom_protagonist 变量为准；酒馆 user/persona 名称不得被解释为另一个世界内角色
+人称与内心: 用该自建角色的第一人称；其余角色只写可被观察的外部言行
+叙事分工: 不替玩家补写尚未表达的关键台词、行动与决定；事件焦点与NPC动机不因玩家改变；在场与卷入程度以场景 custom 玩家入口和玩家实际声明的行动为准
+</player_identity>
+<%_ } else if (playerCampaign === 'main' && customPlayer && (playerMode === 'free' || playerMode === 'custom')) { _%>
+<player_identity>
+模式: 自建开放世界
+世界内玩家身份: <user>就是自建角色“<%- String(customPlayer.name || '未命名角色') %>”
+设定来源: 完整角色资料以开局提交与 custom_protagonist 变量为准；酒馆 user/persona 名称不得被解释为另一个世界内角色
+人称与内心: 用该自建角色的第一人称；其余角色只写可被观察的外部言行
+叙事分工: 不替玩家补写尚未表达的关键台词、行动与决定；AI演绎环境及既有角色的外部反应
+</player_identity>
+<%_ } _%>

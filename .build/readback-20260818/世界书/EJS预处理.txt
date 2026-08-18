@@ -1,0 +1,22 @@
+@@generate_before
+<%_
+define('difficulty', getvar('stat_data.difficulty', { defaults: null }));
+define('campaign_id', getvar('stat_data.campaign_id', { defaults: 'main' }));
+define('campaign_revision', getvar('stat_data.campaign_revision', { defaults: 1 }));
+define('campaign_completed', getvar('stat_data.campaign_completed', { defaults: false }));
+define('mode', getvar('stat_data.mode', { defaults: null }));
+define('current_pov', getvar('stat_data.current_pov', { defaults: null }));
+define('identity_state', getvar('stat_data.identity_state', { defaults: null }));
+define('custom_protagonist', getvar('stat_data.custom_protagonist', { defaults: null }));
+define('current_scene', getvar('stat_data.current_scene', { defaults: 1 }));
+define('mainline_completed', getvar('stat_data.mainline_completed', { defaults: false }));
+define('world', getvar('stat_data.world', { defaults: { current_date: '2013-05-20', current_location: '未确认' } }));
+define('current_date', getvar('stat_data.world.current_date', { defaults: '2013-05-20' }));
+define('current_location', getvar('stat_data.world.current_location', { defaults: '未确认' }));
+define('player', getvar('stat_data.player', { defaults: { cash: null, carried_items: [] } }));
+define('characters', getvar('stat_data.characters', { defaults: {} }));
+define('Ω_resonance', getvar('stat_data.Ω_resonance', { defaults: 0 }));
+define('laff_knows_fire_truth', getvar('stat_data.laff_knows_fire_truth', { defaults: false }));
+define('laff_reed_authorized_yukino', getvar('stat_data.laff_reed_authorized_yukino', { defaults: false }));
+define('branch_choice', getvar('stat_data.branch_choice', { defaults: null }));
+_%>

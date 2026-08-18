@@ -1,0 +1,192 @@
+场景: 8
+幕: "第一幕·入部磨合"
+时间: "2013年6月26日 傍晚（期末复习结束当日）"
+索引日期: "2013-06-26"
+地点: "奉仕部活动室 → 总武高校门 → 千叶站天桥"
+人物: "雪之下雪乃、拉芙希妮·都柏林、比企谷八幡、由比滨结衣、户冢彩加"
+事件焦点:
+  类型: 角色
+  角色:
+    - "拉芙希妮·都柏林"
+
+# TRANSITION_RUNTIME_GUARD_START main:8
+# <%_ const __cfTransitionTarget8 = 8; _%>
+# <%_ const __cfTransitionCurrentScene8 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign8 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages8 = []; _%>
+# <%_ try { const __cfTransitionLastId8 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages8 = getChatMessages('0-' + __cfTransitionLastId8, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages8 = []; } _%>
+# <%_ const __cfTransitionSnapshots8 = (Array.isArray(__cfTransitionMessages8) ? __cfTransitionMessages8 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious8 = __cfTransitionSnapshots8.length ? __cfTransitionSnapshots8[__cfTransitionSnapshots8.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene8 = Number(__cfTransitionPrevious8 && __cfTransitionPrevious8.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign8 = (__cfTransitionPrevious8 && __cfTransitionPrevious8.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped8 = Math.max(0, __cfTransitionCurrentScene8 - __cfTransitionPreviousScene8 - 1); _%>
+# <%_ const __cfTransitionExpose8 = __cfTransitionCurrentCampaign8 === 'main' && __cfTransitionPreviousCampaign8 === 'main' && __cfTransitionCurrentScene8 === __cfTransitionTarget8 && Number.isInteger(__cfTransitionPreviousScene8) && __cfTransitionPreviousScene8 < __cfTransitionCurrentScene8; _%>
+# <%_ if (__cfTransitionExpose8) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped8 %>"
+  mode: date_only
+  visible_title: 六月下旬，答案交回之前
+  visible_lines:
+    - 两周复习被课堂、放学铃和活动室里交换的题纸分成相似的几段。
+    - 梅雨尚未结束，期末考试已经到了可以核对结果的时候。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:8
+场景功能:
+  - 总结两周复习成果——各人进度不同但都完成
+  - 展示拉芙希妮在社交邀请面前的权衡：为维持平衡而拒绝结衣
+  - 揭示爱布拉娜的短信——首次以"家族关怀"外衣展示控制型关系
+  - 拉芙希妮选择不回复——确立她对爱布拉娜的沉默抵抗姿态
+
+进入状态:
+  已发生:
+    - 户冢委托复习（场景七），两周复习刚结束
+    - 拉芙希妮两周里每天都待到活动室关门，无一次早退（尽管J班考试内容独立）
+    - 八幡始终没有拿出过复习计划表（雪乃注意到但没说）
+  当前局面:
+    - 复习结束，结衣提议庆祝
+  未发生:
+    - 众人尚未离开活动室
+    - 拉芙希妮尚未看到爱布拉娜的短信
+
+世界推动:
+  - 梅雨季即将来临——空气已经积攒了干燥的闷热
+  - 期末考试结束，校园节奏进入暑假前的缓冲期
+
+NPC动机:
+  由比滨结衣:
+    - 此刻目标: 庆祝复习结束，拉人出去吃东西；被全员拒绝后不气馁
+    - 行为倾向: 先问雪乃和八幡，被拒后转向拉芙希妮
+    - 知情边界: 不知道拉芙希妮拒绝的真实原因（维持平衡的社交计算）
+    - 不得执行: 追问拉芙希妮拒绝的理由
+  雪之下雪乃:
+    - 此刻目标: 收拾东西回家；用余光观察拉芙希妮对结衣邀请的反应
+    - 行为倾向: 拒绝自己的邀请但关注拉芙希妮的选择
+    - 知情边界: 看到拉芙希妮在选择前停顿——知道那不是随意的
+    - 不得执行: 为拉芙希妮做决定或替她回答
+  比企谷八幡:
+    - 此刻目标: 用常规借口（小町让回家吃饭）拒绝
+    - 行为倾向: 干瘪搪塞，无意参与社交活动
+    - 不得执行: 干涉拉芙希妮的选择
+  拉芙希妮·都柏林:
+    - 此刻目标: 对结衣的邀请做出选择；独自回家后处理爱布拉娜的短信
+    - 行为倾向: 权衡：答应会打破雪乃和八幡已拒绝的平衡，拒绝则维持"每个人独立存在"的假象；选择后者；读短信后不回复
+    - 知情边界: 掌握了爱布拉娜短信中隐含的控制意味
+    - 不得执行: 向在场任何人解释拒绝的原因；回复爱布拉娜的短信
+
+信息边界:
+  公开:
+    - 复习结束，所有人都通过了或达到了各自的目标
+    - 结衣提议庆祝——雪乃和八幡先后拒绝
+  局部:
+    - 拉芙希妮拒绝时的停顿（雪乃注意到）
+    - 拉芙希妮在天桥上独自阅读爱布拉娜短信并选择不回复
+  隐藏:
+    - 爱布拉娜短信中的"塔拉庄园蓝绣球开了"作为控制信号的真实含义
+    - 拉芙希妮对"家族水准"和"等你放假回来"的情感反应（窒息感）
+    - 爱布拉娜与拉芙希妮关系的全貌
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - 复习结束。结衣伸了个懒腰提议庆祝——雪乃和比企谷都拒绝了
+      - 结衣转向你。你感到空气停滞了一瞬——如果答应，会打破雪乃和比企谷已经建立的"独立"平衡
+      - 你说你也回家。走出校门时梅雨前的空气干燥而闷热
+      - 你走到千叶站的天桥上，从书包里掏出爱布拉娜送的手机。屏幕上有一条一小时前的短信
+      - 那些优雅得体的字句里夹着你看得懂的东西。你没有回复。屏幕黑了
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    在场说明: "活动室部分"
+    演绎入口:
+      - 复习结束。结衣提议庆祝——你拒绝了
+      - 结衣转向拉芙希妮。你用余光观察——她停顿了。那不是一个随意的犹豫
+      - 她说她也回家。和你的拒绝并列在一起，像是一个经过计算的选择
+      - 活动结束。你收拾文具离开。她之后去了哪里，你不知道
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    在场说明: "活动室部分"
+    演绎入口:
+      - 结衣提议庆祝。你用小町当借口搪塞过去
+      - 都柏林也被问了。她停了一拍后说回家。你觉得她大概也有自己的"妹妹"需要搪塞
+      - 大家各自散去。你骑车回家——对之后天桥上发生的事一无所知
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    在场说明: "活动室部分"
+    演绎入口:
+      - 大家都不去——有点失落但习惯了
+      - 拉芙希妮也说回家。你说那明天见，扬起笑容把失落盖过去
+      - 你没有追问为什么她犹豫了一下才回答。你只觉得可能是她害羞
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "期末结束的傍晚——结衣提议庆祝，他用小町当借口搪塞过去；都柏林也被问了，停了一拍后说回家，他骑上车，对之后天桥上发生的事一无所知。"
+  yukino: "期末结束的傍晚——她拒绝了结衣的庆祝提议，余光看见拉芙希妮停顿了一下，那不是随意的犹豫；她说她也回家，和你的拒绝并列在一起，像是一个经过计算的选择。"
+  yui: "期末结束的傍晚——大家都不去，有点失落但习惯了；拉芙希妮也说回家，她说那明天见，扬起笑容把失落盖过去，没追问为什么她犹豫了一下才回答。"
+  laff: "主场轨道，见可用节拍，不变。"
+
+玩家控制边界:
+  - 如何回应结衣的庆祝邀请（接受/拒绝/其他方案）
+  - 拒绝时的解释或不解释
+  - 在天桥上看到爱布拉娜短信后的反应：是否回复、回复什么
+  - 短信引发的情绪在离开天桥后如何处理
+
+可用节拍:
+  - 结衣宣布庆祝——雪乃拒绝——八幡拒绝
+  - 结衣转向拉芙希妮——拉芙希妮停顿——选择拒绝
+  - 众人解散，拉芙希妮独自走出校门
+  - 拉芙希妮在天桥上驻足——掏出手机——阅读爱布拉娜短信
+  - 拉芙希妮不回复——屏幕变黑——继续前进
+
+偏离处理:
+  - 若玩家接受结衣邀请：拉芙希妮将和结衣两人单独出去——这将打破"独立个体平衡"，是角色主动选择
+  - 若玩家回复爱布拉娜短信：内容由玩家决定，将成为姐妹关系线中的重要节点
+  - 若玩家不回复（如原文）：确立沉默抵抗姿态
+
+推进边界:
+  保持当前场景: 还在活动室里，庆祝提议刚被提出
+  可以推进: 拉芙希妮从天桥另一端走下，便利店的白光在暮色中亮起
+  永久失效: 本场之后向奉仕部成员透露爱布拉娜短信内容（非拉芙 POV不可知）
+
+完成后事实:
+  - 期末复习期正式结束
+  - 拉芙希妮选择以拒绝社交来维持独立性平衡——不是疏远，而是对现有关系的保护
+  - 爱布拉娜以短信形式首次在叙事中出现：优雅的字面下是控制（家族水准、放假回来）
+  - 拉芙希妮对短信选择了不回复——沉默是最小的抵抗空间
+  - 拉芙希妮在两周复习中从未早退的事实成立
+
+氛围锚点:
+  - 梅雨季前最后一个傍晚的那种干燥闷热——空气还没有完全湿透
+  - 拉芙希妮手指在文具盒边缘停顿的半秒——一个被社交计算占据的瞬间
+  - 天桥栏杆冰凉的金属触感，远处灰色海面被城市建筑切割得支离破碎
+  - 屏幕慢慢暗下去直到彻底变成一片死寂的黑色——被拒绝的对话
+
+禁止提前:
+  - 爱布拉娜本人出场
+  - 塔拉庄园的具体位置和意义
+  - 拉芙希妮向奉仕部任何成员透露短信内容或爱布拉娜的存在
+  - 雷暴雨和拉芙希妮的创伤闪回（场景九）

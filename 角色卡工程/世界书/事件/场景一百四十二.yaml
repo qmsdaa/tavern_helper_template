@@ -1,0 +1,205 @@
+场景: 142
+幕: "第十幕·冬去春来"
+时间: "2015年2月25日 · 周三"
+索引日期: "2015-02-25"
+地点: "比企谷家（客厅·八幡房间）"
+人物: "比企谷八幡、比企谷小町、比企谷母亲（背景）"
+事件焦点:
+  类型: 角色
+  角色:
+    - "比企谷八幡"
+
+# TRANSITION_RUNTIME_GUARD_START main:142
+# <%_ const __cfTransitionTarget142 = 142; _%>
+# <%_ const __cfTransitionCurrentScene142 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign142 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages142 = []; _%>
+# <%_ try { const __cfTransitionLastId142 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages142 = getChatMessages('0-' + __cfTransitionLastId142, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages142 = []; } _%>
+# <%_ const __cfTransitionSnapshots142 = (Array.isArray(__cfTransitionMessages142) ? __cfTransitionMessages142 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious142 = __cfTransitionSnapshots142.length ? __cfTransitionSnapshots142[__cfTransitionSnapshots142.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene142 = Number(__cfTransitionPrevious142 && __cfTransitionPrevious142.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign142 = (__cfTransitionPrevious142 && __cfTransitionPrevious142.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped142 = Math.max(0, __cfTransitionCurrentScene142 - __cfTransitionPreviousScene142 - 1); _%>
+# <%_ const __cfTransitionExpose142 = __cfTransitionCurrentCampaign142 === 'main' && __cfTransitionPreviousCampaign142 === 'main' && __cfTransitionCurrentScene142 === __cfTransitionTarget142 && Number.isInteger(__cfTransitionPreviousScene142) && __cfTransitionPreviousScene142 < __cfTransitionCurrentScene142; _%>
+# <%_ if (__cfTransitionExpose142) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped142 %>"
+  mode: date_only
+  visible_title: 二月下旬，考试前夜
+  visible_lines:
+    - 情人节过去十一天，巧克力包装从书包里消失，复习表仍贴在看得见的位置。
+    - 明天的考试不会替任何人决定未来，今晚仍只是比企谷家的晚饭和准备。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:142
+场景功能:
+  - 八幡大学考试前夜——从"自爆型"到"认真面对未来"的完整闭环
+  - 小町对哥哥转化的确认——"不回避了"是情人节的非巧克力礼物
+  - 比企谷家的家庭氛围——迷信但温暖
+  - 八幡的志愿正式宣告：千叶大学法政经学部·社会科学方向
+
+进入状态:
+  已发生:
+    - 国立大学二次试验明天上午九点半
+    - 八幡已备考多时，参考书封面贴了三条胶带
+    - 母亲去买寿喜烧材料——"明天考试要吃肉"
+  当前局面:
+    - 傍晚六点，八幡在暖桌翻参考书最后一章
+    - 小町趴在暖桌另一边打游戏
+    - 母亲尚未到家
+  未发生:
+    - 考试尚未进行
+    - 小町尚未说出"回礼"——不在情人节当天，而在考试前夜
+
+世界推动:
+  - 八幡的思想转变被小町见证并命名——"不回避认真的事"
+  - 这是八幡线在个人成长维度的关键场景：承认自己在乎"别人怎么被对待"
+
+NPC动机:
+  小町:
+    - 目标: 在考试前夜确认哥哥真的变了——用她自己的方式
+    - 行为倾向: 趴在暖桌上、踢椅子、拿着手机但不认真玩——她在等时机
+    - 知情边界: 知道鹤见留美事件（八幡提过但未细说）；知道八幡以前说"家庭主夫"是玩笑但有一半认真
+    - 不得执行: 不能替八幡考试；不能说太肉麻的话——她用的是"小町觉得很重要"
+  母亲:
+    - 目标: 给考试前的儿子吃好、正常对待
+    - 行为倾向: 在厨房和客厅之间进出——信任儿子不需要过度照顾；问考完想吃什么——被说"随便"也不在意
+    - 知情边界: 不知道八幡和小町在暖桌说了什么
+    - 不得执行: 不能过度表现紧张——她是用寿喜烧和"明天考试要吃肉"表达关心的类型
+
+信息边界:
+  公开:
+    - 八幡的志愿：千叶大学法政经学部·社会科学方向
+    - 明天考试时间：上午九点半，下午还有一科
+    - 母亲做了寿喜烧
+  局部:
+    - 八幡对"为什么认真起来"的完整讲述——鹤见留美事件→自爆被指出→被人指出来之后不能假装不知道
+    - 小町的"情人节回礼"——"不回避认真的事"
+    - 铅笔是小町削的但八幡没问
+  隐藏:
+    - 小町对八幡考上大学后自己将变成"独生女"的感受
+    - 母亲对儿子从"家庭主夫"到"千叶大学"转变的具体想法
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - 翻到参考书最后一章——书页发毛，封面贴了三条胶带
+      - 被小町问"你是什么时候开始认真想未来的"——这个问题的答案需要追溯到千叶村
+      - 讲述鹤见留美事件——自爆被拉芙希妮指出"把自己也算进牺牲品"
+      - 承认"想'想要什么'比牺牲自己更难"
+      - 说大学不是逃避，"是因为被人指出来了，不能假装不知道"
+      - 总结"我确实在意别人怎么被对待"——这是八幡自我认知的成熟宣言
+      - 在参考书封面写"收了"——两个字的回应，但包含了全部
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: false
+    演绎入口:
+      - 不在场，但她在八幡的叙述中——她是那个骂他的人之一
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: false
+    演绎入口:
+      - 不在场，但她在八幡的叙述中——她也是那个骂他的人之一
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: false
+    演绎入口:
+      - 不在场，但她在八幡的叙述中——她是那个问"你把自己也算进牺牲品了"的人
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: false
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - 本场景仅有事件焦点角色在场（私密/独占场景），任何参与轨道均不在场：玩家只能事后通过传闻、转述或主动追问得知
+      - 事件焦点与NPC动机不因玩家改变；不得替玩家补写；NPC不得主动向玩家泄露本场景经过
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "主场轨道，见可用节拍，不变。"
+  yukino: "考试前夜——她在公寓做最后的复习；她不知道有人正在暖桌边第一次用正常的语气说出自己的志愿。"
+  yui: "考试前夜——她在家练习明天的面试自我介绍；她不知道有人正在暖桌边承认'我确实在意别人怎么被对待'。"
+  laff: "考试前夜——她在公寓整理四月要用的书单；她不知道有人正在暖桌边回忆起千叶村，回忆起那句'你把自己也算进牺牲品了'。"
+
+玩家控制边界:
+  - 此场景仅在八幡POV下可演绎
+  - 玩家不能通过其他角色介入比企谷家客厅
+  - 玩家可以选择对小町的问题坦率回答或回避（但原文中八幡很坦率）
+
+可用节拍:
+  - 傍晚六点，暖桌边 / 参考书最后一章，书页发毛
+  - 小町问"明天几点的考试"——看似普通关心，实际在铺垫
+  - 小町提"去年这个时候哥哥还说自己要当家庭主夫"——引出转变话题
+  - 八幡说"那是开玩笑" / 小町说"有一半是认真的"
+  - 八幡承认"那时候不知道除了开玩笑还能怎么面对"
+  - 小町问"那现在呢" / 八幡说"现在知道假的和无所谓的中间，还有别的说法"
+  - 八幡正式说出志愿：千叶大学法政经学部·社会科学方向
+  - 小町说"哥哥说了正常的志愿。用正常的语气。"——她说"这个然后本身，小町觉得很重要"
+  - 小町问"你是什么时候开始认真想未来的"——从暖桌底下用脚踢椅子
+  - 八幡去厨房倒水——水是中午烧的，已经凉了
+  - 八幡讲述千叶村合宿——鹤见留美、自爆、被三人指出
+  - 小町说"因为想'想要什么'比牺牲自己更难"——八幡说"对"
+  - 八幡说"被人指出来之后，不能假装不知道"
+  - 小町归纳：哥哥开始认真想未来——是因为不想再自爆了
+  - 八幡的核心总结：在奉仕部做的事——听人说、帮人想办法、查规则、写方案——发现"我确实在意别人怎么被对待"
+  - 小町说"哥哥变成这样了，小町有点不习惯"
+  - "哪样"——"以前用玩笑回避所有认真的事，现在不回避了"
+  - 八幡转移话题——"你也认真。数学再不及格，川崎就白给你吃那七批巧克力了。"
+  - "为什么突然跳到这里！而且那七批是他自己愿意吃的！"
+  - 八幡说"是。是他自己愿意的。"——后半句停顿比前半句多一拍（对大志的认可）
+  - 母亲回来——"冷死了"→问豆腐→"吃了豆腐你也考好期末考试"→厨房日常
+  - 八幡帮母亲搬菜——母亲问几点出门、考完想吃什么——"随便""至少想想"
+  - 铅笔不知什么时候削好放在参考书上
+  - 小町说"不回避认真的事——这句话是小町今年给哥哥的情人节回礼"
+  - 八幡在参考书封面上写"收了"——字很丑，但两个字是他的全部回应
+  - 第二天早上六点二十——小町在厨房，围裙系在睡衣外，捏两个不成形但捏紧的梅干饭团
+
+偏离处理:
+  - 若玩家对鹤见留美事件展开过多细节：可以简略讲述但重点应放在八幡对自爆的反思
+  - 若玩家对小町表现出过度感动：小町会用"为什么突然跳到这里"拉回来
+  - 若玩家否定自己的成长：小町会坚持"不回避了，小町看到了"
+  - 收敛路径：无论如何，八幡的志愿和转变原因需要被说出
+
+推进边界:
+  保持当前场景:
+    - 暖桌边兄妹对话
+    - 母亲回家、厨房日常
+    - 第二天早上小町做饭团
+  可以推进:
+    - 到考试当天（非场景化）
+    - 到合格发表（场景143）
+  永久失效:
+    - 八幡说"家庭主夫"——他不会再拿这个当回避的方式
+    - 小町认为哥哥没有变——她已经确认了转变
+
+完成后事实:
+  - 八幡的志愿（千叶大学法政经学部）被小町见证和肯定
+  - 八幡的成长轨迹被自己完整叙述：自爆→被指出→不能假装不知道→接受"在意别人怎么被对待"
+  - 小町的"情人节回礼"——"不回避认真的事"被八幡"收了"
+  - 母亲做寿喜烧——考试前夜的家族仪式
+  - 铅笔是小町削的
+
+氛围锚点:
+  - 傍晚暖黄色灯光 / 参考书页角发毛、封面贴三条胶带 / 铅笔削好放在书上
+  - 暖桌被子的触感——小町把腿收进去、踢椅子
+  - 电视音量调到刚能听见——千叶天气预报：明天晴，最低气温一度
+  - 母亲从超市回来——环保袋里的塑料袋窸窣声 / 冰箱开关 / "冷死了！"
+  - 厨房洗菜的水声——日常的环境音
+  - 第二天清晨六点二十——围裙系在睡衣外的小町 / 不成形但捏紧的饭团 / 梅干味道从海苔缝隙漏出
+
+禁止提前:
+  - 考试结果——在场景143
+  - 其他三人的考试结果——在场景143同步揭晓
+  - 八幡对"被陪伴"的进一步表达——已通过场景138完成

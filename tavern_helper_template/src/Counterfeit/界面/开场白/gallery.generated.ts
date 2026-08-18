@@ -1,0 +1,51 @@
+// 本文件由 assets/tools/build_gallery.py 自动生成，请勿手改（改文案用 画廊/说明.txt）
+export interface GeneratedGalleryItem {
+  image: string;
+  title: string;
+  caption: string;
+}
+
+export const GENERATED_GALLERY_ITEMS: GeneratedGalleryItem[] = [
+  { image: '画廊/已压缩/刺猬八幡.webp', title: '小刺猬', caption: 'MAX 咖啡是底线' },
+  { image: '画廊/已压缩/四人同框.webp', title: '四人同框', caption: '蓝天与海之间，四个人并肩而立' },
+  { image: '画廊/已压缩/四小只.webp', title: '四小只', caption: '刺猬、黑猫、粉毛狗与小火龙' },
+  { image: '画廊/已压缩/场景9.webp', title: '场景9', caption: '' },
+  { image: '画廊/已压缩/场景10.webp', title: '雨后彩虹与踩水洼', caption: '四人雨后的性格群像' },
+  { image: '画廊/已压缩/场景11.webp', title: '场景11', caption: '' },
+  { image: '画廊/已压缩/场景21.webp', title: '场景21', caption: '' },
+  { image: '画廊/已压缩/场景24.webp', title: '场景24', caption: '' },
+  { image: '画廊/已压缩/场景25.webp', title: '被叫去整理旧档案', caption: '达洛维旧信的三条线索' },
+  { image: '画廊/已压缩/场景44.webp', title: '场景44', caption: '' },
+  { image: '画廊/已压缩/场景57.webp', title: '场景57', caption: '' },
+  { image: '画廊/已压缩/场景61.webp', title: '平安夜的已读', caption: '第三幕→第四幕·幕间' },
+  { image: '画廊/已压缩/场景67.webp', title: '场景67', caption: '' },
+  { image: '画廊/已压缩/场景68.webp', title: '场景68', caption: '' },
+  { image: '画廊/已压缩/场景70.webp', title: '场景70', caption: '' },
+  { image: '画廊/已压缩/场景75.webp', title: '礼物与愿望的双向暴露场', caption: '结衣×拉芙互相拆解' },
+  { image: '画廊/已压缩/场景76.webp', title: '场景76', caption: '' },
+  { image: '画廊/已压缩/场景77.webp', title: '情人节·站前', caption: '第四幕→第五幕·幕间' },
+  { image: '画廊/已压缩/场景85.webp', title: '场景85', caption: '' },
+  { image: '画廊/已压缩/场景88.webp', title: '场景88', caption: '' },
+  { image: '画廊/已压缩/场景90.webp', title: '场景90', caption: '' },
+  { image: '画廊/已压缩/场景92.webp', title: '寄出的信', caption: '第五幕→第六幕·幕间' },
+  { image: '画廊/已压缩/场景96.webp', title: '场景96', caption: '' },
+  { image: '画廊/已压缩/场景98.webp', title: '五件物品·接机前夜', caption: '第六幕→第七幕·幕间' },
+  { image: '画廊/已压缩/场景99.webp', title: '场景99', caption: '' },
+  { image: '画廊/已压缩/场景100.webp', title: '场景100', caption: '' },
+  { image: '画廊/已压缩/场景105.webp', title: '场景105', caption: '' },
+  { image: '画廊/已压缩/场景117.webp', title: '场景117', caption: '' },
+  { image: '画廊/已压缩/场景119.webp', title: '空白的一页', caption: '第七幕→第八幕·幕间' },
+  { image: '画廊/已压缩/场景122.webp', title: '场景122', caption: '' },
+  { image: '画廊/已压缩/场景124.webp', title: '场景124', caption: '' },
+  { image: '画廊/已压缩/场景126.webp', title: '生日快乐·六个字', caption: '第八幕→第九幕·幕间' },
+  { image: '画廊/已压缩/场景132.webp', title: '场景132', caption: '' },
+  { image: '画廊/已压缩/场景133.webp', title: '炉火·钥匙', caption: '第九幕→第十幕·幕间' },
+  { image: '画廊/已压缩/场景139.webp', title: '不让任何人被漏掉', caption: '毕业相册委托启动' },
+  { image: '画廊/已压缩/场景140.webp', title: '升学方向确立', caption: '结衣与母亲' },
+  { image: '画廊/已压缩/场景143.webp', title: '场景143', caption: '' },
+  { image: '画廊/已压缩/场景145.webp', title: '我想要他选我', caption: '结衣首次说出真心话' },
+  { image: '画廊/已压缩/场景148.webp', title: '场景148', caption: '' },
+  { image: '画廊/已压缩/场景150.webp', title: '场景150', caption: '' },
+  { image: '画廊/已压缩/小龙泡泡.webp', title: '小火龙', caption: '红茶要趁热喝' },
+  { image: '画廊/已压缩/自拍合照.webp', title: '第一张自拍', caption: '结衣举起了手机，把所有人都框了进去' },
+];

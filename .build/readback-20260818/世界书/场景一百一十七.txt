@@ -1,0 +1,199 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 117)
+场景: 117
+幕: "第七幕·重新为奉仕部命名"
+时间: "2014年7月5日 · 周六傍晚—夜"
+索引日期: "2014-07-05"
+地点: "千叶市内·河岸神社的夏季游园会"
+人物: "雪之下雪乃、比企谷八幡、由比滨结衣、拉芙希妮·都柏林、比企谷小町、川崎大志"
+场景呈现参考: "共享场景／零POV"
+事件焦点:
+  类型: 角色
+  角色:
+    - "由比滨结衣"
+
+# TRANSITION_RUNTIME_GUARD_START main:117
+# <%_ const __cfTransitionTarget117 = 117; _%>
+# <%_ const __cfTransitionCurrentScene117 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign117 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages117 = []; _%>
+# <%_ try { const __cfTransitionLastId117 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages117 = getChatMessages('0-' + __cfTransitionLastId117, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages117 = []; } _%>
+# <%_ const __cfTransitionSnapshots117 = (Array.isArray(__cfTransitionMessages117) ? __cfTransitionMessages117 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious117 = __cfTransitionSnapshots117.length ? __cfTransitionSnapshots117[__cfTransitionSnapshots117.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene117 = Number(__cfTransitionPrevious117 && __cfTransitionPrevious117.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign117 = (__cfTransitionPrevious117 && __cfTransitionPrevious117.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped117 = Math.max(0, __cfTransitionCurrentScene117 - __cfTransitionPreviousScene117 - 1); _%>
+# <%_ const __cfTransitionExpose117 = __cfTransitionCurrentCampaign117 === 'main' && __cfTransitionPreviousCampaign117 === 'main' && __cfTransitionCurrentScene117 === __cfTransitionTarget117 && Number.isInteger(__cfTransitionPreviousScene117) && __cfTransitionPreviousScene117 < __cfTransitionCurrentScene117; _%>
+# <%_ if (__cfTransitionExpose117) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped117 %>"
+  mode: date_only
+  visible_title: 七月，夏季游园会
+  visible_lines:
+    - 体育祭结束两周，操场上的帐篷已经收走，暑气留在放学后的街道上。
+    - 六名部员第一次把共同时间安排到校外，浴衣、集合地点和烟火都只是今天的日常。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:117
+场景功能:
+  - 夏季祭典团建场景——六人第一次作为正式社团成员共处校外
+  - 拉芙希妮穿自选的浴衣("这件是我自己选的")——从被安排穿衣到自主选择的成长
+  - 拉芙希妮把朝颜簪子从发间取下看了看又插回去——对美的自我确认
+  - 结衣提出"明年大家再一起来吧"→拉芙希妮第一个回应"嗯"
+  - ★结衣的普通愿望：祭典里她主动提出想再去某处/想吃某样东西——仅因为自己想，不服务任何主线；她允许别人拒绝，但不预先撤回邀请
+  - ★儿童照顾兴趣铺垫②：祭典里一个走丢的小女孩——结衣蹲下来和她平视说话，陪她等到家长；她蹲得很自然，像做过很多次（兴趣的痕迹，不宣布志愿）
+  - ★结衣的组织拍：烟火结束后六人散落在河堤草地上——大志帮小町提金鱼、八幡盘腿坐边上汽水瓶插草里、雪乃在面具摊那段沉默后还没完全回来、拉芙希妮仰脸看余烬。结衣是唯一能在这时候把六个人收拢成一张合影/一个约定的人——她没有喊口号，而是从包里掏出一台一次性相机（"我妈让我拍的，说要洗出来贴冰箱"），挨个把人往灯笼光最好的那截河堤栏边拽，连雪乃都被她用"小雪乃你也来嘛，就一张"拽过去。这是她的驱动方式：用人际温度把散漫的六个个体临时焊成一个"我们"，不服务任何主线，只为这一刻存在（2026-08-17 第二批 B11 补录）
+  - 回程路上簪子还在就没有多按——安全感
+
+进入状态:
+  已发生:
+    - 体育祭完成(场景116)
+    - PTA审查结束
+    - 暑假前最后的轻松时刻
+  当前局面:
+    - 傍晚天刚擦黑,河岸参道红白灯笼一盏接一盏亮起
+    - 六人在石鸟居下集合
+  未发生:
+    - 无后续事件
+
+世界推动:
+  - 章鱼烧酱汁味、烤玉米焦香、刨冰糖浆甜气
+  - 远处太鼓闷响混在七月夜风里
+  - 烟火九点整开始→河边被照亮的瞬间→最后一发大轮炸开后渐暗的天光
+  - 回程灯笼一盏盏熄下去
+
+NPC动机:
+  所有角色:
+    - 此刻目标: 享受夏日祭典,无任务压力
+    - 核心互动:拉芙希妮浴衣展示→小町烟花连拍→大志捞金鱼神技→八幡射击→雪乃在面具摊停了半拍→结衣喊"明年再来"
+    - 拉芙希妮的浴衣是场景最重要的道具线:"这件是我自己选的"
+
+信息边界:
+  公开:
+    - 夏季祭典,无秘密信息
+  局部:
+    - 仅雪乃:在熊猫面具摊停了半拍(什么都没说也什么都没买)
+    - 仅拉芙希妮:朝颜簪子取下看了又插回去的动作细节
+  隐藏:
+    - 无
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - 射击摊连中三奖:"没练。只是对把东西从高处弄下来这种事比较有心得"→把熊猫摆件塞给小町→只留一瓶汽水
+      - 小町:"哥哥你什么时候练的？"→"没练"→小町盯着他两秒:"……加五分。就五分哦"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - 拉芙希妮转圈展示浴衣时:"合身"→只两个字→视线停了一拍
+      - 拉芙希妮腰带松了→雪乃伸手理平:"歪了"→一气呵成
+      - 在面具摊熊猫面具前停了半拍→很快跟上前→什么都没说也什么都没买
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - 结衣绕拉芙希妮看两圈:腰带系得很正→"下午可是我亲自系的"
+      - 渐暗天光中第一个说出"明年大家再一起来吧"
+      - 普通愿望：走到一半停下来——"呐，我想去那边那家店买豆沙团子。谁陪我都行，没人陪我自己去"——说完没有找补；她以为大家都会想去，结果只有她一个人要去，笑着说"啊哈哈，我以为你们也想去的"，然后真的自己去买了回来
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - 拉芙希妮依言转半圈→水色浴衣下摆旋开弧度→朝颜花在灯笼光里明灭
+      - "这件是我自己选的"→无人追问这句话
+      - 把朝颜簪子从发间取下来握掌心看了看→抬手重新插回去
+      - "明年大家再一起来"→第一个回应"嗯"
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "夏祭——他穿皱巴巴的甚平站在三步外，吐槽结衣把腰带系反；射击摊连中三奖：'没练。只是对把东西从高处弄下来这种事比较有心得'，把熊猫摆件塞给小町，自己只留一瓶汽水。"
+  yukino: "夏祭——拉芙希妮转圈展示浴衣时她说'合身'，只两个字，视线停了一拍；腰带松了，她伸手理平：'歪了'，一气呵成；她在熊猫面具摊前停了半拍，什么都没说也什么都没买，很快跟上前。"
+  yui: "夏祭——她绕拉芙希妮看两圈：'下午可是我亲自系的'；烟花结束后，她在渐暗的天光里第一个开口：'呐明年大家再一起来吧！'；回程前她突然停下来：'我想去买豆沙团子，谁陪我都行，没人陪我自己去'——结果真的只有她一个人去，她笑着说'啊哈哈，我以为你们也想去的'，买回来时团子已经咬了一口；烟火结束后她从包里掏出一次性相机，挨个把六个人往灯笼光最好的河堤栏边拽——大志、八幡、雪乃、拉芙希妮一个没落下，'三、二、一——'快门咔嚓一声，那一刻六个人是'我们'。"
+  laff: "夏祭——她穿着自己选的水色浴衣转半圈，'这件是我自己选的'；烟火下她取下朝颜簪子握在掌心看了看，抬手重新插回去；结衣说'明年再来'时，她是第一个回应的：'……嗯'。"
+
+玩家控制边界:
+  - 日常场景,无决策压力
+
+可用节拍:
+  - 参道入口集合→小町第一冲过去让拉芙希妮转圈
+  - 拉芙希妮转半圈→水色浴衣朝颜花→"好看！超好看！"→结衣验收自己工作成果
+  - 八幡穿皱巴巴甚平站三步外吐槽结衣腰带系反
+  - 雪乃站远→深色浴衣落紫阳花→"合身"两字→拉芙希妮:"这件是我自己选的"
+  - 小町拽大志往人堆冲
+  - 捞金鱼摊→大志蹲得比谁都稳→纸网入水手腕纹丝不动→第四条进网纸刚好破→两手捧起鱼和水→"给"倒进小町塑料袋→耳尖通红
+  - 结衣:"大志同学你刚刚那下超帅的"
+  - 射击摊→八幡连打三个→摊主脸色越来越微妙→把熊猫摆件塞给小町自己留汽水
+  - 小町:"哥哥你什么时候练的"→"没练"→"加五分。就五分哦"
+  - 面具摊→雪乃在熊猫面具前慢半拍→很快跟上前→什么都没说也什么都没买
+  - 拉芙希妮走斜后方→视线在熊猫面具上轻掠→移开→端苹果糖咬一小口→糖衣碎裂声混太鼓
+  - 人流间隙→拉芙希妮叫住雪乃→腰带结松了→"雪乃同学过来一下"
+  - 雪乃看两秒→伸手抽紧理平→"歪了"→"……嗯。谢谢"
+  - 结衣回头→被小町拉:"那边那边章鱼烧要没了"
+  - 烟火九点→六人在河堤草地向空地→大志帮小町提金鱼→八幡盘腿坐边上汽水瓶插草里
+  - 第一发金色烟火撑开夜空→落在河面→结衣欢呼叠爆炸声
+  - 小町手机连拍拍糊七八张→大志怀里金鱼袋被火光映透亮
+  - 拉芙希妮仰脸→水色衣袖在夜风轻动→烟火光落在侧脸上又熄→很久没眨眼睛→取下朝颜簪子握掌心看→重新插回去
+  - 最后一发大轮→河岸亮如白昼→渐暗
+  - 结衣在渐暗天光里突然开口:"呐明年大家再一起来吧！"
+  - 没人立刻接话→河面漂最后几粒没熄的光
+  - 拉芙希妮:"……嗯"——声音很轻但谁都听见
+  - ★结衣的普通愿望：走到一半停下来——"呐，我想去那边那家店买豆沙团子。谁陪我都行，没人陪我自己去"——没有人立刻响应，她没有收回，真的自己去买了回来，团子咬在嘴里
+  - ★结衣的小误判："啊哈哈，我以为你们也想去的"——她假设了"大家都愿意"，结果这次只有她自己愿意；她笑两声就过去了，没当回事
+  - ★走丢的小女孩：结衣蹲下来和她平视说话——"妈妈很快会来的，我们先数数摊子上的灯笼"——陪她等到家长，蹲得很自然
+  - ★烟火结束后的合影拍：结衣从包里掏出一台一次性相机——"我妈让我拍的，说要洗出来贴冰箱"——她挨个把人往灯笼光最好的那截河堤栏边拽：大志被她一句"大志同学你站小町旁边嘛"推过去、八幡被她"小企你别跑，就一张"拦下、雪乃被她"小雪乃你也来嘛，就一张"拽过去（雪乃没有拒绝）、拉芙希妮自己走过来站在最边上。六个人挤在栏边，灯笼光在背后一明一灭——"三、二、一——"快门咔嚓一声。没人记得最后是谁先散开的，但那一刻六个人是"我们"
+  - 回程→灯笼一盏盏熄→六人影子在参道时长时短→金鱼缸水声、木屐咔哒、小町断续哼歌
+  - 风从河面上来带水汽凉意→拉芙希妮抬手按被吹乱的头发→指尖碰到朝颜簪子→簪子还在→没有再多按→把手放回袖子里
+
+偏离处理:
+  - 日常场景,无主要偏离点
+  - 若无人响应结衣的普通愿望提议：她不会撤回——自己去了，回来把团子分给大家；这是"允许被拒绝"的示范，不是退让
+
+推进边界:
+  保持当前场景:
+    - 六人尚未在石鸟居集合
+  可以推进:
+    - 六人影子在回程参道上渐远
+
+完成后事实:
+  - 六人第一次校外团建完成
+  - 拉芙希妮的浴衣是"自己选的"——从场景13浴衣被家族安排到今天
+  - "明年"首次被提及——结衣发起,拉芙希妮第一确认
+  - 结衣提出并完成了只属于自己的普通愿望——不服务主线、不服务他人；"允许被拒绝但不预先撤回"
+  - 儿童照顾兴趣铺垫②完成（蹲下来和小女孩平视、陪她等家长）——铺垫①在场景71
+
+氛围锚点:
+  - 红白灯笼湿漉漉柏油路上的暖光
+  - 水色浴衣朝颜花在灯笼光里一明一灭
+  - 大志捞金鱼纸网入水的角度→手腕纹丝不动→耳尖通红
+  - 八幡射击命中率与他死鱼眼毫不相称→摊主脸色微妙
+  - 雪乃在熊猫面具前半拍停顿→什么都没说也什么都没买→跟上
+  - 拉芙希妮苹果糖糖衣碎裂声混太鼓
+  - 最后烟火大轮全亮→河岸如白昼→渐暗后河面漂余烬
+  - 朝颜簪子还在就没有多按→把手放回袖子
+
+禁止提前:
+  - 暑假回国(场景120)
+  - 拉芙希妮发现文件编号(场景119)
+  - 结衣的普通愿望与主线挂钩（拉芙家族危机/奉仕部事务）——它是纯粹的私人日常

@@ -1,0 +1,78 @@
+@@generate_before
+@@private
+<%_
+const openingMode = getvar('stat_data.mode', { defaults: null });
+const openingCampaign = getvar('stat_data.campaign_id', { defaults: 'main' });
+const openingPov = getvar('stat_data.current_pov', { defaults: null });
+const openingScene = Number(getvar('stat_data.current_scene', { defaults: 1 }));
+let openingMessages = [];
+try {
+  const openingLastId = typeof getLastMessageId === 'function' ? getLastMessageId() : 1;
+  openingMessages = getChatMessages('0-' + openingLastId, { role: 'user' });
+} catch (error) {
+  openingMessages = [];
+}
+const openingUserMessages = Array.isArray(openingMessages) ? openingMessages : [];
+// 结构化开局判定改用可见句特征（"我选择扮演/我将以自建角色"）——
+// 原 <counterfeit_opening> 尖括号标记会被酒馆消息清洗剥除（2026-08-05 首条回复中止根因），
+// 可见句不被清洗且兼容旧存档。路由所需 mode/pov/scene 全部来自 stat_data 变量。
+const hasOpeningPayload = openingUserMessages.some((item) =>
+  typeof item.message === 'string' &&
+  (item.message.includes('我选择扮演') || item.message.includes('我将以自建角色')) &&
+  !item.message.includes('我已迁移旧档')
+);
+const isFirstReply = hasOpeningPayload && openingUserMessages.length === 1;
+const openingCustom = getvar('stat_data.custom_protagonist', { defaults: null });
+const povAnchors = {
+  hachiman: '地点在二年F班或由玩家首条消息明确指定的位置。八幡只知道二年J班来了英国转学生的公开传闻；J班的自我介绍不在他眼前发生。先给出F班可观察的日常与一个可回应的外部动静，不写八幡的吐槽、判断、反应或行动。',
+  yukino: '地点在二年J班。拉芙希妮刚被教师带到讲台前，教室正在等待她的自我介绍或教师安排。只呈现教师、拉芙希妮和同学的可观察言行，停在雪乃可以回应的位置；不替雪乃形成关于拉芙的比喻、判断或行动。',
+  yui: '地点在二年F班或由玩家首条消息明确指定的位置。结衣只接触到转学生传闻与F班的人际气氛；不要把她直接放进二年J班的介绍现场。先呈现可观察的同学反应或一个自然交谈入口，不替结衣决定好奇、接近或回避。',
+  laff: '地点在二年J班讲台前。教师与全班正在等待拉芙希妮开口。描写教室、教师和学生的公开反应即可，必须把自我介绍的内容、语气、动作与内心留给玩家。',
+};
+_%>
+<%_ if (openingCampaign === 'dlc_genderbend_hachiman' && openingPov === 'hachiman' && isFirstReply) { _%>
+<opening_route>
+这是《错位的日常》提交后的第一轮正式演绎。日期2014-07-12，星期六早晨；地点为比企谷家·八幡房间。
+只建立这些可观察事实：手机闹铃响起；八幡发现手指、声音、头发、衣物贴合与镜中外观已经变化；房间、手机记录、记忆、法律姓名和昨天发生的事情均未改变；小町在门外叫他，因沉默把手放到门把上。
+结尾停在小町问“哥哥还活着吗”后，门把刚开始转动的瞬间。
+不得替玩家回答、堵门、继续检查、联系任何人、接受新的身份标签、决定是否出门或开始调查。第一轮只给一个可以立刻回应的青春喜剧困境，不生成治愈任务或事件清单。
+</opening_route>
+<%_ } else if (openingCampaign === 'dlc_body_swap_mrs_yukinoshita' && openingPov === 'hachiman' && isFirstReply) { _%>
+<opening_route>
+这是《君的名字？》八幡意识路线提交后的第一轮正式演绎。日期2014-07-12，星期六早晨；地点为雪之下家本邸·夫人卧室。
+八幡在雪之下夫人的身体中醒来；陌生手机、精确到分钟的日程与镜中身份构成可观察证据。工作人员敲门，告知07:40出发且阳乃正在楼下等母亲；手机随即响起，来电显示“比企谷宅”。
+停在玩家必须决定如何面对来电、敲门与下楼日程之前。不得替玩家接听、躲藏、查阅隐私、模仿夫人、下楼或公开互换；不得展示雪之下夫人意识的私下行动或内心。
+</opening_route>
+<%_ } else if (openingCampaign === 'dlc_body_swap_mrs_yukinoshita' && openingPov === 'mrs_yukinoshita' && isFirstReply) { _%>
+<opening_route>
+这是《君的名字？》雪之下夫人意识路线提交后的第一轮正式演绎。日期2014-07-12，星期六早晨；地点为比企谷家·八幡房间。
+雪之下夫人在八幡的身体中醒来；房间与手机里只有八幡日常生活留下的公开可见痕迹，没有互换原因。小町已在门外，以对哥哥说话的方式催促并试探房内异常。
+停在玩家第一次开口、开门、查看手机、改变八幡日程或联系雪之下家之前。不得替玩家作出任一选择；不得展示八幡意识的私下行动或内心。
+</opening_route>
+<%_ } else if (openingCampaign === 'main' && openingMode === 'pov' && openingScene === 1 && isFirstReply && povAnchors[openingPov]) { _%>
+<opening_route>
+这是结构化开局资料提交后的第一轮正式演绎。
+起始锚点: <%- povAnchors[openingPov] %>
+开场白界面的OP文字属于电影式气氛引导，其中替玩家写出的内心结论、比喻或动作不构成已发生事实；不得复述、续写或据此替<user>定性。
+本轮只建立一个清晰、可观察、可回应的局面，然后把行动权交还玩家。不补写<user>尚未表达的关键台词、行动或内心结论，不得为了让四人立刻会合而瞬移或跳过日常因果。
+</opening_route>
+<%_ } else if (openingCampaign === 'main' && openingMode === 'custom' && isFirstReply && openingCustom && openingCustom.participation && openingCustom.participation.track) { _%>
+<opening_route>
+这是剧情模式自建角色资料提交后的第一轮正式演绎，时间为2013年5月20日，主线从场景1开始（当日事件以场景1注入内容与其 custom 玩家入口为准）。
+玩家的自建角色为「<%- String(openingCustom.name || '未命名角色') %>」，参与方式轨道：<%- openingCustom.participation.track %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人）；玩家补充：<%- openingCustom.participation.note || '无' %>。
+起点由参与方式与场景1的 custom 玩家入口共同决定：member 是已被平冢静安排进奉仕部的第五名部员，可直接处于事件核心；classmate 以同学身份在场边目击场景1的公开事件；outsider 不在场景现场，从与其身份相符的日常位置开始，经传闻与主线相遇。
+本轮只建立一个清晰、可观察、可回应的局面，然后把行动权交还玩家；不补写<user>尚未表达的关键台词、行动或内心结论。开场白界面的OP文字只负责气氛，其中替玩家写出的内容不构成已发生事实。
+</opening_route>
+<%_ } else if (openingCampaign === 'main' && openingMode === 'custom' && isFirstReply && openingCustom) { _%>
+<opening_route>
+这是结构化自建角色资料提交后的第一轮正式演绎，时间为2013年5月20日。
+根据自建角色的年龄、身份、年级/班级、性格与玩家首条消息选择合理起点：学生优先从其明确填写的班级或校内位置开始，非学生从身份允许抵达的公开地点开始。
+自建角色开局不自动认识核心角色、不自动加入奉仕部，也不因卡片主线而被强制送到二年J班。先给出一个与其身份相符的可观察环境和一个自然钩子，然后停下等待玩家行动。
+开场白界面的OP文字只负责气氛，不得替<user>补写内心、台词、决定或未提交的背景。
+</opening_route>
+<%_ } else if (openingCampaign === 'main' && openingMode === 'free' && isFirstReply) { _%>
+<opening_route>
+这是主线世界开放模式的第一轮正式演绎，时间为2013年5月20日；本模式不继承150场事件。
+按玩家视点或自建角色的身份、初始位置与首条消息建立一个可观察、可回应的日常局面。不得自动加入奉仕部、自动认识核心角色、复演主线场景1或替玩家补写关键台词、行动与内心结论。
+</opening_route>
+<%_ } _%>

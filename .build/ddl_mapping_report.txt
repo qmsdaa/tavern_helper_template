@@ -1,0 +1,29 @@
+checkpoint floor: 3
+sheet_bwxtt33d5 | 检定建议表 | table=check_suggestions | rows=5 | OK
+   header: ['row_id', '展示文本', '骰子命令']
+sheet_dwj6ltghl | 导演规划表 | table=plot_state | rows=1 | OK
+   header: ['row_id', '剧情走向', '大纲', 'AI指导']
+sheet_escyvvs2u | 才艺技能表 | table=protagonist_skills | rows=3 | OK
+   header: ['row_id', '名称', '分类', '熟练度', '说明']
+sheet_factions | 关系网络表 | table=relationship_networks | rows=1 | OK
+   header: ['row_id', '网络名称', '当前立场', '存在状态', '关联角色', '关系说明', '对恋爱线影响']
+sheet_global_data | 全局数据表 | table=global_state | rows=1 | OK
+   header: ['row_id', '全局状态', '当前详细地点', '当前次要地区', '当前主要地区', '上轮场景时间', '经过的时间', '当前时间']
+sheet_important_non_romance | 重要角色表 | table=important_non_romance | rows=0 | OK
+   header: ['row_id', '姓名', '性别', '年龄', '一句话介绍', '外貌特征', '穿着打扮', '基础属性', '特有属性', '所在地点', '在场状态', '人际关系', '过往经历', '交互选项']
+sheet_inventory | 物品表 | table=inventory | rows=2 | OK
+   header: ['row_id', '物品名称', '类型', '数量', '情感分量', '品质', '描述']
+sheet_memo | 备忘录 | table=memo | rows=1 | OK
+   header: ['row_id', '备忘标题', '类型', '相关角色', '详细内容', '当前状态', '相关时间', '重要程度', '后续结果']
+sheet_outfits | 装扮表 | table=outfits | rows=1 | OK
+   header: ['row_id', '所属角色', '装扮名称', '类型', '当前状态', '外观描述', '来源', '场景及寓意', '交互选项']
+sheet_protagonist | 主角信息表 | table=protagonist_info | rows=1 | OK
+   header: ['row_id', '姓名', '性别', '年龄', '外貌特征', '身份', '近况', '所在地点', '基础属性', '特有属性', '随身财物']
+sheet_romance_diary | 恋爱日记表 | table=romance_diary | rows=1 | OK
+   header: ['row_id', '写作角色', '关联角色', '关联AM码', '日记内容', '发生时间', '事件类型', '影响判断']
+sheet_romance_targets | 恋爱对象表 | table=romance_targets | rows=1 | OK
+   header: ['row_id', '姓名', '性别', '年龄', '一句话介绍', '外貌特征', '穿着打扮', '基础属性', '特有属性', '所在地点', '在场状态', '人际关系', '当下想法', '过往经历', '性爱次数', '交互选项']
+sheet_summary | 纪要表 | table=chronicle | rows=1 | OK
+   header: ['row_id', '编码索引', '时间跨度', '概览', '纪要', '重要对话']
+sheet_world_map | 世界地图点 | table=world_map_points | rows=3 | OK
+   header: ['row_id', '详细地点', '次要地区', '主要地区', '地点类型', '环境描述', '重要度', '解锁阶段']

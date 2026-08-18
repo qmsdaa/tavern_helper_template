@@ -1,0 +1,199 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 121)
+场景: 121
+幕: "第八幕·归国与失语"
+时间: "2014年8月2日 · 周六"
+索引日期: "2014-08-02"
+地点: "拉芙希妮公寓→成田机场→伦敦（A线）／总武高特别栋奉仕部活动室（B线）"
+人物: "拉芙希妮·都柏林、温斯顿（A线）／雪之下雪乃、比企谷八幡、由比滨结衣、比企谷小町、川崎大志（B线）"
+事件焦点:
+  类型: 角色
+  角色:
+    - "拉芙希妮·都柏林"
+
+# TRANSITION_RUNTIME_GUARD_START main:121
+# <%_ const __cfTransitionTarget121 = 121; _%>
+# <%_ const __cfTransitionCurrentScene121 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign121 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages121 = []; _%>
+# <%_ try { const __cfTransitionLastId121 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages121 = getChatMessages('0-' + __cfTransitionLastId121, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages121 = []; } _%>
+# <%_ const __cfTransitionSnapshots121 = (Array.isArray(__cfTransitionMessages121) ? __cfTransitionMessages121 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious121 = __cfTransitionSnapshots121.length ? __cfTransitionSnapshots121[__cfTransitionSnapshots121.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene121 = Number(__cfTransitionPrevious121 && __cfTransitionPrevious121.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign121 = (__cfTransitionPrevious121 && __cfTransitionPrevious121.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped121 = Math.max(0, __cfTransitionCurrentScene121 - __cfTransitionPreviousScene121 - 1); _%>
+# <%_ const __cfTransitionExpose121 = __cfTransitionCurrentCampaign121 === 'main' && __cfTransitionPreviousCampaign121 === 'main' && __cfTransitionCurrentScene121 === __cfTransitionTarget121 && Number.isInteger(__cfTransitionPreviousScene121) && __cfTransitionPreviousScene121 < __cfTransitionCurrentScene121; _%>
+# <%_ if (__cfTransitionExpose121) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped121 %>"
+  mode: date_only
+  visible_title: 八月，返程票在手
+  visible_lines:
+    - 编号缺页被说出口八天后，暑假的日常没有替拉芙决定是否出发。
+    - 她带着返程票来到机场，去查明一件事，也保留回到千叶的日期。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:121
+场景功能:
+  - 拉芙出发回伦敦，确立"去查明一件事，然后回来"的双向承诺
+  - 钢笔（来自L-Fly的礼物）与返程票并置：可见证"可以走"与"会回来"
+  - B线日本侧锚定文化祭企划启动，为Act 8日本侧日常线提供骨架
+  - 值日表第五个名字空格被留出，建立"等待归来"的群体默契
+
+进入状态:
+  已发生:
+    - 拉芙收到伦敦来信，决定利用暑假回英国调查火灾真相
+    - 自行订购往返机票（去程8/2，返程8/29），温斯顿未追问原因
+    - 送行：全员在成田机场告别，六人看过拉芙的行程单
+    - 日本侧文化祭企划需提前提交，雪乃主导方向讨论
+  当前局面:
+    - 拉芙清晨整理珍藏抽屉：钢笔与返程票并置，确认"回去是为了回来"
+    - 家政太太送行，未追问伦敦事宜
+    - B线活动室：五人讨论文化祭方向，收到拉芙起飞照片→全员回复
+    - 拉芙在飞机上，望着云海，内心锚定：有些答案只有她自己能拿
+  未发生:
+    - 拉芙抵达伦敦后的调查行动
+    - 书库档案查阅
+    - 与爱布拉娜的任何直接接触
+    - 日本侧文化祭具体企划成型
+
+世界推动:
+  - 拉芙乘航班前往伦敦，十二小时航程
+  - 日本侧文化祭企划方向被列在白板上（鬼屋×·咖啡店×·戏剧留）
+  - 雪乃在予定表八月二十九日格添写"拉芙希妮，归"
+  - 值日表第六张便签位置空出，成为群体等待的可见标记
+
+NPC动机:
+  家政太太:
+    - 目标：确保拉芙出行顺利，用平常的早餐和祝福降低分别感
+    - 行为倾向：不问伦敦详情，只确认接机安排
+    - 知情边界：知道拉芙回伦敦过暑假，不知调查意图
+    - 不得执行：替"那边"传话（本场景尚未出现相关指令）
+  温斯顿:
+    - 目标：完成拉芙出行的全部手续支持
+    - 行为倾向：提供专业协助，不追问动机；用"任何事都可以"打开未来联系通道
+    - 知情边界：知道拉芙订往返票，知道返程日期；不知书库调查计划
+    - 不得执行：向家族汇报拉芙的具体行程目的
+
+信息边界:
+  公开:
+    - 拉芙于8月2日乘机前往伦敦，8月29日返回
+    - 日本侧奉仕部全员参与文化祭企划讨论
+    - 拉芙在群聊中保持"每日第一条"的习惯
+  局部:
+    - 拉芙的钢笔（L-Fly）被取出又放回——只有她自己知道这份仪式
+    - 家政太太与温斯顿各自感知到拉芙此行"不只是过暑假"
+  隐藏:
+    - 拉芙回伦敦的真正目的（调查火灾真相）
+    - 保险报告编号AXI-2013-04873-J的存在
+    - 爱布拉娜与火灾的关系
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - B线活动室场景：瘫在老位置翻文库本，对文化祭方向保持消极但配合的态度
+      - 对群聊消息的回复习惯：先打"哦"再删掉改成"落地记得报平安"
+      - 对拉芙离开的感知：不追问，不渲染情绪，用行动（改消息）代替言语
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - B线活动室场景：主导文化祭企划讨论，展示企划资料，纠正航班时间
+      - 最后一个回复群聊消息（"收到"），保持一贯的简洁
+      - 在予定表上添写"拉芙希妮，归"——一个克制但有重量的动作
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - B线活动室场景：摆六杯麦茶，在第六个位置停手→收走多余的一杯
+      - 第一个回复拉芙消息（"一路平安！！到了记得吃东西！"），情感表达最直接
+      - 散场后洗第六只杯子，杯柄朝向与其他三只一致——用日常动作承载等待
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - A线：清晨在卧室整理珍藏抽屉，钢笔与返程票并置——只描写她的动作，不替她决定任何话
+      - 与家政太太的早餐对话：回答简单，不展开伦敦之行的真实目的
+      - 与温斯顿在机场：接受"任何事都可以"的承诺，不追问条件
+      - 飞机上：望着云海，内心确认"有些答案只有她自己能拿"——此处停止，不展开她会如何调查
+      - 拉芙在群聊中发第一条消息（"起飞了。十二个小时后到。"）——这是玩家可能执行的动作，提供语境但不强制
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "出发日——他在活动室开文化祭方向讨论会，负责翻历年企划书；群里收到'起飞了'时他先打'哦'又删掉，改成'落地记得报平安'。"
+  yukino: "出发日——她在活动室主导文化祭讨论，纠正了一次航班时间；收到起飞消息后她最后一个回复：'收到'。予定表八月二十九日那格，她提前写下'拉芙希妮，归'。"
+  yui: "出发日——她摆了六杯麦茶，在第六个位置停手，收走了一杯；收到'起飞了'时第一个回'一路平安！！到了记得吃东西！'，散场后把第六只杯子洗了，杯柄和其余三只对齐。"
+  laff: "主场轨道，见可用节拍，不变。"
+
+玩家控制边界:
+  - 拉芙的"每日第一条"消息内容由玩家决定（可发照片/文字/省略）
+  - 拉芙对家政太太"家里会想你的"的回应方式
+  - 拉芙在飞机上的内心活动深度与具体内容
+
+可用节拍:
+  - 拉芙在卧室整理珍藏抽屉：钢笔与返程票的并置仪式
+  - 与家政太太的早餐告别
+  - 成田机场：温斯顿最后的支持与"任何事都可以"
+  - 安检过线——独自一人进入待飞状态
+  - 飞机上云海→内心锚定
+  - 群聊第一条消息发送
+  - B线：活动室文化祭讨论（戏剧方向留白板）
+  - B线：收到起飞消息→全员回复
+  - B线：散场——值日表空格、第六只杯子复位
+
+偏离处理:
+  - 若拉芙在出发前主动联系日本侧任何人：可执行，对话内容保持克制（"到了会发消息"级别）
+  - 若拉芙拒绝出发或犹豫不决：场景不能推进到飞机段落；提示"往返票已经买好"作为事实约束
+  - 若日本侧B线讨论跑偏到无关话题：雪乃会拉回文化祭方向（"下午把历年的企划书翻出来"）
+
+推进边界:
+  保持当前场景:
+    - 拉芙尚未完成"整理珍藏抽屉"的仪式
+    - 日本侧尚未完成文化祭方向白板记录
+    - 拉芙尚未发送起飞消息
+  可以推进:
+    - 拉芙登上飞机后→场景自然收束于云海与内心锚定
+    - B线散场后→活动室锁门，一天结束
+    - 拉芙抵达伦敦宅邸（第一晚）→进入下一场景
+  永久失效:
+    - 拉芙在出发前改变主意（往返票已购，事实约束不可逆）
+    - 拉芙向家政太太或温斯顿摊牌调查目的（信息发布时机未到）
+
+完成后事实:
+  - 拉芙抵达伦敦都柏林宅邸，护照和行程单立在台灯旁
+  - 返程票日期（8/29）被物理放置在视野内
+  - 日本侧值日表留有第六张便签的空格
+  - 雪乃予定表八月栏标注"拉芙希妮，归"
+  - 拉芙在群聊中建立了"每日第一条"的跨时区联系节奏
+
+氛围锚点:
+  - 清晨五点半千叶的天空刚亮——出发时刻的安静
+  - 绿墨水钢笔在绒布里的光与返程票并置——走与归的物质化
+  - 飞机穿过云层后平稳的轰鸣——悬浮在两个世界之间的阈限
+  - 伦敦宅邸的房间，灯光比千叶密也冷得多——抵达的疏离感
+
+禁止提前:
+  - 禁止在拉芙尚未出发时描写伦敦宅邸场景
+  - 禁止让任何日本侧角色猜测拉芙回伦敦的真实原因（除她已经明确说过的"有些问题只有那里才有档案"）
+  - 禁止家政太太或温斯顿表现出超过"隐约感知"的知情程度

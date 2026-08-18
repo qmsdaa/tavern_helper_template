@@ -1,0 +1,158 @@
+场景: 77
+幕: "第四幕·冬假→三学期"
+时间: "2014年2月14日 · 周五 · 情人节"
+索引日期: "2014-02-14"
+地点: "千叶站检票口 → 电车 → 总武高中 · 特别栋 · 奉仕部活动室"
+人物: "拉芙希妮·都柏林、雪之下雪乃、由比滨结衣、比企谷八幡"
+事件焦点:
+  类型: 角色
+  角色:
+    - "拉芙希妮·都柏林"
+    - "雪之下雪乃"
+
+# TRANSITION_RUNTIME_GUARD_START main:77
+# <%_ const __cfTransitionTarget77 = 77; _%>
+# <%_ const __cfTransitionCurrentScene77 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign77 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages77 = []; _%>
+# <%_ try { const __cfTransitionLastId77 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages77 = getChatMessages('0-' + __cfTransitionLastId77, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages77 = []; } _%>
+# <%_ const __cfTransitionSnapshots77 = (Array.isArray(__cfTransitionMessages77) ? __cfTransitionMessages77 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious77 = __cfTransitionSnapshots77.length ? __cfTransitionSnapshots77[__cfTransitionSnapshots77.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene77 = Number(__cfTransitionPrevious77 && __cfTransitionPrevious77.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign77 = (__cfTransitionPrevious77 && __cfTransitionPrevious77.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped77 = Math.max(0, __cfTransitionCurrentScene77 - __cfTransitionPreviousScene77 - 1); _%>
+# <%_ const __cfTransitionExpose77 = __cfTransitionCurrentCampaign77 === 'main' && __cfTransitionPreviousCampaign77 === 'main' && __cfTransitionCurrentScene77 === __cfTransitionTarget77 && Number.isInteger(__cfTransitionPreviousScene77) && __cfTransitionPreviousScene77 < __cfTransitionCurrentScene77; _%>
+# <%_ if (__cfTransitionExpose77) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped77 %>"
+  mode: date_only
+  visible_title: 二月十四日，早晨
+  visible_lines:
+    - 十三天里，准备好的巧克力一直没有替送礼者决定该怎样开口。
+    - 千叶站的检票声照常响起，下午部室里的目光尚未来到。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:77
+场景功能:
+  - ★情人节早晨：拉芙希妮在千叶站检票口外拦住雪乃——直接递出巧克力——"因为到了下午的部室里，会有太多双眼睛看着……那样的话，雪乃同学如果觉得收下会困扰，我就连让你装傻拒绝的机会都没有了"
+  - 拉芙希妮帮雪乃整理被风吹乱的头发——"指尖冷得像冰块，擦过雪乃耳廓边缘"
+  - 电车上：拉芙希妮为雪乃撑开空间→车转弯时雪乃抓住拉芙希妮袖口→小声说"谢谢"
+  - 下午部室：结衣鼓起勇气送八幡巧克力——八幡在接受前做了一系列防御性反应
+  - 雪乃+拉芙希妮联手助攻——"逃避卡路里，并不能解决你现在面临的社交问题……除非，你对'真心'这种成分过敏"
+
+进入状态:
+  已发生:
+    - 场景75：巧克力制作
+    - 情人节当天
+  当前局面:
+    - 千叶站检票口外，冷风
+    - 雪乃准备刷卡进站
+  未发生:
+    - 巧克力尚未送出
+    - 下午部室尚未开始
+
+世界推动: 情人节日常
+
+NPC动机:
+  拉芙希妮·都柏林:
+    - 此刻目标: 在无人见证时把巧克力给雪乃——不给她用"人情往来"包装的机会
+    - 行为倾向: 拦住雪乃→递出盒子→"等不到放学后了"→整理雪乃头发→电车上撑空间→部室内助攻结衣
+    - 知情边界: 知道雪乃会用逻辑防御
+    - 表达意图: "因为到了下午的部室里，会有太多双眼睛看着。那样的话，雪乃同学如果觉得收下会困扰，我就连让你装傻拒绝的机会都没有了。"
+  雪之下雪乃:
+    - 此刻目标: 维持体面接收巧克力——失败
+    - 行为倾向: 用"人流量""场合""糖分摄入指标"防御→全部失效→粗暴抓过盒子塞进书包→"我并没有觉得困扰"→电车上抓拉芙希妮袖口→小声"谢谢"→部室内助攻结衣
+  由比滨结衣:
+    - 此刻目标: 把巧克力给八幡
+    - 行为倾向: 紧张到结巴→推盒子→被八幡防御→被雪乃和拉芙希妮助攻→八幡最终接受
+
+信息边界:
+  公开: 下午部室的巧克力交换
+  局部: 早晨站前——雪乃和拉芙希妮独处时的巧克力+对话
+  隐藏: 巧克力是手工制作（雪乃可能知道可能不知道）
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - "主场轨道，见可用节拍，不变。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - "情人节——她早上出门前对着镜子练习了三遍'给'的姿势，下午在部室堵住八幡，紧张到结巴；被联手助攻后她看着八幡接下盒子，差点原地跳起来。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - "主场轨道，见可用节拍，不变。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - "情人节——他下午才到部室，进门就被结衣堵在墙角塞了一盒巧克力，防御性反应连开三轮，全被雪乃和拉芙希妮的联手助攻拆掉；最后他接下了盒子，耳朵有点红。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "情人节——他下午才到部室，进门就被结衣堵在墙角塞了一盒巧克力，防御性反应连开三轮，全被雪乃和拉芙希妮的联手助攻拆掉；最后他接下了盒子，耳朵有点红。"
+  yukino: "主场轨道，见可用节拍，不变。"
+  yui: "情人节——她早上出门前对着镜子练习了三遍'给'的姿势，下午在部室堵住八幡，紧张到结巴；被联手助攻后她看着八幡接下盒子，差点原地跳起来。"
+  laff: "主场轨道，见可用节拍，不变。"
+
+玩家控制边界:
+  - 拉芙希妮POV：递出巧克力的措辞、时机——由玩家决定
+  - 雪乃POV：接收的反应——由玩家决定——原文是"粗暴抓过"
+  - 结衣POV：送八幡的措辞——由玩家决定
+
+可用节拍:
+  - ★拉芙希妮在站前拦住雪乃→递巧克力
+  - 雪乃防御→拉芙希妮拆穿→雪乃抓过塞进书包
+  - 拉芙希妮整理雪乃头发
+  - 电车上——拉芙希妮撑空间→雪乃抓袖口→"谢谢"
+  - 下午部室——结衣送八幡
+  - 雪乃+拉芙希妮联手助攻
+  - 八幡接受巧克力
+
+偏离处理:
+  - 若雪乃POV选择当场坦然收下（不走防御流程）：允许——但拉芙希妮会因为"没能看到她慌乱"而反过来失语半拍，情人节的重量不减
+  - 若雪乃拒收：拉芙希妮不追、不劝，把盒子收回口袋——放学后它会以"多做了一盒"的名义出现在雪乃桌上；巧克力必须在今天送达
+  - 若拉芙希妮POV选择在部室当众送出（不在站前）：允许——但雪乃会用"人情往来"把它包装掉，"抢在所有人之前"的独占性丧失，完成后事实第一条改为"未能独占"
+  - 若结衣临阵退缩：雪乃与拉芙希妮的助攻改为把八幡按在原地不许走，结衣仍须在放学前把盒子递出去
+  - 电车触碰、耳廓、"谢谢"三个动作可增删措辞，但不得升级为告白级表达（进度锚点在后续幕）
+
+推进边界:
+  保持当前场景: 下午部室的巧克力交换尚未完成
+  可以推进: 八幡接下盒子、放学铃响
+  永久失效: 站前独处的时机——一旦进站，早晨这段不可回补
+
+完成后事实:
+  - 拉芙希妮在情人节清晨第一个把巧克力给雪乃——在所有人之前
+  - 结衣成功将巧克力送给八幡
+  - 情人节巧克力交换完成
+
+氛围锚点:
+  - "清晨七点四十五分的北风，像是一把没开刃的钝刀"
+  - 拉芙希妮整理雪乃头发——"指尖冷得像冰块，擦过雪乃耳廓边缘的瞬间，带起了一阵让人心悸的战栗"
+  - 雪乃小声说"谢谢"——"声音很小，被电车到站时刺耳的气阀放气声完全盖住"
+
+禁止提前: PTA舞会相关

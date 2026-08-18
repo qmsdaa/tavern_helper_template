@@ -1,0 +1,70 @@
+/* Counterfeit · 手机助手 全局样式 */
+
+:root {
+  /* 机身 */
+  --c-phone-frame: #2b2b30; /* 机身边框 */
+  --c-phone-frame-hi: #4a4a52; /* 边框高光 */
+  --c-phone-screen: #f2f2f7; /* 屏幕底色（iOS 系统灰） */
+
+  /* 系统色 */
+  --c-ios-blue: #0a84ff; /* 发送气泡/链接 */
+  --c-ios-green: #30d158; /* 在线/确认 */
+  --c-ios-gray: #8e8e93; /* 次要文字 */
+  --c-bubble-other: #e9e9eb; /* 对方气泡 */
+  --c-separator: #d8d8de; /* 列表分隔线 */
+  --c-success: #28a745; /* 成功提示 */
+  --c-danger: #dc3545; /* 错误提示 */
+
+  /* 项目色（沿用开场白气质） */
+  --c-primary: #e58aa5;
+  --c-primary-strong: #d4698a;
+  --c-accent: #a78bfa;
+
+  /* 文字 */
+  --c-text: #1c1c1e;
+  --c-text-inverse: #ffffff;
+
+  /* 启动器 */
+  --c-launcher: #3a3a40;
+
+  /* 阴影 */
+  --shadow-phone: 0 30px 80px rgba(0, 0, 0, 0.55);
+  --shadow-launcher: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  /* 字体 */
+  --font-main:
+    'Zen Maru Gothic', 'Source Han Sans SC', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-display: 'ZCOOL KuaiLe', 'Klee One', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-latin: 'Klee One', 'ZCOOL KuaiLe', serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--c-text);
+  background: #141416;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+img {
+  user-select: none;
+}

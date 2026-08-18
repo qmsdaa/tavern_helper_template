@@ -1,0 +1,28 @@
+(node:23740) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/%E7%A5%9E%E4%BA%86/Counterfeit-v0.6.0-%E5%AE%8C%E6%95%B4%E5%B7%A5%E7%A8%8B-hotfix2-20260814/Counterfeit-v0.6.0-%E5%AE%8C%E6%95%B4%E5%B7%A5%E7%A8%8B-hotfix2/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B/tests/.save-build/%E5%AD%98%E6%A1%A3/acuTables.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\神了\Counterfeit-v0.6.0-完整工程-hotfix2-20260814\Counterfeit-v0.6.0-完整工程-hotfix2\前端工程\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+=== jsonl line 15 ===
+  UPDATE romance_targets SET presence_status = '离场' WHERE name = '材木座义辉'
+  UPDATE romance_targets SET relation_state = '拉芙希妮·都柏林:警惕,认可', current_thought = '竟然会有这种想法……不仅仅是逻辑，更像是在某种压力下的真实感悟。不过，她既然想走，那就让她走好了。' WHERE name = '雪之下雪乃'
+  UPDATE romance_targets SET relation_state = '主角:认识,警惕', current_thought = '啧，明明累得要死还装出一副优雅的样子。雪之下居然给了个台阶，看来这两人在某种奇怪的地方合拍了啊。' WHERE name = '比企谷八幡'
+  UPDATE romance_targets SET relation_state = '主角:认识,好奇', current_thought = '拉芙希妮酱这就要走了吗？还没一起吃点心呢……感觉她刚才说那些话的时候好难过，我是不是不该问那个问题。' WHERE name = '由比滨结衣'
+=== jsonl line 21 ===
+  UPDATE romance_targets SET presence_status = '离场', location_name = '总武高中' WHERE name IN ('雪之下雪乃', '比企谷八幡', '由比滨结衣')
+  UPDATE relationship_networks SET stance = '监视', presence = '在场活跃' WHERE network_name = '都柏林家族'
+=== jsonl line 23 ===
+  UPDATE world_map_points SET unlock_stage = '故事已发生' WHERE location_name = '千叶市·海侧公寓'
+  UPDATE romance_targets SET presence_status = '离场', location_name = '未知' WHERE name IN ('雪之下雪乃', '比企谷八幡', '由比滨结衣')
+
+romance_targets 姓名列: [ '"雪之下雪乃"', '"比企谷八幡"', '"由比滨结衣"' ]
+relationship_networks 网络名称列: [ '"2年J班"', '"奉仕部"' ]
+world_map_points 详细地点列: [
+  '"2年J班教室"',
+  '"总武高中中庭"',
+  '"奉仕部活动室"',
+  '"千叶市·街头"',
+  '"千叶市·公寓楼下"',
+  '"总武线电车"',
+  '"总武高中天台"',
+  '"总武高中·奉仕部活动室"'
+]

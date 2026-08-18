@@ -1,0 +1,200 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 32)
+场景: 32
+幕: "第三幕·二学期"
+时间: "2013年10月下旬 · 文化祭开幕当天早晨（距开幕仪式约半小时）"
+索引日期: "2013-10-26"
+地点: "奉仕部活动室 → 特别栋走廊"
+人物: "拉芙希妮·都柏林、雪之下雪乃、比企谷八幡、由比滨结衣"
+事件焦点:
+  类型: 群像
+  角色:
+    []
+
+# TRANSITION_RUNTIME_GUARD_START main:32
+# <%_ const __cfTransitionTarget32 = 32; _%>
+# <%_ const __cfTransitionCurrentScene32 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign32 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages32 = []; _%>
+# <%_ try { const __cfTransitionLastId32 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages32 = getChatMessages('0-' + __cfTransitionLastId32, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages32 = []; } _%>
+# <%_ const __cfTransitionSnapshots32 = (Array.isArray(__cfTransitionMessages32) ? __cfTransitionMessages32 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious32 = __cfTransitionSnapshots32.length ? __cfTransitionSnapshots32[__cfTransitionSnapshots32.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene32 = Number(__cfTransitionPrevious32 && __cfTransitionPrevious32.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign32 = (__cfTransitionPrevious32 && __cfTransitionPrevious32.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped32 = Math.max(0, __cfTransitionCurrentScene32 - __cfTransitionPreviousScene32 - 1); _%>
+# <%_ const __cfTransitionExpose32 = __cfTransitionCurrentCampaign32 === 'main' && __cfTransitionPreviousCampaign32 === 'main' && __cfTransitionCurrentScene32 === __cfTransitionTarget32 && Number.isInteger(__cfTransitionPreviousScene32) && __cfTransitionPreviousScene32 < __cfTransitionCurrentScene32; _%>
+# <%_ if (__cfTransitionExpose32) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped32 %>"
+  mode: date_only
+  visible_title: 十月下旬，文化祭当日
+  visible_lines:
+    - 十七天里，校舍被纸板、胶带和反复修改的流程表逐层填满。
+    - 开幕前半小时，准备完成的表面之下仍留着一个无人愿意接手的位置。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:32
+场景功能:
+  - 危机触发：相模南在开幕半小时前临阵脱逃
+  - 拉芙希妮首次以行为逻辑分析NPC心理，精准定位相模南的藏身处
+  - 八幡与雪乃的战术分工：八幡去"揪人"，雪乃去守住主席台底线
+  - 拉芙希妮被留在中间，选择等待——为场景33的介入埋下伏笔
+
+进入状态:
+  已发生:
+    - 文化祭开幕仪式定于半小时后
+    - 相模南作为执行委员长持有开幕致辞稿
+    - 执委会已发现相模南不见了，正在四处寻找
+    - 场景31中八幡的自爆行为已让雪乃对八幡的方式产生极度厌恶
+  当前局面:
+    - 由比滨结衣冲进活动室报告相模南失踪
+    - 距开幕仅半小时，致辞稿在相模南手中
+    - 奉仕部必须应对这个突发危机
+  未发生:
+    - 相模南尚未被找到
+    - 八幡尚未出发
+    - 雪乃尚未接受去主席台备援的任务
+    - 开幕仪式尚未开始
+
+世界推动:
+  - 文化祭开幕式将在半小时后按预定时间开始
+  - 全校师生及部分来宾已开始向体育馆聚集
+  - 如果委员长缺席，副委员长雪之下雪乃有责任顶替致辞
+  - 执委会各成员在各自岗位忙碌，无法抽调搜索人力
+
+NPC动机:
+  相模南:
+    - 目标：逃避压力但不愿真正消失——需要有人焦急地寻找和哀求她回去
+    - 行为倾向：躲在显眼但被忽略的角落，等待被"需要"
+    - 知情边界：知道开幕时间，不知道奉仕部正在分析她的藏身逻辑
+    - 不得执行：不得主动出现在会场；不得在无人寻找的情况下自行返回
+
+信息边界:
+  公开:
+    - 相模南失踪，开幕致辞稿在她手中
+    - 执委会已经找过但找不到
+  局部:
+    - 拉芙希妮对相模南藏身逻辑的分析（只在活动室内分享）
+    - 八幡对相模南藏身处的推断（基于拉芙希妮的分析）
+    - 雪乃被八幡以"你需要去顶主席台"为由留在后方的战术安排
+  隐藏:
+    - 雪乃在八幡站起身时说"我和你一起"时真正担心的是什么——害怕他的自爆重演
+    - 拉芙希妮留在门边的真实原因：她知道自焚式燃烧不容旁人插手，但准备在火灭后去看被烧伤的人
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - 结衣冲进来报告相模南失踪，距开幕仅半小时
+      - 拉芙希妮从靠窗阴影里开口，分析相模南不会去偏僻角落——她需要被人找到
+      - 她的最后一句话像钥匙一样咔哒一声，你立刻知道那个"显眼但被忽略"的角落是哪里
+      - 你拎起外套，说"我去"
+      - 雪乃几乎同时说"我和你一起"，但你需要把她留在安全的后方
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - 结衣冲进来——相模南不见了，开幕致辞稿在她手里
+      - 你立刻切换至危机处理模式，开始罗列搜寻地点
+      - 拉芙希妮打断你，用一种近乎冷彻的逻辑分析相模南的藏身动机
+      - 八幡听完后站起身说"我去"，你脱口而出"我和你一起"
+      - 但八幡用最残酷的底线反驳你：如果十分钟内他揪不回她，你需要顶开幕致辞
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - 你跌跌撞撞冲进活动室，报告相模南失踪
+      - 雪乃和拉芙希妮开始分析，八幡拎起外套说"我去"
+      - 雪乃想和八幡一起去，但八幡把她推向主席台方向
+      - 活动室陷入令人窒息的静默，你想拉住雪乃的手臂却在半空中停住
+      - 雪乃用近乎夺的动作抓起进度表文件夹——那是放弃争执的信号
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - 结衣冲进来时，八幡说"意料之中"——他早就预判了相模南会逃
+      - 你注意到雪乃在核对进度表的手指停顿了，眉头紧皱
+      - 你需要说出你对相模南藏身逻辑的分析：她不会躲进真正没人能找到的地方
+      - 八幡听完你的分析后立刻知道了位置，拎起外套说"我去"
+      - 雪乃想跟去被八幡拒绝——他用主席台备援的理由把她钉在安全后方
+      - 两个人一南一北走开，你留在门边，左手覆上右手腕的旧丝带
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "开幕当天的早晨——结衣冲进来报告相模南失踪，他说'意料之中'；听完拉芙希妮的分析，他拎起外套说'我去'，用主席台备援的理由把雪乃钉在安全的后方。"
+  yukino: "开幕当天早晨——她立刻切到危机模式罗列搜寻地点，被拉芙希妮的分析打断；八幡说'我去'时她脱口而出'我和你一起'，但被'十分钟揪不回她你就得顶开幕致辞'的残酷逻辑钉在原地。"
+  yui: "开幕当天早晨——她跌跌撞撞冲进活动室报告相模南失踪；八幡拎起外套走了，雪乃抓起进度表文件夹往另一个方向走，她想拉住雪乃的手臂，手却停在了半空。"
+  laff: "开幕当天早晨——她用行为逻辑拆解了相模南的藏身动机：她不会躲进真正找不到的地方，她需要被人找到；八幡听完立刻知道了位置，两个人一南一北走开，她留在门边，左手覆上右手腕的旧丝带。"
+
+玩家控制边界:
+  - 八幡：由玩家决定如何说服雪乃留下；决定以什么态度去揪相模南
+  - 雪乃：由玩家决定是否坚持跟去；决定以什么态度接受被留在后方
+  - 结衣：由玩家决定跟雪乃还是跟八幡
+  - 拉芙希妮：由玩家决定是否保持沉默、是否跟任何人走；是否说出自己的分析
+
+可用节拍:
+  - 结衣冲进活动室，气喘吁吁报告相模南失踪
+  - 八幡用干瘪的"意料之中"给这个烂摊子定性
+  - 雪乃开始罗列搜寻地点（避难室、女子更衣室、旧卫生间）
+  - 拉芙希妮开口打断：她不会去那种地方——说出理由
+  - 八幡眼中有焦点，发出极轻的干笑——已知道位置在哪
+  - 八幡说"我去"，雪乃立刻接"我和你一起"
+  - 八幡拒绝，亮出主席台备援逻辑，雪乃被说服
+  - 结衣在两人之间无措
+  - 八幡先走，雪乃抓起文件夹带结衣向另一方向走
+  - 拉芙希妮留在门边，左手覆上右腕旧丝带
+
+偏离处理:
+  - 如果雪乃坚持跟八幡一起：两人同去，主席台无人备援，相模南面对雪乃的讲理会彻底下不来台
+  - 如果拉芙希妮选择跟八幡：场景33的结构改变，拉芙希妮更早介入
+  - 如果拉芙希妮选择跟雪乃：场景33的介入不会发生
+  - 如果奉仕部无人去寻找相模南：开幕式开天窗，文化祭首日混乱
+
+推进边界:
+  保持当前场景:
+    - 活动室内的分析和分工
+    - 四人分开的瞬间（一南一北）
+  可以推进:
+    - 八幡前往特别栋二层休息平台（→场景33）
+    - 雪乃前往体育馆主席台
+    - 拉芙希妮在走廊等待
+  永久失效:
+    - 相模南在开幕前主动出现的可能性已被排除
+    - 奉仕部"只协助不代替"的底线已被相模南的逃避打破
+
+完成后事实:
+  - 四人分工：八幡去揪相模南，雪乃去主席台备援，结衣跟雪乃，拉芙希妮留在原地
+  - 拉芙希妮第一次以行为逻辑分析他人动机并影响了团队决策
+  - 雪乃和八幡在战术层面达成残酷默契，但关系裂痕未修复
+
+氛围锚点:
+  - 拉门被粗暴拽开时木质滑轨发出的刺耳悲鸣
+  - 结衣因跑动而发劈的声音和她撑在长桌边缘指节泛白的手
+  - 八幡说"我去"时连看都不看雪乃的眼睛——目光盯着手里的扣子
+  - 雪乃抓起进度表文件夹时塑料封皮在空气里发出的短促闷响
+
+禁止提前:
+  - 禁止让拉芙希妮在此场景跟任何人走——她必须留在原地等待
+  - 禁止让八幡和雪乃在活动室内就自爆方式展开争论
+  - 禁止让相模南在此场景被找到
+  - 禁止让雪乃说出"我害怕你的自爆重演"——只能通过绷紧的指尖和过快接话来表达

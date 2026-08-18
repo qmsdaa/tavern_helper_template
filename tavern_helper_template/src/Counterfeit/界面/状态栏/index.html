@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Counterfeit · 状态栏</title>
+  <!-- Vue、Pinia、lodash 与 Zod 均由状态栏专用生产构建内联（webpack.statusbar.config.ts
+       已置 externals=undefined），与开场白同款：禁止在卡内运行时加载执行模块。
+       历史上此处保留的 CDN 兜底（document.write / 动态 import）在打包内联后仍会触发——
+       bundle 里的 Vue 是模块作用域，window.Vue 恒为 undefined，兜底必然走 CDN，
+       CDN 被墙即"丢状态栏"（2026-08-16 确认根因，2026-08-17 移除）。 -->
+</head>
+<body>
+  <div id="app"></div>
+</body>

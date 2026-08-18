@@ -1,0 +1,206 @@
+场景: 25
+幕: "第二幕·暑夏·林间学校"
+时间: "2013年8月下旬 · 暑假尾声"
+索引日期: "2013-08-21"
+地点: "总武高教职员室"
+人物: "拉芙希妮·都柏林、平冢静"
+场景呈现参考: "拉芙希妮·都柏林"
+事件焦点:
+  类型: 角色
+  角色:
+    - "拉芙希妮·都柏林"
+
+# TRANSITION_RUNTIME_GUARD_START main:25
+# <%_ const __cfTransitionTarget25 = 25; _%>
+# <%_ const __cfTransitionCurrentScene25 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign25 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages25 = []; _%>
+# <%_ try { const __cfTransitionLastId25 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages25 = getChatMessages('0-' + __cfTransitionLastId25, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages25 = []; } _%>
+# <%_ const __cfTransitionSnapshots25 = (Array.isArray(__cfTransitionMessages25) ? __cfTransitionMessages25 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious25 = __cfTransitionSnapshots25.length ? __cfTransitionSnapshots25[__cfTransitionSnapshots25.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene25 = Number(__cfTransitionPrevious25 && __cfTransitionPrevious25.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign25 = (__cfTransitionPrevious25 && __cfTransitionPrevious25.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped25 = Math.max(0, __cfTransitionCurrentScene25 - __cfTransitionPreviousScene25 - 1); _%>
+# <%_ const __cfTransitionExpose25 = __cfTransitionCurrentCampaign25 === 'main' && __cfTransitionPreviousCampaign25 === 'main' && __cfTransitionCurrentScene25 === __cfTransitionTarget25 && Number.isInteger(__cfTransitionPreviousScene25) && __cfTransitionPreviousScene25 < __cfTransitionCurrentScene25; _%>
+# <%_ if (__cfTransitionExpose25) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped25 %>"
+  mode: date_only
+  visible_title: 八月下旬，暑假尚未结束
+  visible_lines:
+    - 海边烟火散去八天，千叶的白天仍长，学校里的走廊却先恢复了值班声。
+    - 平冢静留下的旧档案没有节日气氛，只在纸箱里等人整理。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:25
+场景功能:
+  - 拉芙被平冢静叫去帮忙整理旧档案——一次属于"普通高中生"的被需要感
+  - 拉芙在整理旧纸箱时偶然发现达洛维小姐写给平冢静的私人信件（来自伦敦）
+  - 信件内容揭示三个关键信息：达洛维在伦敦关注拉芙读诗集、拉芙问过"什么是永远"、达洛维的愿望是拉芙遇到"不试图回答永远，而是陪她一起不去回答的人"
+  - 拉芙将信读完后原样放回——不哭、不拿、不声张
+  - 拉芙对达洛维信中愿望的内心回应：想起林间学校的黑暗房间、平稳呼吸声、甜得发腻的红茶
+  - 拉芙独占场景——只有拉芙POV能直接演绎，其他POV需要替代段
+
+进入状态:
+  已发生:
+    - 暑假接近尾声
+    - 🍵甜红茶#1锤子已触发（或不触发），拉芙已建立"甜茶—安全区域"记忆
+    - 拉芙皮包夹层中有雪乃号码和温斯顿私人邮箱卡片
+    - 拉芙拥有结衣送的粉色发卡（在口袋中）
+  当前局面:
+    - 拉芙在公寓收到平冢静的短信——请她去学校帮忙整理教职员室旧档案
+    - 这种属于"普通高中生"的被需要感让拉芙找到一丝喘息
+  未发生:
+    - 拉芙尚未到达教职员室
+    - 拉芙尚未发现旧纸箱
+    - 达洛维的信尚未被发现
+
+世界推动:
+  - 拉芙到达总武高教职员室，平冢静在批改暑假作业
+  - 拉芙开始整理铁皮柜中的旧档案——机械而规律的重复性工作
+  - 拉芙从最底层拖出没有标签的旧纸箱——里面是未贴邮票的私人信件
+  - 拉芙的视线扫过一个泛黄信封上的字迹——识别出达洛维的字迹
+  - 信封未封口，胶水已干涸——信纸可自然抽出
+
+NPC动机:
+  平冢静:
+    - 此刻目标: 批改堆积的暑假作业，同时让拉芙帮忙整理旧档案（给拉芙一个"普通存在"的理由）
+    - 行为倾向: 规律地批改作业，红笔划过纸面的声音持续不断——构成安全网般的背景音；不抬头、不干预拉芙的整理工作
+    - 知情边界: 知道达洛维的信在旧纸箱中（但平冢静是否确切知道拉芙会发现、或这是某种刻意的安排——保持模糊，不得明确解释）；不知道拉芙的家族背景细节
+    - 不得执行: 主动提示或暗示达洛维的信的存在、在拉芙读信时抬头或出声打断、事后询问拉芙是否看了什么东西
+
+信息边界:
+  公开:
+    - 拉芙帮平冢静整理了教职员室的旧档案
+    - 教职员室里有旧纸张、灰尘和残存咖啡气味的混合味道
+  局部:
+    - 拉芙发现并阅读了达洛维写给平冢静的私人信件（仅拉芙知情，平冢静可能知情但不确认）
+    - 达洛维信件内容：（仅拉芙阅读过）
+      - 伦敦下雨，问候千叶的天气
+      - "那个孩子最近开始读诗集了。她总是在词典旁边放一本笔记，遇到不认识的古英文词就记下来。"
+      - 拉芙问过"'什么是永远'"，达洛维回答"永远是一个很长的时间，我们不需要现在就理解它"
+      - 达洛维的愿望：拉芙"能有机会遇到一些不试图回答'永远'的人，而是陪她一起不去回答的人"
+      - 信末署名"D"
+    - 拉芙读完后将信原样放回，不哭不拿不声张
+  隐藏:
+    - 达洛维与平冢静的关系（仅知有通信往来）
+    - 达洛维的当前所在和状态（信中说"伦敦这边下雨了"但时间未明）
+    - 平冢静是否知道拉芙读了信——不可确认
+    - 达洛维信件的完整内容和前后通信脉络
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: false
+    演绎入口:
+      - 替代段：八幡这天可能正常在家度过暑假尾声，对教职员室内发生的一切完全不知情。不得获知达洛维的信或拉芙的任何发现。
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: false
+    演绎入口:
+      - 替代段：雪乃可能在家复习或准备开学。她不知道拉芙今天去了学校。不得获知教职员室内的任何事件。
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: false
+    演绎入口:
+      - 替代段：结衣可能在家度过暑假最后的日子。她不知道拉芙今天去了学校。不得获知教职员室内的任何事件。
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - 从收到平冢静的短信开始——拉芙在沉闷公寓中找到一丝"被需要"的喘息
+      - 到达教职员室：平冢静在改作业，拉芙开始规律地整理铁皮柜文件——享受这种不需要调动情绪逻辑的机械工作
+      - 从最底层拖出无标签旧纸箱——看到泛黄信封上达洛维的字迹
+      - 核心演绎点：拉芙认出字迹的瞬间——不需要字迹比对，不需要逻辑推演，那是在梦里和窒息岁月中抚摸过无数次的字
+      - 拉芙在冷气嗡鸣和平冢静翻作业纸的声音中，保持捏住信封边缘的姿势——静止
+      - 信封未封口，拉芙抽出信纸阅读
+      - 信的内容逐行展开：达洛维在伦敦仍关注她的诗集阅读、"什么是永远"的旧问、达洛维的愿望——"不试图回答永远，而是陪她一起不去回答的人"
+      - 拉芙的笔迹触发反应：右手腕内侧烧焦丝带似乎开始隐隐发烫
+      - 拉芙内心的对照：不试图回答永远的人——林间学校黑暗房间、平稳呼吸声、甜得发腻的红茶
+      - 拉芙没有哭——眼泪是最先被剔除的无用代谢物
+      - 拉芙将信纸原样折叠放回信封，放回箱子深处，盖好防尘纸
+      - 拉芙继续下一柜的整理工作——仿佛什么都没发生
+      - 将"读信时的内心反应深度"和"对'陪她一起不去回答的人'的内心指向"留给玩家决定——但不得让拉芙当场对平冢静说出任何有关信的话
+      - 将"拉芙是否在心中将这封信与当下的任何人（如雪乃）关联"留给玩家决定——原文文本提供了关联但玩家可选择不关联
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: false
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - 本场景仅有事件焦点角色在场（私密/独占场景），任何参与轨道均不在场：玩家只能事后通过传闻、转述或主动追问得知
+      - 事件焦点与NPC动机不因玩家改变；不得替玩家补写；NPC不得主动向玩家泄露本场景经过
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "暑假尾声——他在家打游戏，被小町差去买晚饭的菜；他完全不知道今天有人在学校教职员室的旧纸箱里，发现了一封来自伦敦的信。"
+  yukino: "暑假尾声——她在家复习开学要用的内容，把笔记本整理了一遍；她不知道拉芙今天去了学校。"
+  yui: "暑假尾声——她在家看电视剧，和妈妈讨论开学要买的文具；她不知道拉芙今天去了学校。"
+  laff: "主场轨道，见可用节拍，不变。"
+
+玩家控制边界:
+  - 拉芙POV：是否读信——但场景以"视线不可避免地扫过字迹"为前提，一旦认出字迹，是否继续抽出信纸阅读由玩家决定（但不读的情况会严重削弱场景功能）；读信后的内心反应由玩家决定——可以是沉默、内心震动、或更淡的处理；是否将"陪她一起不去回答的人"指向特定某人由玩家决定
+  - 所有非拉芙POV：不得以任何方式获知信的存在或内容
+  - 拉芙不得当场与平冢静讨论信的内容
+
+可用节拍:
+  - 拉芙收到平冢静短信，前往总武高
+  - 进入教职员室，平冢静在改作业，红笔"沙沙"声规律而安稳
+  - 拉芙开始整理铁皮柜文件——机械而平静
+  - 从底层拖出无标签旧纸箱
+  - 视线扫过信封——认出达洛维字迹，动作僵住
+  - 在平冢静持续不抬头的背景中，拉芙抽出信纸阅读
+  - 信中内容展开：诗集、"永远"、愿望
+  - 拉芙的内心反应——发烫的丝带、对照当下
+  - 拉芙将信原样放回
+  - 拉芙继续整理下一柜，仿佛无事发生
+
+偏离处理:
+  - 若拉芙POV玩家选择不抽出信纸阅读（仅在认出字迹后停止）：场景的核心功能（信的内容揭示）将无法在当前实现——但拉芙"知道达洛维给平冢静写过信"这一事实仍成立
+  - 若拉芙POV玩家试图拿走信或向平冢静提问：平冢静可能抬头，以"怎么了？"回应——后续由玩家和AI共同推进，但信是从旧纸箱中发现的私人信件，拿走属于越界
+  - 若拉芙POV玩家在后续的动作中表现出明显的情绪波动：平冢静可能抬头看一眼但不会追问
+
+推进边界:
+  保持当前场景:
+    - 拉芙尚未拖出旧纸箱
+    - 拉芙尚未认出达洛维字迹
+    - 拉芙正在读信但尚未放回
+  可以推进:
+    - 信已被原样放回，拉芙继续整理工作
+    - 整理工作完成，拉芙向平冢静道别离开
+    - 拉芙离开教职员室/离开总武高
+  永久失效:
+    - 达洛维信的内容揭示——这是特定时间特定地点的发现，不可在后续场景中复现
+    - 拉芙第一次读到"陪她一起不去回答的人"时的内心对应——后续任何回忆都是"重温"而非"发现"
+
+完成后事实:
+  - 拉芙知道达洛维仍活着并且在伦敦（"伦敦这边下雨了"）
+  - 拉芙知道达洛维一直关注她——读诗集、记古英文词
+  - 拉芙知道小时候问过的"什么是永远"被达洛维记得
+  - 拉芙读到了达洛维对她的愿望——"不试图回答'永远'的人"
+  - 拉芙将达洛维的愿望与当下的某些人产生了对照（或选择不关联）
+  - 平冢静可能知道拉芙发现了信——但不确定
+  - 达洛维的信仍在平冢静办公桌下的旧纸箱里
+
+氛围锚点:
+  - 教职员室冷气源源不断，旧纸张与灰尘的气味混合残存咖啡香
+  - 红色笔尖划过纸面的规律"沙沙"声——构成安全网
+  - 泛黄信封上达洛维首字母的起笔压迫感与收束拖尾弧度
+  - 淡蓝色墨水字迹清晰，信末"D"字的拖尾在纸页右下角收束
+
+禁止提前:
+  - 达洛维的出场或更多信件内容
+  - 平冢静与达洛维关系的揭示
+  - 拉芙向任何人提起这封信
+  - 文化祭相关事件
+  - "苇草"称呼（场景134才出现）

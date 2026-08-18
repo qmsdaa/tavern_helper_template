@@ -1,0 +1,77 @@
+# Counterfeit · MVU 初始变量（中性保底套）
+# 框架要求：[initvar] 条目只放一套初始值，与 schema.ts 结构一一对应
+# 双模式差异（现金/教室/时段）与初始关系表角色记录由开场白 commit 脚本写入；本表保持中性骨架
+campaign_id: main
+campaign_revision: 1
+mode: null
+difficulty: null
+current_pov: null
+custom_protagonist: null
+current_scene: 1
+campaign_completed: false
+mainline_completed: false
+identity_state: null
+collection:
+  version: 1
+  cg_unlocks: {}
+  ending_unlocks: {}
+world:
+  current_date: "2013-05-20"
+  current_location: "未确认"
+  time_slot: null
+player:
+  cash: null
+  carried_items: []
+# characters 初始为空对象：初始关系表由开场白 commit 预建（record 形状见 schema.ts，
+# relationship 含 intimate_memory/intimate_sexual_memory 等，默认均为空字符串）
+characters: {}
+Ω_resonance: 0
+hammer_thunder_1: pending
+hammer_tea_1: pending
+hammer_tea_2: pending
+hammer_teddy_1: pending
+hammer_thunder_2: pending
+hammer_outcast_1: pending
+hammer_teddy_2: pending
+hammer_outcast_2: pending
+hammer_tea_3: pending
+laff_knows_fire_truth: false
+laff_reed_authorized_yukino: false
+dalloway_pen_used: false
+arc_milestones:
+  hachiman:
+    asked_before_self_sacrifice: false
+    accepted_shared_cost: false
+    stated_personal_desire: false
+  yukino:
+    offered_resources_without_deciding: false
+    admitted_personal_wish: false
+    separated_self_from_family_standard: false
+  yui:
+    voiced_disagreement_publicly: false
+    did_not_retract_after_conflict: false
+    admitted_selfish_wish: false
+  laff:
+    expressed_preference: false
+    refused_without_explanation: false
+    chose_against_group_expectation: false
+    accepted_consequence_without_withdrawing_choice: false
+iroha_milestones:
+  rejected_profitable_solution: false
+  made_uncalculated_request: false
+  stated_desire_without_performance: false
+branch_choice: null
+phone:
+  version: 2
+  contacts: {}
+  threads: {}
+  messages: {}
+  forum:
+    posts: []
+  context:
+    active_snapshot: null
+    manual_queue: []
+    ingest_records: {}
+    facts: []
+    appointments: []
+  requests: []

@@ -1,0 +1,1007 @@
+/* Counterfeit · CG挂载器 v2
+   数据权威：世界书/剧情/cg-manifest.yaml → build_tools/build_cg_manifest.mjs。
+   每个 AI 楼层以同一纯 predicate 比较前后 MVU 快照，只揭示本战役中新满足的一项。
+   主线使用 scene_completed；开放世界只接受 collection/opening/fact 等稳定发现 ID，绝不伪造场景号。
+   collection.cg_unlocks 由本客户端挂载器幂等写入楼层与聊天快照，主 AI 无权修改。 */
+console.info('[Counterfeit·CG] eval v2');
+(() => {
+  /* CG_MANIFEST_GENERATED_START */
+  const CG_MANIFEST = {
+    "schema_version": 2,
+    "release": "v0.6.0",
+    "asset_commit": "9e5de97a57a0b92e1679b0f4da907768f0d44df3",
+    "preview_asset_commit": "0e601ca2dbb529a160e5b18bae8709c674895134",
+    "images_base": "https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template@9e5de97a57a0b92e1679b0f4da907768f0d44df3/assets/Counterfeit/CG",
+    "items": [
+      {
+        "id": "main:1:default",
+        "campaign_id": "main",
+        "scene": 1,
+        "variant": "default",
+        "file": "场景1.webp",
+        "title": "拉芙希妮转学进入总武高2年J班，建立与雪乃的第一次接触",
+        "alt": "场景1剧情插图：拉芙希妮转学进入总武高2年J班，建立与雪乃的第一次接触",
+        "date": "2013-05-20",
+        "act": 1,
+        "tags": [
+          "主线",
+          "第1幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 1
+        },
+        "spoiler_level": 1
+      },
+      {
+        "id": "main:9:default",
+        "campaign_id": "main",
+        "scene": 9,
+        "variant": "default",
+        "file": "场景9.webp",
+        "title": "以雷声为触发器揭示拉芙希妮的创伤闪回——黑暗走廊、姐姐令人窒息的控制（\"只要你需要我，我就会一直在\"）",
+        "alt": "场景9剧情插图：以雷声为触发器揭示拉芙希妮的创伤闪回——黑暗走廊、姐姐令人窒息的控制（\"只要你需要我，我就会一直在\"）",
+        "date": "2013-07-03",
+        "act": 1,
+        "tags": [
+          "主线",
+          "第1幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 9
+        },
+        "spoiler_level": 1
+      },
+      {
+        "id": "main:10:default",
+        "campaign_id": "main",
+        "scene": 10,
+        "variant": "default",
+        "file": "场景10.webp",
+        "title": "以雨后彩虹和踩水洼为媒介，用行动展示四人截然不同的性格：结衣毫不讲理地踩进去、八幡不阻止即是允许、雪乃用精确的鞋尖点水、拉芙希妮选择不打伞淋雨",
+        "alt": "场景10剧情插图：以雨后彩虹和踩水洼为媒介，用行动展示四人截然不同的性格：结衣毫不讲理地踩进去、八幡不阻止即是允许、雪乃用精确的鞋尖点水、拉芙希妮选择不打伞淋雨",
+        "date": "2013-07-05",
+        "act": 1,
+        "tags": [
+          "主线",
+          "第1幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 10
+        },
+        "spoiler_level": 1
+      },
+      {
+        "id": "main:11:default",
+        "campaign_id": "main",
+        "scene": 11,
+        "variant": "default",
+        "file": "场景11.webp",
+        "title": "雪乃看到拉芙希妮第一个真正的笑容——不设防的、属于拉芙希妮本人的笑，而非社交面具",
+        "alt": "场景11剧情插图：雪乃看到拉芙希妮第一个真正的笑容——不设防的、属于拉芙希妮本人的笑，而非社交面具",
+        "date": "2013-07-05",
+        "act": 2,
+        "tags": [
+          "主线",
+          "第2幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 11
+        },
+        "spoiler_level": 1
+      },
+      {
+        "id": "main:21:default",
+        "campaign_id": "main",
+        "scene": 21,
+        "variant": "default",
+        "file": "场景21.webp",
+        "title": "拉芙作为旁观者见证留美的高墙被\"美\"而非暴力瓦解——对拉芙\"达洛维-还火\"创伤模式的对照性治愈",
+        "alt": "场景21剧情插图：拉芙作为旁观者见证留美的高墙被\"美\"而非暴力瓦解——对拉芙\"达洛维-还火\"创伤模式的对照性治愈",
+        "date": "2013-07-26",
+        "act": 2,
+        "tags": [
+          "主线",
+          "第2幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 21
+        },
+        "spoiler_level": 1
+      },
+      {
+        "id": "main:24:default",
+        "campaign_id": "main",
+        "scene": 24,
+        "variant": "default",
+        "file": "场景24.webp",
+        "title": "拉芙与结衣的首次单独外出——拉芙在社交融入上的实战练习",
+        "alt": "场景24剧情插图：拉芙与结衣的首次单独外出——拉芙在社交融入上的实战练习",
+        "date": "2013-08-13",
+        "act": 2,
+        "tags": [
+          "主线",
+          "第2幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 24
+        },
+        "spoiler_level": 1
+      },
+      {
+        "id": "main:25:default",
+        "campaign_id": "main",
+        "scene": 25,
+        "variant": "default",
+        "file": "场景25.webp",
+        "title": "拉芙被平冢静叫去帮忙整理旧档案——一次属于\"普通高中生\"的被需要感",
+        "alt": "场景25剧情插图：拉芙被平冢静叫去帮忙整理旧档案——一次属于\"普通高中生\"的被需要感",
+        "date": "2013-08-21",
+        "act": 2,
+        "tags": [
+          "主线",
+          "第2幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 25
+        },
+        "spoiler_level": 1
+      },
+      {
+        "id": "main:33:default",
+        "campaign_id": "main",
+        "scene": 33,
+        "variant": "default",
+        "file": "场景33.webp",
+        "title": "八幡用极度恶毒的语言逼相模南回到舞台",
+        "alt": "场景33剧情插图：八幡用极度恶毒的语言逼相模南回到舞台",
+        "date": "2013-10-27",
+        "act": 3,
+        "tags": [
+          "主线",
+          "第3幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 33
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:36:default",
+        "campaign_id": "main",
+        "scene": 36,
+        "variant": "default",
+        "file": "场景36.webp",
+        "title": "拉芙希妮首次进入雪乃的私人空间——发现潘先生周边与雪乃公开形象的巨大反差",
+        "alt": "场景36剧情插图：拉芙希妮首次进入雪乃的私人空间——发现潘先生周边与雪乃公开形象的巨大反差",
+        "date": "2013-10-28",
+        "act": 3,
+        "tags": [
+          "主线",
+          "第3幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 36
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:44:default",
+        "campaign_id": "main",
+        "scene": 44,
+        "variant": "default",
+        "file": "场景44.webp",
+        "title": "拉芙希妮发现第三个陶瓷茶杯——雪乃在原本封闭的几何关系里为她确立了物理归属位",
+        "alt": "场景44剧情插图：拉芙希妮发现第三个陶瓷茶杯——雪乃在原本封闭的几何关系里为她确立了物理归属位",
+        "date": "2013-11-16",
+        "act": 3,
+        "tags": [
+          "主线",
+          "第3幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 44
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:57:default",
+        "campaign_id": "main",
+        "scene": 57,
+        "variant": "default",
+        "file": "场景57.webp",
+        "title": "★🍵甜红茶#2 Hammer场景（+10Ω）：拉芙希妮以高糖红茶触发对结衣与雪乃的双重情感共振",
+        "alt": "场景57剧情插图：★🍵甜红茶#2 Hammer场景（+10Ω）：拉芙希妮以高糖红茶触发对结衣与雪乃的双重情感共振",
+        "date": "2013-12-24",
+        "act": 3,
+        "tags": [
+          "主线",
+          "第3幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 57
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:61:default",
+        "campaign_id": "main",
+        "scene": 61,
+        "variant": "default",
+        "file": "场景61.webp",
+        "title": "雪乃独处时向潘先生控诉拉芙希妮的\"越界行为\"——踢脚后跟、桌下按手、\"明天见\"——实则是无法消化被触碰后的情感波动",
+        "alt": "场景61剧情插图：雪乃独处时向潘先生控诉拉芙希妮的\"越界行为\"——踢脚后跟、桌下按手、\"明天见\"——实则是无法消化被触碰后的情感波动",
+        "date": "2013-12-24",
+        "act": 3,
+        "tags": [
+          "主线",
+          "第3幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 61
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:67:default",
+        "campaign_id": "main",
+        "scene": 67,
+        "variant": "default",
+        "file": "场景67.webp",
+        "title": "结衣和小町促成元旦初诣——推翻场景64雪乃的否决",
+        "alt": "场景67剧情插图：结衣和小町促成元旦初诣——推翻场景64雪乃的否决",
+        "date": "2014-01-01",
+        "act": 4,
+        "tags": [
+          "主线",
+          "第4幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 67
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:68:default",
+        "campaign_id": "main",
+        "scene": 68,
+        "variant": "default",
+        "file": "场景68.webp",
+        "title": "★爱布拉娜从拉芙希妮衣柜中翻出8岁玩具熊——放在茶几中央作为展示——宣示\"在这个体系里任何被藏匿的软弱都可以被翻出\"",
+        "alt": "场景68剧情插图：★爱布拉娜从拉芙希妮衣柜中翻出8岁玩具熊——放在茶几中央作为展示——宣示\"在这个体系里任何被藏匿的软弱都可以被翻出\"",
+        "date": "2014-01-01",
+        "act": 4,
+        "tags": [
+          "主线",
+          "第4幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 68
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:70:default",
+        "campaign_id": "main",
+        "scene": 70,
+        "variant": "default",
+        "file": "场景70.webp",
+        "title": "雪乃的17岁生日惊喜——由拉芙希妮策划，八幡和结衣执行",
+        "alt": "场景70剧情插图：雪乃的17岁生日惊喜——由拉芙希妮策划，八幡和结衣执行",
+        "date": "2014-01-03",
+        "act": 4,
+        "tags": [
+          "主线",
+          "第4幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 70
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:75:default",
+        "campaign_id": "main",
+        "scene": 75,
+        "variant": "default",
+        "file": "场景75.webp",
+        "title": "★双向暴露场：结衣×拉芙围绕\"礼物与愿望\"的互相拆解——结衣准备给所有人近似的礼物，以免任何关系显得不平衡；拉芙把礼物理解为需要计算和偿还的关系债务",
+        "alt": "场景75剧情插图：★双向暴露场：结衣×拉芙围绕\"礼物与愿望\"的互相拆解——结衣准备给所有人近似的礼物，以免任何关系显得不平衡；拉芙把礼物理解为需要计算和偿还的关系债务",
+        "date": "2014-02-01",
+        "act": 4,
+        "tags": [
+          "主线",
+          "第4幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 75
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:76:default",
+        "campaign_id": "main",
+        "scene": 76,
+        "variant": "default",
+        "file": "场景76.webp",
+        "title": "★首次奉仕部全员在雪乃公寓聚会——八幡和结衣来访",
+        "alt": "场景76剧情插图：★首次奉仕部全员在雪乃公寓聚会——八幡和结衣来访",
+        "date": "2014-02-01",
+        "act": 4,
+        "tags": [
+          "主线",
+          "第4幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 76
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:77:default",
+        "campaign_id": "main",
+        "scene": 77,
+        "variant": "default",
+        "file": "场景77.webp",
+        "title": "★情人节早晨：拉芙希妮在千叶站检票口外拦住雪乃——直接递出巧克力——\"因为到了下午的部室里，会有太多双眼睛看着……那样的话，雪乃同学如果觉得收下会困扰，我就连让你装傻拒绝的机会都没有了\"",
+        "alt": "场景77剧情插图：★情人节早晨：拉芙希妮在千叶站检票口外拦住雪乃——直接递出巧克力——\"因为到了下午的部室里，会有太多双眼睛看着……那样的话，雪乃同学如果觉得收下会困扰，我就连让你装傻拒绝的机会都没有了\"",
+        "date": "2014-02-14",
+        "act": 4,
+        "tags": [
+          "主线",
+          "第4幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 77
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:80:default",
+        "campaign_id": "main",
+        "scene": 80,
+        "variant": "default",
+        "file": "场景80.webp",
+        "title": "三天等待后——平冢静带来PTA回复：同意预算增加30%+更换场地——但要求在PTA特别会议上当面汇报并接受质询",
+        "alt": "场景80剧情插图：三天等待后——平冢静带来PTA回复：同意预算增加30%+更换场地——但要求在PTA特别会议上当面汇报并接受质询",
+        "date": "2014-02-24",
+        "act": 5,
+        "tags": [
+          "主线",
+          "第5幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 80
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:83:default",
+        "campaign_id": "main",
+        "scene": 83,
+        "variant": "default",
+        "file": "场景83.webp",
+        "title": "雪乃从本邸出来后无意识走到拉芙希妮公寓楼下——在对讲机前反复编排借口又全部否决",
+        "alt": "场景83剧情插图：雪乃从本邸出来后无意识走到拉芙希妮公寓楼下——在对讲机前反复编排借口又全部否决",
+        "date": "2014-03-02",
+        "act": 5,
+        "tags": [
+          "主线",
+          "第5幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 83
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:85:default",
+        "campaign_id": "main",
+        "scene": 85,
+        "variant": "default",
+        "file": "场景85.webp",
+        "title": "★本邸聚餐——全剧情感高潮之一",
+        "alt": "场景85剧情插图：★本邸聚餐——全剧情感高潮之一",
+        "date": "2014-03-09",
+        "act": 5,
+        "tags": [
+          "主线",
+          "第5幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 85
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:88:default",
+        "campaign_id": "main",
+        "scene": 88,
+        "variant": "default",
+        "file": "场景88.webp",
+        "title": "★拉芙希妮在被\"全员去英国\"击溃后，重新站起来——改变决定",
+        "alt": "场景88剧情插图：★拉芙希妮在被\"全员去英国\"击溃后，重新站起来——改变决定",
+        "date": "2014-03-22",
+        "act": 5,
+        "tags": [
+          "主线",
+          "第5幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 88
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:90:default",
+        "campaign_id": "main",
+        "scene": 90,
+        "variant": "default",
+        "file": "场景90.webp",
+        "title": "★平冢静最后一次走进部室——穿着深色西服套装而非白大褂",
+        "alt": "场景90剧情插图：★平冢静最后一次走进部室——穿着深色西服套装而非白大褂",
+        "date": "2014-03-24",
+        "act": 5,
+        "tags": [
+          "主线",
+          "第5幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 90
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:92:default",
+        "campaign_id": "main",
+        "scene": 92,
+        "variant": "default",
+        "file": "场景92.webp",
+        "title": "拉芙希妮将邀请函寄出，切断退缩的后路",
+        "alt": "场景92剧情插图：拉芙希妮将邀请函寄出，切断退缩的后路",
+        "date": "2014-03-26",
+        "act": 5,
+        "tags": [
+          "主线",
+          "第5幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 92
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:96:default",
+        "campaign_id": "main",
+        "scene": 96,
+        "variant": "default",
+        "file": "场景96.webp",
+        "title": "⛈️打雷#2 HAMMER SCENE: 爱布拉娜越洋电话 + 雷声触发童年记忆对比→+13Ω情感冲击",
+        "alt": "场景96剧情插图：⛈️打雷#2 HAMMER SCENE: 爱布拉娜越洋电话 + 雷声触发童年记忆对比→+13Ω情感冲击",
+        "date": "2014-04-01",
+        "act": 6,
+        "tags": [
+          "主线",
+          "第6幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 96
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:98:default",
+        "campaign_id": "main",
+        "scene": 98,
+        "variant": "default",
+        "file": "场景98.webp",
+        "title": "独处/静默场景：接机前夜的内心整理",
+        "alt": "场景98剧情插图：独处/静默场景：接机前夜的内心整理",
+        "date": "2014-04-05",
+        "act": 6,
+        "tags": [
+          "主线",
+          "第6幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 98
+        },
+        "spoiler_level": 2
+      },
+      {
+        "id": "main:99:default",
+        "campaign_id": "main",
+        "scene": 99,
+        "variant": "default",
+        "file": "场景99.webp",
+        "title": "接机场景：爱布拉娜降落千叶，首次与奉仕部全员见面",
+        "alt": "场景99剧情插图：接机场景：爱布拉娜降落千叶，首次与奉仕部全员见面",
+        "date": "2014-04-06",
+        "act": 7,
+        "tags": [
+          "主线",
+          "第7幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 99
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:100:default",
+        "campaign_id": "main",
+        "scene": 100,
+        "variant": "default",
+        "file": "场景100.webp",
+        "title": "🔥Outcast#1 HAMMER SCENE: 拉芙希妮首次在爱布拉娜面前展示三件旧物（绿色钢笔、残信、烧焦丝带），触发火场感官记忆",
+        "alt": "场景100剧情插图：🔥Outcast#1 HAMMER SCENE: 拉芙希妮首次在爱布拉娜面前展示三件旧物（绿色钢笔、残信、烧焦丝带），触发火场感官记忆",
+        "date": "2014-04-06",
+        "act": 7,
+        "tags": [
+          "主线",
+          "第7幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 100
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:105:default",
+        "campaign_id": "main",
+        "scene": 105,
+        "variant": "default",
+        "file": "场景105.webp",
+        "title": "★真物宣言 HAMMER SCENE——八幡说出\"我想要真物\"，将四人关系提升至宣言层面",
+        "alt": "场景105剧情插图：★真物宣言 HAMMER SCENE——八幡说出\"我想要真物\"，将四人关系提升至宣言层面",
+        "date": "2014-04-16",
+        "act": 7,
+        "tags": [
+          "主线",
+          "第7幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 105
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:117:default",
+        "campaign_id": "main",
+        "scene": 117,
+        "variant": "default",
+        "file": "场景117.webp",
+        "title": "夏季祭典团建场景——六人第一次作为正式社团成员共处校外",
+        "alt": "场景117剧情插图：夏季祭典团建场景——六人第一次作为正式社团成员共处校外",
+        "date": "2014-07-05",
+        "act": 7,
+        "tags": [
+          "主线",
+          "第7幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 117
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:119:default",
+        "campaign_id": "main",
+        "scene": 119,
+        "variant": "default",
+        "file": "场景119.webp",
+        "title": "拉芙希妮独自整理平冢静留下的三箱旧材料",
+        "alt": "场景119剧情插图：拉芙希妮独自整理平冢静留下的三箱旧材料",
+        "date": "2014-07-22",
+        "act": 7,
+        "tags": [
+          "主线",
+          "第7幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 119
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:122:default",
+        "campaign_id": "main",
+        "scene": 122,
+        "variant": "default",
+        "file": "场景122.webp",
+        "title": "🧸玩具熊#2锤子场景（+15Ω）：拉芙在爱布拉娜房间玻璃柜中发现童年的玩具熊",
+        "alt": "场景122剧情插图：🧸玩具熊#2锤子场景（+15Ω）：拉芙在爱布拉娜房间玻璃柜中发现童年的玩具熊",
+        "date": "2014-08-06",
+        "act": 8,
+        "tags": [
+          "主线",
+          "第8幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 122
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:124:default",
+        "campaign_id": "main",
+        "scene": 124,
+        "variant": "default",
+        "file": "场景124.webp",
+        "title": "🔥Outcast#2锤子场景收束：拉芙将认证謄本放在爱布拉娜面前，发动深夜书房对峙",
+        "alt": "场景124剧情插图：🔥Outcast#2锤子场景收束：拉芙将认证謄本放在爱布拉娜面前，发动深夜书房对峙",
+        "date": "2014-08-12",
+        "act": 8,
+        "tags": [
+          "主线",
+          "第8幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 124
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:126:default",
+        "campaign_id": "main",
+        "scene": 126,
+        "variant": "default",
+        "file": "场景126.webp",
+        "title": "拉芙十八岁生日：三个生日礼物——信托启动信（父亲）、奉仕部的生日会（朋友）、姐姐的\"生日快乐\"（六十五天后的第一句话）",
+        "alt": "场景126剧情插图：拉芙十八岁生日：三个生日礼物——信托启动信（父亲）、奉仕部的生日会（朋友）、姐姐的\"生日快乐\"（六十五天后的第一句话）",
+        "date": "2014-10-16",
+        "act": 8,
+        "tags": [
+          "主线",
+          "第8幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 126
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:132:default",
+        "campaign_id": "main",
+        "scene": 132,
+        "variant": "default",
+        "file": "场景132.webp",
+        "title": "🍵甜红茶#3锤子场景（+9Ω）：爱布拉娜主动认责→达洛维复名→为拉芙倒茶→糖罐放桌面正中",
+        "alt": "场景132剧情插图：🍵甜红茶#3锤子场景（+9Ω）：爱布拉娜主动认责→达洛维复名→为拉芙倒茶→糖罐放桌面正中",
+        "date": "2015-01-23",
+        "act": 9,
+        "tags": [
+          "主线",
+          "第9幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 132
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:133:default",
+        "campaign_id": "main",
+        "scene": 133,
+        "variant": "default",
+        "file": "场景133.webp",
+        "title": "父亲科尔马克的\"迟来的保护\"收束：七页审计报告+信托设立信+怀表",
+        "alt": "场景133剧情插图：父亲科尔马克的\"迟来的保护\"收束：七页审计报告+信托设立信+怀表",
+        "date": "2015-01-26",
+        "act": 9,
+        "tags": [
+          "主线",
+          "第9幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 133
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:139:default",
+        "campaign_id": "main",
+        "scene": 139,
+        "variant": "default",
+        "file": "场景139.webp",
+        "title": "结衣个人成长线关键节点：从\"维持气氛的人\"升级为\"不让任何人被漏掉\"的主动行动者",
+        "alt": "场景139剧情插图：结衣个人成长线关键节点：从\"维持气氛的人\"升级为\"不让任何人被漏掉\"的主动行动者",
+        "date": "2015-02-12",
+        "act": 10,
+        "tags": [
+          "主线",
+          "第10幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 139
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:140:default",
+        "campaign_id": "main",
+        "scene": 140,
+        "variant": "default",
+        "file": "场景140.webp",
+        "title": "结衣升学方向正式确立：儿童发展/学前教育",
+        "alt": "场景140剧情插图：结衣升学方向正式确立：儿童发展/学前教育",
+        "date": "2015-02-13",
+        "act": 10,
+        "tags": [
+          "主线",
+          "第10幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 140
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:143:default",
+        "campaign_id": "main",
+        "scene": 143,
+        "variant": "default",
+        "file": "场景143.webp",
+        "title": "★关键场景★ 四人合格发表——大学命运确定",
+        "alt": "场景143剧情插图：★关键场景★ 四人合格发表——大学命运确定",
+        "date": "2015-03-06",
+        "act": 10,
+        "tags": [
+          "主线",
+          "第10幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 143
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:145:default",
+        "campaign_id": "main",
+        "scene": 145,
+        "variant": "default",
+        "file": "场景145.webp",
+        "title": "★关键场景★ 结衣首次以第一人称说出对八幡的感情——\"我想要他选我\"",
+        "alt": "场景145剧情插图：★关键场景★ 结衣首次以第一人称说出对八幡的感情——\"我想要他选我\"",
+        "date": "2015-03-12",
+        "act": 10,
+        "tags": [
+          "主线",
+          "第10幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 145
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:148:default",
+        "campaign_id": "main",
+        "scene": 148,
+        "variant": "default",
+        "file": "场景148.webp",
+        "title": "★关键场景★ 毕业典礼——总武高中的最终幕",
+        "alt": "场景148剧情插图：★关键场景★ 毕业典礼——总武高中的最终幕",
+        "date": "2015-03-15",
+        "act": 10,
+        "tags": [
+          "主线",
+          "第10幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 148
+        },
+        "spoiler_level": 3
+      },
+      {
+        "id": "main:150:default",
+        "campaign_id": "main",
+        "scene": 150,
+        "variant": "default",
+        "file": "场景150.webp",
+        "title": "★★★★★ 公共路线终点 ★★★★★",
+        "alt": "场景150剧情插图：★★★★★ 公共路线终点 ★★★★★",
+        "date": "2015-03-24",
+        "act": 10,
+        "tags": [
+          "主线",
+          "第10幕"
+        ],
+        "unlock": {
+          "type": "scene_completed",
+          "scene": 150
+        },
+        "spoiler_level": 3
+      }
+    ]
+  };
+  /* CG_MANIFEST_GENERATED_END */
+
+  /* CG_UNLOCK_PREDICATE_GENERATED_START */
+  function campaignIdOf(stat) {
+    return typeof stat?.campaign_id === 'string' && stat.campaign_id ? stat.campaign_id : 'main';
+  }
+  
+  function completedScene(stat) {
+    if (!stat || campaignIdOf(stat) !== 'main') return 0;
+    const currentScene = Math.min(150, Math.max(1, Number(stat.current_scene || 1)));
+    return stat.campaign_completed === true || stat.mainline_completed === true ? 150 : currentScene - 1;
+  }
+  
+  function hasCollectionUnlock(stat, unlockId) {
+    return Boolean(unlockId && stat?.collection?.cg_unlocks?.[unlockId] === true);
+  }
+  
+  function evaluateCgUnlockPredicate(unlock, stat, item) {
+    if (!unlock || !stat || !item) return false;
+    if (unlock.type === 'scene_completed') {
+      return campaignIdOf(stat) === item.campaign_id && completedScene(stat) >= Number(unlock.scene);
+    }
+    if (unlock.type === 'collection_unlock' || unlock.type === 'opening_seen' || unlock.type === 'fact_observed') {
+      return hasCollectionUnlock(stat, unlock.unlock_id || item.id);
+    }
+    return false;
+  }
+  
+  function isCgUnlocked(item, stat) {
+    if (!item || !stat) return false;
+    return hasCollectionUnlock(stat, item.id) || evaluateCgUnlockPredicate(item.unlock, stat, item);
+  }
+  
+  function pickCgReveal(manifest, prevStat, curStat) {
+    if (!manifest || !Array.isArray(manifest.items) || !curStat) return null;
+    const campaignId = campaignIdOf(curStat);
+    const candidates = manifest.items.filter(item =>
+      item?.campaign_id === campaignId && !isCgUnlocked(item, prevStat) && isCgUnlocked(item, curStat),
+    );
+    if (candidates.length === 0) return null;
+    candidates.sort((a, b) => Number(a.scene || 0) - Number(b.scene || 0) || String(a.id).localeCompare(String(b.id)));
+    return candidates.at(-1) || null;
+  }
+  /* CG_UNLOCK_PREDICATE_GENERATED_END */
+
+  const CONTAINER_PREFIX = 'counterfeit-cg--';
+  const topDoc = window.top.document;
+
+  const style = topDoc.createElement('style');
+  style.textContent = `
+    .counterfeit-cg-reveal { width: 92%; margin: 12px auto 4px; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 2px 14px rgba(92, 100, 112, 0.18); border: 1px solid #f3d9de; background: #fffdfb; }
+    .counterfeit-cg-reveal img { display: block; width: 100%; height: auto; }
+    .counterfeit-cg-reveal .cg-caption { padding: 5px 14px 7px; font-size: 12px; color: #9aa3af;
+      letter-spacing: 0.5px; background: #fffdfb; }
+  `;
+  topDoc.head.appendChild(style);
+
+  function snapshotOf(mesid) {
+    try {
+      const msgs = getChatMessages(`${mesid}-${mesid}`, { include_swipes: false });
+      const msg = msgs && msgs[0];
+      return msg?.data?.stat_data || null;
+    } catch {
+      return null;
+    }
+  }
+
+  function isAiFloor(mesEl) {
+    if (mesEl.getAttribute('is_user') === 'true') return false;
+    if (mesEl.getAttribute('is_system') === 'true') return false;
+    if (mesEl.classList.contains('smallSysMes')) return false;
+    return mesEl.querySelector('.mes_text') !== null;
+  }
+
+  function prevAiFloorId(mesEl) {
+    let node = mesEl.previousElementSibling;
+    while (node) {
+      if (node.classList?.contains('mes') && isAiFloor(node) && node.getAttribute('mesid') !== null) {
+        return Number(node.getAttribute('mesid'));
+      }
+      node = node.previousElementSibling;
+    }
+    return null;
+  }
+
+  async function recordCollectionUnlock(mesid, itemId) {
+    if (typeof updateVariablesWith !== 'function' || !itemId) return;
+    const apply = vars => {
+      const stat = vars.stat_data || (vars.stat_data = {});
+      const collection = stat.collection || (stat.collection = { version: 1, cg_unlocks: {}, ending_unlocks: {} });
+      collection.version = 1;
+      collection.cg_unlocks = collection.cg_unlocks || {};
+      collection.ending_unlocks = collection.ending_unlocks || {};
+      collection.cg_unlocks[itemId] = true;
+      return vars;
+    };
+    await updateVariablesWith(apply, { type: 'message', message_id: mesid });
+    await updateVariablesWith(apply, { type: 'chat' });
+  }
+
+  async function mountFor(mesEl) {
+    const mesid = mesEl.getAttribute('mesid');
+    if (mesid === null) return;
+    const containerId = CONTAINER_PREFIX + mesid;
+    if (mesEl.querySelector('#' + CSS.escape(containerId))) return;
+
+    const cur = snapshotOf(Number(mesid));
+    if (!cur) return;
+    const prevId = prevAiFloorId(mesEl);
+    const prev = prevId === null ? null : snapshotOf(prevId);
+    const reveal = pickCgReveal(CG_MANIFEST, prev, cur);
+    if (!reveal) return;
+
+    const mesText = mesEl.querySelector('.mes_text');
+    if (!mesText) return;
+    const container = topDoc.createElement('div');
+    container.id = containerId;
+    container.className = 'counterfeit-cg-reveal';
+    const image = topDoc.createElement('img');
+    image.src = `${CG_MANIFEST.images_base}/${encodeURIComponent(reveal.file)}`;
+    image.loading = 'lazy';
+    image.alt = reveal.alt;
+    const caption = topDoc.createElement('div');
+    caption.className = 'cg-caption';
+    caption.textContent = [reveal.title, reveal.date].filter(Boolean).join(' · ');
+    container.append(image, caption);
+    mesText.after(container);
+    await recordCollectionUnlock(Number(mesid), reveal.id);
+  }
+
+  async function check() {
+    const chat = topDoc.querySelector('#chat');
+    if (!chat) return;
+    const floors = [...chat.querySelectorAll('.mes')].filter(isAiFloor);
+    for (const mesEl of floors) {
+      try {
+        await mountFor(mesEl);
+      } catch (error) {
+        console.error('[Counterfeit·CG] 楼层挂载失败：', error);
+      }
+    }
+  }
+
+  check();
+  setTimeout(check, 800);
+  setTimeout(check, 2500);
+  setTimeout(check, 6000);
+  new MutationObserver(() => { void check(); }).observe(topDoc.body, { childList: true, subtree: true });
+})();

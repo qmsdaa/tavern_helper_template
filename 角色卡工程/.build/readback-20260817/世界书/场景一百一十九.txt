@@ -1,0 +1,197 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 119)
+场景: 119
+幕: "第七幕·重新为奉仕部命名"
+时间: "2014年7月22日 · 周二 · 暑假"
+索引日期: "2014-07-22"
+地点: "总武高特别栋奉仕部活动室"
+人物: "拉芙希妮·都柏林"
+场景呈现参考: "拉芙希妮·都柏林"
+事件焦点:
+  类型: 角色
+  角色:
+    - "拉芙希妮·都柏林"
+
+# TRANSITION_RUNTIME_GUARD_START main:119
+# <%_ const __cfTransitionTarget119 = 119; _%>
+# <%_ const __cfTransitionCurrentScene119 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign119 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages119 = []; _%>
+# <%_ try { const __cfTransitionLastId119 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages119 = getChatMessages('0-' + __cfTransitionLastId119, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages119 = []; } _%>
+# <%_ const __cfTransitionSnapshots119 = (Array.isArray(__cfTransitionMessages119) ? __cfTransitionMessages119 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious119 = __cfTransitionSnapshots119.length ? __cfTransitionSnapshots119[__cfTransitionSnapshots119.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene119 = Number(__cfTransitionPrevious119 && __cfTransitionPrevious119.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign119 = (__cfTransitionPrevious119 && __cfTransitionPrevious119.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped119 = Math.max(0, __cfTransitionCurrentScene119 - __cfTransitionPreviousScene119 - 1); _%>
+# <%_ const __cfTransitionExpose119 = __cfTransitionCurrentCampaign119 === 'main' && __cfTransitionPreviousCampaign119 === 'main' && __cfTransitionCurrentScene119 === __cfTransitionTarget119 && Number.isInteger(__cfTransitionPreviousScene119) && __cfTransitionPreviousScene119 < __cfTransitionCurrentScene119; _%>
+# <%_ if (__cfTransitionExpose119) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped119 %>"
+  mode: date_only
+  visible_title: 七月下旬，旧档案的纸箱
+  visible_lines:
+    - 期末后的十一天里，学校逐渐进入暑假，特别栋比平日更安静。
+    - 平冢静留下的三箱材料仍在原处，直到整理工作真正开始。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:119
+场景功能:
+  - 拉芙希妮独自整理平冢静留下的三箱旧材料
+  - 在第二只箱底发现自己的休学申请书附属资料——其中第五项《独立保险调查报告书·要旨》缺失
+  - 发现受理番号AXI-2013-04873-J——前缀三个字母不属于都柏林家族系统→属于外部第三方机构
+  - 平冢静的褪色便签:"⑤未着。3/12再照会"——询问没有回音
+  - 拉芙希妮抄下番号,对折收进衬衫口袋——周五要告诉他们
+  - 此为暑假回国线(场景120→Act8)的引信
+
+进入状态:
+  已发生:
+    - 考试周结束,暑假开始
+    - 雪乃留便签让拉芙希妮整理柜旁旧材料
+  当前局面:
+    - 暑假第二天,特别栋安静得能听见电线里的电流声
+    - 三只纸箱摞在文件柜旁→最上面的盖子上有雪乃便签
+    - 拉芙希妮独自开始整理
+  未发生:
+    - 番号的存在尚未被任何其他人知道
+    - 拉芙希妮尚未做出回国的决定(将在场景120做出)
+
+世界推动:
+  - 没有课的校园把蝉鸣放得很大
+  - 窗户开到最大,风从操场过来吹得值日表的纸角一下一下掀动
+  - 第一只箱子:按年度捆好的旧许可→发黄的橡皮筋→空年份的记录
+  - 第二只箱子:牛皮纸文件夹(无年份标记)
+  - 第三只箱子待整理
+  - 夕阳偏西→锁门→走廊影子
+
+NPC动机:
+  拉芙希妮·都柏林:
+    - 此刻目标: 完成整理任务→发现后保持冷静,记录信息
+    - 行为倾向: 做索引卡→逐箱整理→发现异常→控制情绪→记录→复原→不对任何人立刻说→决定周五告知
+    - 不得执行: 在独处中崩溃或立即打电话给任何人——她必须控制并计划下一步
+  平冢静:
+    - 不直接出场;仅通过褪色便签和旧文件夹存在
+
+信息边界:
+  公开(仅此场景内,后续将在场景120公开):
+    - 发现受理番号AXI-2013-04873-J
+    - 休学申请附属资料第五项缺失
+    - 平冢静曾发照会查询但未获回音
+  局部(仅拉芙希妮):
+    - AXI前缀不属于都柏林家族文书系统的推论
+    - 手帐上独立记录的番号页
+  隐藏:
+    - 独立保险调查报告书的内容
+    - 谁决定让这份报告不跟着拉芙希妮的档案旅行
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: false
+    演绎入口:
+      - "暑假第二天——睡到快中午，下午窝在客厅看文库本，被小町差去买了个西瓜；特别栋的灯今天亮了一下午，他没在意。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: false
+    演绎入口:
+      - "暑假第二天——上午整理平冢老师留下的档案清单，下午去书店买了三本参考书；路过特别栋时看了一眼，窗户开着，风把值日表的纸角吹得一掀一掀。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: false
+    演绎入口:
+      - "暑假第二天——上午遛萨布雷，下午约了三浦她们去商场买夏装，试衣服时讨论暑假要去哪里玩；她路过学校门口看见特别栋二楼亮着灯，想着谁暑假还去部室。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - 从拉芙希妮的视角:独自在活动室整理旧材料→发现缺失→分析番号→控制情绪→记录→决定告知
+      - 可感知:蝉鸣、空调/风扇声、纸张的陈旧气味、便签褪色的蓝色墨迹
+      - 关键发现:番号前缀分析——"三个字母的冠码属于家族之外的系统"
+      - 将发现时的内心过程留给玩家
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: false
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - 本场景仅有事件焦点角色在场（私密/独占场景），任何参与轨道均不在场：玩家只能事后通过传闻、转述或主动追问得知
+      - 事件焦点与NPC动机不因玩家改变；不得替玩家补写；NPC不得主动向玩家泄露本场景经过
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "暑假第二天——睡到快中午，下午窝在客厅看文库本，被小町差去买了个西瓜；特别栋的灯今天亮了一下午，他没在意。"
+  yukino: "暑假第二天——上午整理平冢老师留下的档案清单，下午去书店买了三本参考书；路过特别栋时看了一眼，窗户开着，风把值日表的纸角吹得一掀一掀。"
+  yui: "暑假第二天——上午遛萨布雷，下午约了三浦她们去商场买夏装，试衣服时讨论暑假要去哪里玩；她路过学校门口看见特别栋二楼亮着灯，想着谁暑假还去部室。"
+  laff: "主场轨道，见可用节拍，不变。"
+
+玩家控制边界:
+  - 拉芙希妮POV:发现后的情绪管理和分析方式由玩家决定
+  - 固定:番号必须被发现、必须抄录、必须决定周五告知
+
+可用节拍:
+  - 暑假第二天→特别栋安静得能听见电线里的电流声
+  - 活动室窗户开到最大→风从操场过来吹得值日表纸角一掀一掀
+  - 三只纸箱摞在文件柜旁→最上面盖子压着雪乃便签:"柜旁的旧材料麻烦按年份整理。能丢的和要留的由你判断。——雪乃"
+  - 拉芙希妮把便签揭下来夹进手帐→蹲下打开第一只箱子
+  - 第一箱内容:旧许可申请书→发黄橡皮筋→活动记录(有些年份空着)→文化祭预算表、体育祭器材单、志愿指导手册→垫板、半包没用过的打印纸、写着"加油"的图章
+  - 拉芙希妮摊手帐在长桌→给每捆材料做索引卡→"年份、类别、保存状态、去向建议"→字迹和窗外的蝉鸣保持各自节奏
+  - 第二只箱子见底时摸到没有年份标记的牛皮纸文件夹→脊背没贴标签
+  - 翻开展示:《休学申请书·附属资料》→申请人栏印着她自己的罗马字姓名
+  - 休学理由"家庭原因"→附家族事务所情况说明→末尾一行"详情参照独立保险调查报告书(受理番号:AXI-2013-04873-J)"
+  - 抬眼看文件夹内侧附属资料清单→列六项→前四项有蓝"付"字小印→第六项也有→第五项(独立保险调查报告书·要旨)为空
+  - 不是没装订→是连一张纸都不存在
+  - 清单空白处贴着一张极小褪色便签→平冢静的字:"⑤未着。3/12再照会"
+  - 三月十二日→休学手续在办理→复学前一个多月→平冢老师发过询问→便签下面没有第二行字→"询问没有回音。文件夹就这样被封存了"
+  - 活动室蝉鸣忽然显得很远→拉芙希妮维持蹲姿没动→视线落在受理番号逐位读
+  - AXI分析:都柏林家族内部文书不用三个字母打头→温斯顿公务文书用单字母加部门代码→三个字母冠码属于家族之外系统(保险公司或第三方鉴定机构)
+  - 推论:有人(家族之外)调查过那场事故→写过报告→报告没有跟着档案旅行→"有人决定过它不应该跟着"
+  - 手帐翻新页→用普通黑色圆珠笔把受理番号逐字抄下来"AXI-2013-04873-J"→核对两遍→在番号下面画一条很轻的横线
+  - 附属资料按原顺序理好→褪色便签贴回原位→牛皮纸文件夹放回第二箱最底层→上层材料一捆一捆复原
+  - 索引卡如实写:"第二箱:许可·休学复学关系保存"→没有多一个字
+  - 第三只箱子整理完→夕阳偏西→三只箱子按"保存"记号码回文件柜旁→索引页撕下压雪乃便签下面
+  - 写着番号的那一页单独撕下→对折两次→收进衬衫胸口口袋
+  - 锁文件柜→收好钥匙
+  - "……平冢老师"→活动室没人回答她→只有值日表纸角在风里一下一下掀动
+  - 拿起包→钥匙挂回教员室→登记表签名字和时间
+  - 走廊很长→夕阳把影子投在身后→手放在胸口口袋上→隔着布料那张对折的纸有一个很硬的角
+  - "周五。部活日。她要把这件事从头到尾告诉他们"
+
+偏离处理:
+  - 若拉芙希妮在发现瞬间的情绪反应更强烈:可以但必须保持功能并对纸箱原样复原
+  - 她不能提前告知任何人——必须在周五的部活日
+
+推进边界:
+  保持当前场景:
+    - 三只箱子尚未打开
+    - 番号文件夹尚未被发现
+  可以推进:
+    - 拉芙希妮锁门离开,决定周五告知
+
+完成后事实:
+  - 三只平冢静遗留纸箱已整理完毕(附索引卡)
+  - 拉芙希妮发现了缺失的保险调查报告和受理番号AXI-2013-04873-J
+  - 她知道有外部机构调查过还火事件——但结果被某人在她档案中移除
+  - 番号收在衬衫口袋→计划周五部活日告知全员
+
+氛围锚点:
+  - 暑假第二天特别栋的绝对安静→"能听见电线里的电流声"
+  - 值日表纸角被风一掀一掀→像一个没人读的信
+  - 橡皮筋老化发黄的触感
+  - 褪色便签上的"⑤未着 3/12再照会"→没有第二行字
+  - 受理番号三个字母冠码被分析的过程→逐位读
+  - "清单空白处连一张纸都不存在"→一处形状整齐的缺失
+  - 番号页对折两次收进衬衫胸口→布料下面"很硬的角"
+  - 夕阳走廊影子被投在身后→手放在胸口口袋
+
+禁止提前:
+  - 周五部活日的任何内容(场景120)
+  - 拉芙希妮向任何人提前透露发现
+  - 独立保险调查报告书的内容

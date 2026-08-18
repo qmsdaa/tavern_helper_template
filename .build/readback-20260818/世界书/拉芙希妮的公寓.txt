@@ -1,0 +1,30 @@
+拉芙希妮的公寓:
+  位置: 千叶市美滨区海侧·高层安保公寓
+<%_
+const apartmentMode = getvar('stat_data.mode', { defaults: null });
+const apartmentScene = Number(getvar('stat_data.current_scene', { defaults: 1 }));
+_%>
+  特征:
+<%_ if (apartmentMode === 'pov') { _%>
+    - 家族安排的住所·安保体系由爱布拉娜远程监控
+    - 家政太太（日本本地女性·爱布拉娜体系）定期出入·隐性监视
+    - 中庭悬挂拉芙希妮肖像画（家族凝视终端·披肩解构成锁链的意象）
+    - 双手机制度：家族专机（冰冷金属烙铁）vs 日常手机
+<%_ } else { _%>
+    - 住所的具体安保与家族监视机制不在自建开放世界开局中自动展开，只有真实调查或角色主动披露后才可建立
+<%_ } _%>
+    - 开局已有物件：达洛维钢笔"To L-Fly"
+<%_ if (apartmentMode === 'pov' && apartmentScene >= 12) { _%>
+    - 珍藏抽屉中已有雪乃交给她的熊猫面巾纸
+<%_ } _%>
+<%_ if (apartmentMode === 'pov' && apartmentScene >= 25) { _%>
+    - 已获得结衣赠送的粉色发卡；具体收纳位置以当前正文为准
+<%_ } _%>
+<%_ if (apartmentMode === 'pov' && apartmentScene >= 11) { _%>
+    - 圣经中已经夹入蒲公英种子
+<%_ } _%>
+<%_ if (apartmentMode === 'pov') { _%>
+  功能: 四人偶尔聚集的私人空间·也是家族监视场·围攻与庇护并存
+<%_ } else { _%>
+  功能: 拉芙希妮的私人住所；谁能够进入、这里是否成为聚会或冲突场所，均由实际互动决定
+<%_ } _%>

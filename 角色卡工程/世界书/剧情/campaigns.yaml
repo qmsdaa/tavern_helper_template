@@ -1,0 +1,38 @@
+schema_version: 1
+campaigns:
+  main:
+    title: "Counterfeit 公共线"
+    revision: 1
+    campaign_type: scripted
+    total_scenes: 150
+    allowed_povs:
+      - hachiman
+      - yukino
+      - yui
+      - laff
+    scene_dir: "世界书/事件"
+    save_migration_aliases: {}
+    completion_field_compat: mainline_completed
+  dlc_genderbend_hachiman:
+    title: "错位的日常"
+    revision: 1
+    campaign_type: open_world
+    timeline_anchor: "main:118"
+    start_date: "2014-07-12"
+    allowed_povs:
+      - hachiman
+    forced_mode: free
+    opening_route: dlc_genderbend_hachiman
+    premise_entry: "世界书/DLC/性转八幡/演绎规则.yaml"
+  dlc_body_swap_mrs_yukinoshita:
+    title: "君的名字？"
+    revision: 1
+    campaign_type: open_world
+    timeline_anchor: "main:118"
+    start_date: "2014-07-12"
+    allowed_povs:
+      - hachiman
+      - mrs_yukinoshita
+    forced_mode: free
+    opening_route: dlc_body_swap_mrs_yukinoshita
+    premise_entry: "世界书/DLC/身体互换/演绎规则.yaml"

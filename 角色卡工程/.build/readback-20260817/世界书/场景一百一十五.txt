@@ -1,0 +1,201 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 115)
+场景: 115
+幕: "第七幕·重新为奉仕部命名"
+时间: "2014年6月11日 · 周三放学后"
+索引日期: "2014-06-11"
+地点: "总武高特别栋奉仕部活动室"
+人物: "雪之下雪乃、比企谷八幡、由比滨结衣、拉芙希妮·都柏林、比企谷小町、川崎大志、一色彩羽"
+场景呈现参考: "共享场景／零POV"
+事件焦点:
+  类型: 角色
+  角色:
+    - "雪之下雪乃"
+
+# TRANSITION_RUNTIME_GUARD_START main:115
+# <%_ const __cfTransitionTarget115 = 115; _%>
+# <%_ const __cfTransitionCurrentScene115 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign115 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages115 = []; _%>
+# <%_ try { const __cfTransitionLastId115 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages115 = getChatMessages('0-' + __cfTransitionLastId115, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages115 = []; } _%>
+# <%_ const __cfTransitionSnapshots115 = (Array.isArray(__cfTransitionMessages115) ? __cfTransitionMessages115 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious115 = __cfTransitionSnapshots115.length ? __cfTransitionSnapshots115[__cfTransitionSnapshots115.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene115 = Number(__cfTransitionPrevious115 && __cfTransitionPrevious115.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign115 = (__cfTransitionPrevious115 && __cfTransitionPrevious115.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped115 = Math.max(0, __cfTransitionCurrentScene115 - __cfTransitionPreviousScene115 - 1); _%>
+# <%_ const __cfTransitionExpose115 = __cfTransitionCurrentCampaign115 === 'main' && __cfTransitionPreviousCampaign115 === 'main' && __cfTransitionCurrentScene115 === __cfTransitionTarget115 && Number.isInteger(__cfTransitionPreviousScene115) && __cfTransitionPreviousScene115 < __cfTransitionCurrentScene115; _%>
+# <%_ if (__cfTransitionExpose115) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped115 %>"
+  mode: date_only
+  visible_title: 六月中旬，三十六个格子
+  visible_lines:
+    - 一周里，场地、时段和责任人被逐项填进表格，纸面越来越完整。
+    - 直到需要真正签字时，正确的排列才显出它尚未回答的问题。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:115
+场景功能:
+  - 雪乃完成场地分配方案(三十六个格子的完美表格)→发现"正确"无法让任何人签字
+  - 一色提供"台阶":将"认输"改成"协力"、"让步"改成"贡献"、"先例"改成"特例"——学生只执行能接受的不是正确的
+  - 拉芙希妮:"名字换了里面的人就不用输了"——敏锐看透一色方案的本质是面子工程但有实际效果
+  - 雪乃承认"执行意愿是她漏算的变量"→追加施行案(四条)与正案别在同一枚回形针下
+  - ★关键成长:雪乃在所有人面前承认自己的方案有缺陷并立即修正——这是她之前不会做的事
+  - ★进一步的自我辨认：她意识到自己制定"完美正确答案"时使用的正是母亲和爱布拉娜的坐标系——"正确"不能替别人签字（yukino.offered_resources_without_deciding 旗标域：她学会了给框架，但不替人选择）
+
+进入状态:
+  已发生:
+    - 网球部场地委托受理一周（场景114）
+    - 结衣问了叶山(足球部训练日程)、八幡"路过"网球场六次、小町大志做了三年对照表
+    - 雪乃完成了完整方案
+  当前局面:
+    - 梅雨前线雨从早上没停过
+    - B4方格纸摊在长桌中央——雪乃誊清的《体育祭筹备期间场地分配协调案》
+  未发生:
+    - 方案尚未送交执行委员会
+    - 一色尚未带着执行委员会的正式答复到达
+
+世界推动:
+  - 屋顶雨脚连绵不断的低鸣
+  - 老旧拉门木框吸饱湿气开合比平时沉
+  - 操场泡在灰蒙蒙水光里,白线被泡发胀,户外社团都收了队旗
+  - 大志裁的抓阄纸条堆成纸山(纸吸湿后更容易裁歪)
+
+NPC动机:
+  一色彩羽:
+    - 此刻目标: 让完美的方案变成可以被签字的方案
+    - 行为倾向: 用四条修改建议(协力/应援枠/学生会发布/年度限定)给所有相关方台阶下
+    - 关键分析:"学生啊不会执行'正确'只会执行'能接受'。正确让人点头,台阶才让人签字"
+    - 不得执行: 直接批评雪乃的方案有问题——她用"表格本身写得真的很好哦好到让人有点生气"收尾
+  雪之下雪乃:
+    - 此刻目标: 接受自己的完美方案缺少"人愿不愿意"这个变量
+    - 行为倾向: 在承认缺陷后立即修正——追加施行案与正案用回形针别在一起
+    - 这是在爱布拉娜对峙和真物宣言后她的一次具体练习:不是撤回不是完美而是修正
+
+信息边界:
+  公开:
+    - 场地分配方案(正案:三十六个格子+施行案:一色四条)
+    - 执行委员会答复:"内容非常完善但牵涉到各社团的历史情况建议再作慎重研究"
+    - 过去三年调整表签字栏的发现:让路一方每张都签字,占用一方一张都没有
+  局部:
+    - 仅一色清楚"执行委员会最怕的不是错误决定而是明年还会被引用的决定"
+  隐藏:
+    - 方案最终在体育祭当天的实际执行效果(场景116)
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - "也就是说这张表没有恶人。所以它也找不到那个该挨骂的人"
+      - "学生啊不会执行正确只会执行能接受"→八幡沉默认同
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - 从雪乃的视角:完成了一张完美的表格→发现完美没有用→接受自己漏算了"人愿不愿意"
+      - 关键句:"我把场地、时间、人数、依据全部换算成了变量。只有'人愿不愿意'这一项我把它当成了只要答案正确就会自动成立的东西。是我漏算的变量"
+      - 承认后的立即行动:拿出回形针把施行案别在正案上
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - "梅雨的部室——她捧着深蓝杯听雨，手指在杯壁上敲极轻的节拍；听完一色的四条修改建议，她轻声点破：'把让步换成贡献把认输换成帮忙……名字换了里面的人就不用输了'。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - "梅雨的部室——她把茶泡得格外烫，被杯壁烫缩手，过一会儿又试；她回报叶山的反应：'叶山君看完这个以后沉默了很久。然后他说让我再想想'。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "梅雨的部室——他看完雪乃的表格总结：'这张表没有恶人。所以它也找不到那个该挨骂的人'；听完一色说'学生不会执行正确只会执行能接受'，他沉默认同。"
+  yukino: "主场轨道，见可用节拍，不变。"
+  yui: "梅雨的部室——她把茶泡得格外烫，被杯壁烫缩手，过一会儿又试；她回报叶山的反应：'叶山君看完这个以后沉默了很久。然后他说让我再想想'。"
+  laff: "梅雨的部室——她捧着深蓝杯听雨，手指在杯壁上敲极轻的节拍；听完一色的四条修改建议，她轻声点破：'把让步换成贡献把认输换成帮忙……名字换了里面的人就不用输了'。"
+
+玩家控制边界:
+  - 雪乃POV：接受缺陷时的内心过程由玩家决定
+
+可用节拍:
+  - 雨天,活动室里纸张受潮后软塌塌的气味
+  - 大志用剪刀裁抓阄纸条(吸湿后更容易裁歪)→小町用粉色荧光笔在纸条上画记号数数到27忘了
+  - 结衣把茶泡得格外烫→被杯壁烫缩手→过一会儿又试
+  - 八幡文库本摊在膝盖上二十分钟没翻页→视线穿过雨幕看操场角落里被淋蔫的网球网
+  - 拉芙希妮捧着深蓝杯听雨→手指在杯壁上敲极轻的节拍
+  - 长桌中央摊着B4方格纸→雪乃誊清的三十六个格子→每一格写着场地/时段/使用社团→右下角逐条标注依据
+  - 标题:《体育祭筹备期间场地分配协调案》
+  - 雪乃:"完成了"
+  - 小町脸贴到纸面:"哇……这个真的是手写的吗？"
+  - 结衣回报叶山反应:"叶山君看完这个以后沉默了很久。然后他说'让我再想想'。足球部的三年级前辈们不会签的——倒不是觉得吃亏是没办法第一个点头"
+  - 八幡:"这六天他们就在剩下的半边场地上练习。学会在半场里打球的人不会拿着一张纸去要回整个球场"
+  - 大志补充签字栏发现:过去三年调整表,让路一方每张都有签字,占用一方一张都没有
+  - 八幡的总结:"这张表没有恶人。所以它也找不到那个该挨骂的人。没有人挨骂就没有人愿意第一个签字"
+  - 拉门混雨气灌进→一色拿雨伞进来→刘海湿漉打绺
+  - 一色擦水迹(被雪乃要求),放文件夹→宣布执行委员会正式答复:"内容非常完善但牵涉到各社团的历史情况建议再作慎重研究"
+  - 一色自己翻译:"这么正确的表请拿回去我们不想成为签字的那个人"
+  - 雪乃:"换言之这张表连被执行委员会拒绝的资格都没有。因为拒绝本身也是一种决定"
+  - 一色掰三根手指拆解:足球部不会签(等于承认占了)→网球部不敢先签(是之后所有抱怨的收件箱)→执行委员会最不可能签(怕今年决定明年被引用)
+  - 一色:"学生啊不会执行'正确'只会执行'能接受'。正确让人点头台阶才让人签字"
+  - 一色提出四条方案:①改叫"特别协力时间表"(协力≠让步)②雨天体育馆优先给足球部("县大会应援枠")③整张表由学生会以整体调度名义发布(没人需要第一个点头)④标题下加"平成二十六年度体育祭筹备期间限定"(今年特例不构成先例)
+  - 四张裁得整整齐齐的抓阄纸条并排摆在三十六个格子表格旁边
+  - 雪乃:"特例？那么明年同一批人还要再打一次同一场仗"
+  - 一色:"明年有明年的学生会呀。规则那种又大又重的东西等出现了愿意为它负责的人再立就好了。今年的我们只要让今年的体育祭不要出事就可以了"
+  - 拉芙希妮轻声:"把让步换成贡献把认输换成帮忙……名字换了里面的人就不用输了"
+  - 雪乃低头看自己的表格→"我把场地时间人数依据全部换算成了变量。只有人愿不愿意这一项我把它当成了只要答案正确就会自动成立的东西。是我漏算的变量"
+  - 雪乃伸手把四张写满字的纸条理齐→叠在誊清表格上→拉开抽屉取回形针:"修正。正案不动。追加施行案以这四条为准"
+  - 回形针扣上很轻→整间屋子都听见
+  - 一色起身拎伞→拉开门回头:"雪之下学姐。表格本身写得真的很好哦。好到让人有点生气"
+  - 门合上→脚步声被雨声吞掉
+  - 结衣收拾凉掉茶杯→大志补纸条山→小町趴桌沿看那表
+  - 雪乃坐原处看窗外操场方向的雨→今天操场方向没有任何哨声
+
+偏离处理:
+  - 若雪乃不接受一色方案:方案不会被签字,但场景必须通过其他方式解决(一色的方案是剧情最优解)
+
+推进边界:
+  保持当前场景:
+    - 一色尚未到达
+  可以推进:
+    - 回形针已扣,雨声持续
+
+完成后事实:
+  - 场地分配方案完成(正案+施行案,回形针别在一起)
+  - 一色提供了"让学生能接受"的四条修改
+  - 雪乃承认了执行意愿是不可量化但关键性的变量
+  - 方案将在体育祭当日接受实际检验(场景116)
+
+禁止提前:
+  - 体育祭当日的执行与四起变故（场景116）
+  - 雪之下夫人出现在体育祭来宾席（场景116）
+  - 把雪乃的自我辨认说破成"你在用你母亲的方式"——她自己意识到即可，不得由他人指出
+  - 一色的"台阶"被评价为学生会政治手腕的长篇分析（拉芙希妮一句看透就够）
+
+氛围锚点:
+  - 梅雨前线屋顶雨脚连绵的低鸣
+  - 白线被雨水泡得发胀→操场泡在灰蒙蒙水光里
+  - 八幡文库本二十分钟没翻页→视线穿过雨幕看被淋蔫的网球网
+  - 大志捏剪刀的手指格外小心→吸湿纸更容易裁歪
+  - 表格上字小到凑近才看得清→雪乃誊清的手写精度
+  - 一色撑伞进来→小腿袜脚尖部分洇着深色水迹→像一封被雨水泡皱的投诉信
+  - 四张裁得整整齐齐的抓阄纸条并排摆在三十六个格子旁
+  - 回形针扣上去的轻响→全屋都听见

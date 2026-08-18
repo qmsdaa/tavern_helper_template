@@ -1,0 +1,192 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 112)
+场景: 112
+幕: "第七幕·重新为奉仕部命名"
+时间: "2014年5月21日 · 周三放学后"
+索引日期: "2014-05-21"
+地点: "总武高特别栋奉仕部活动室"
+人物: "雪之下雪乃、比企谷八幡、由比滨结衣、拉芙希妮·都柏林、比企谷小町、川崎大志"
+场景呈现参考: "共享场景／零POV"
+事件焦点:
+  类型: 群像
+  角色:
+    []
+
+# TRANSITION_RUNTIME_GUARD_START main:112
+# <%_ const __cfTransitionTarget112 = 112; _%>
+# <%_ const __cfTransitionCurrentScene112 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign112 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages112 = []; _%>
+# <%_ try { const __cfTransitionLastId112 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages112 = getChatMessages('0-' + __cfTransitionLastId112, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages112 = []; } _%>
+# <%_ const __cfTransitionSnapshots112 = (Array.isArray(__cfTransitionMessages112) ? __cfTransitionMessages112 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious112 = __cfTransitionSnapshots112.length ? __cfTransitionSnapshots112[__cfTransitionSnapshots112.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene112 = Number(__cfTransitionPrevious112 && __cfTransitionPrevious112.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign112 = (__cfTransitionPrevious112 && __cfTransitionPrevious112.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped112 = Math.max(0, __cfTransitionCurrentScene112 - __cfTransitionPreviousScene112 - 1); _%>
+# <%_ const __cfTransitionExpose112 = __cfTransitionCurrentCampaign112 === 'main' && __cfTransitionPreviousCampaign112 === 'main' && __cfTransitionCurrentScene112 === __cfTransitionTarget112 && Number.isInteger(__cfTransitionPreviousScene112) && __cfTransitionPreviousScene112 < __cfTransitionCurrentScene112; _%>
+# <%_ if (__cfTransitionExpose112) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped112 %>"
+  mode: date_only
+  visible_title: 五月下旬，活动室的普通一周
+  visible_lines:
+    - 联合体检的报告收好后，八天没有新的危机占据长桌。
+    - 六名部员仍要决定谁烧水、谁锁门，以及沉默时各自坐在哪里。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:112
+场景功能:
+  - 日常过渡场景：奉仕部值日表的建立
+  - 六人在无委托的下午共处——"好安静哦"→"安静才正常"的对话代表奉仕部已从任务中心转为日常存在
+  - 茶柜上四只旧杯子和两只新杯子的视觉层级——奉仕部的物理延续
+  - 拉芙希妮右手在焦黑丝带上停了一下然后松手——仍在自我调节中
+  - 门背后值日表左下角反复翘起——"八幡伸手按回去纸角又翘了起来"
+
+进入状态:
+  已发生:
+    - 奉仕部正式成立已数周（场景109）
+    - 联合体检已归档（场景111）
+    - 日常部活已建立节奏
+  当前局面:
+    - 雪乃午休时写好了值日表和任务便签
+    - 门背后贴着手画的值日表（A4横版）
+    - 六人围坐，无人在做任何一件外界可称为"成果"的事
+  未发生:
+    - 今天的委托（无）
+
+世界推动:
+  - 窗外风把门背后的值日表纸角吹起
+  - 热水壶加热→停止→保温循环
+  - 六只杯子在桌面上的排列
+
+NPC动机:
+  所有角色:
+    - 此刻目标: 无委托——只在同一间活动室里做各自的事
+    - 这是奉仕部从任务导向→日常存在的过渡
+
+信息边界:
+  公开:
+    - 值日表从今天开始
+    - 六人各自的任务分配
+    - 窗台外有一盆没人在浇水的植物（三浦去年文化祭遗留）
+  局部:
+    - 仅拉芙希妮：右手在丝带上停了一下然后松手
+  隐藏:
+    - 无
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - 八幡对值日表的抵抗:"这不是任务认领只是先把格子占住"
+      - 最后在周五格子里写"扫除"→小町立刻戳穿:"就是任务认领"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - "无委托的下午——她午休时写好了值日表和任务便签；小町说'好安静哦'时她没抬头；八幡在周五格子写下'扫除'时，她把水笔推过去又收回来。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - "无委托的下午——她抱热水壶进来，给每只杯子放茶包，到拉芙希妮时停住：'今天还是不放糖？'，得到'不放。谢谢'；收杯子时她把四只旧杯放茶柜上层、两只新杯放下层，花杯和白杯并排、杯口同向。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - 拉芙希妮把流程表从上到下一张张地翻→"像是在等纸上的字自己排得更整齐"
+      - 手指在右手腕焦黑丝带上轻轻一勒随即松手
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "无委托的下午——他看见门后贴的值日表，宣布'这不是任务认领只是先把格子占住'；最后在周五格子里写'扫除'，被小町当场戳穿：'就是任务认领'。"
+  yukino: "无委托的下午——她午休时写好了值日表和任务便签；小町说'好安静哦'时她没抬头；八幡在周五格子写下'扫除'时，她把水笔推过去又收回来。"
+  yui: "无委托的下午——她抱热水壶进来，给每只杯子放茶包，到拉芙希妮时停住：'今天还是不放糖？'，得到'不放。谢谢'；收杯子时她把四只旧杯放茶柜上层、两只新杯放下层，花杯和白杯并排、杯口同向。"
+  laff: "无委托的下午——她把流程表从上到下一张张地翻，像是在等纸上的字自己排得更整齐；手指在右手腕焦黑丝带上轻轻一勒随即松手——仍在自我调节中。"
+
+玩家控制边界:
+  - 日常场景，无重要决策点
+
+可用节拍:
+  - 八幡推门→门后纸被风吹起→值日表
+  - 雪乃没抬头:"今天开始。名字和日期写好了具体任务自己填"
+  - 六张便签上分别写着:扫地/擦窗/整理桌面/洗茶杯/核对委托记录/倒垃圾
+  - 周三栏已填"雪之下·扫地"
+  - 小町和大志已在桌边——小町在样品页上画小动物→大志叠物资清单
+  - 小町:"周三的值日已经排了。小町也想今天做"
+  - 拉芙希妮:"奉仕部的扫地不需要抢"→八幡:"因为只有四张桌子和一个柜子"→"和一把很占地方的折叠椅"
+  - 结衣抱热水壶进来→手肘推开门→纸又响了一声→看值日表发现八幡名字在周四→"欸周四那栏明明——"→实际上是大志填了倒垃圾
+  - 八幡问他的任务→雪乃把水笔推过去:"自己写"
+  - 八幡没有拿任何便签→把笔拨到一边靠进椅子
+  - 热水烧开→结衣拿杯子：上层四只旧杯子(白瓷浅绿深蓝米色)→下层两只新杯子(碎花素白)
+  - 结衣给每只杯子放茶包→提到拉芙希妮时停住:"今天还是不放糖？"→拉芙希妮:"不放。谢谢"
+  - 大志白杯麦茶→小町花杯麦茶→结衣果茶→雪乃柠檬→八幡MAX咖啡搁桌角
+  - 小町翻样品页背面继续画→铅笔很短
+  - 大志翻开从图书室借来的社团运营手册→用手指描自己名字→不是真写只是描一遍
+  - 小町:"好安静哦"→八幡:"安静才正常"→小町:"上班族才会这么说"
+  - 大志:"值日表上要不要加一栏'浇水'？"→雪乃:"活动室里没有植物"→大志:"窗台外面那盆"
+  - 所有人看窗台外侧→陶土花盆干裂→插着歪掉的标签模糊的"三"
+  - 结衣:"那是三浦同学去年文化祭的展示品。她后来忘了搬走"
+  - 八幡:"活了快一年了不浇水还能活到现在已经不归奉仕部管了"
+  - 拉芙希妮看了一眼:"它没活。标签是湿的"→八幡:"……什么时候"→拉芙希妮:"来的时候"
+  - 八幡推窗检查:盆土干的→标签也是干的→但标签杆子最下面两厘米有一圈深色(被雨没过)→"那是上一场雨跟值日无关"
+  - 雪乃把便签发完→周五栏空着一格→"比企谷同学你那格自己填期限到周五放学"
+  - 八幡拿圆珠笔走到门边→在周五格子写"扫除"→"不是任务认领只是先把格子占住"
+  - 小町:"就是任务认领"→八幡:"不是"→小町:"你这个年纪的男生对任务认领的定义还真严格"
+  - 热水壶保温灯灭→结衣把热水倒进保温瓶
+  - 大志把花盆拿进来擦陶土边缘→擦掉的土末落在外窗台上被风吹散
+  - 拉芙希妮合记录簿→右手在焦黑丝带上轻轻一勒随即松手
+  - 小町画完了→给大志看:"这是什么"→"熊猫"→"那是耳朵还是角"→"耳朵。熊猫的耳朵是圆的"
+  - 大志认真地点头，把样品页收进档案袋
+  - 结衣收杯子:上层四只放茶柜上层→下层两只放下层→花杯和白杯并排杯口同向
+  - 门后值日表左下角翘起→纸边拍门板→八幡伸手按回去→透明胶带也粘不住了→"纸角又翘了起来"
+
+偏离处理:
+  - 此为纯日常场景，偏离空间极小
+
+推进边界:
+  保持当前场景:
+    - 值日表尚未被八幡看到
+  可以推进:
+    - 八幡按不住纸角收束
+
+完成后事实:
+  - 奉仕部值日表正式启用
+  - 六人在无委托日各自做各自的事——"好安静"是奉仕部的正常状态
+  - 窗台外的枯花盆获得存在感（但不归奉仕部管）
+
+禁止提前:
+  - 材木座委托（场景113）
+  - 拉芙希妮触碰焦黑丝带被任何人点破——本场是无人注意的自我调节，不得展开为对话
+  - 窗台枯花盆被认领为奉仕部事务（它在本场只是"不归奉仕部管"的存在感）
+  - 值日表纸角的脱胶被彻底修好（它要一直翘到场景118）
+
+氛围锚点:
+  - 门背后值日表左下角只粘一半的透明胶带
+  - 便签被钢尺压住免得被风吹跑
+  - 雪乃放水笔推过去→笔滑到记录簿边上停下来
+  - 茶柜上下两层杯子的并排——旧四只在上新两只在下
+  - 拉芙希妮没放糖→结衣"谢谢"——很短的对话但节奏对
+  - 大志用手指描印刷字自己的名字——不是真写只是描一遍
+  - 窗外枯花盆标签杆最下面两厘米深色——上一场雨留下的
+  - 门背后纸角反复翘起→按回去→又翘起→"透明胶带也粘不住了"
