@@ -711,6 +711,16 @@ function registerBubbleButton() {
       openPanel(doc);
     });
     console.info('[CF-Bubble] 魔棒按钮「对话气泡」已注册');
+    // 动态确保按钮在脚本列表中可见（兼容某些只读运行时按钮配置）
+    try {
+      if (typeof appendInexistentScriptButtons === 'function') {
+        appendInexistentScriptButtons([{ name: '对话气泡', visible: true }]);
+      } else if (typeof replaceScriptButtons === 'function') {
+        replaceScriptButtons([{ name: '对话气泡', visible: true }]);
+      }
+    } catch (e) {
+      console.warn('[CF-Bubble] 动态同步按钮失败:', e);
+    }
     return true;
   };
   if (tryRegister()) return;
