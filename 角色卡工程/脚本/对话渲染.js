@@ -665,6 +665,9 @@ function applyInjection() {
 // █  Part 7: 设置与头像自定义面板                             █
 // ████████████████████████████████████████████████████████████
 
+// 当前面板 iframe 引用，用于 data URL 场景的 source 校验
+let currentPanelIframe = null;
+
 function openPanel(doc) {
   if (doc.getElementById('cf-bubble-panel-mask')) return;
 
@@ -677,8 +680,13 @@ function openPanel(doc) {
   iframe.className = 'cf-panel-iframe';
   iframe.src = `${PANEL_URL}?v=${Date.now()}`;
   iframe.setAttribute('allow', 'clipboard-read; clipboard-write');
+  currentPanelIframe = iframe;
 
-  const close = () => { mask.remove(); iframe.remove(); };
+  const close = () => {
+    mask.remove();
+    iframe.remove();
+    currentPanelIframe = null;
+  };
   mask.addEventListener('click', close);
 
   doc.body.appendChild(mask);
@@ -688,10 +696,12 @@ function openPanel(doc) {
 function closePanel(doc) {
   doc.getElementById('cf-bubble-panel-mask')?.remove();
   doc.getElementById('cf-bubble-panel-iframe')?.remove();
+  currentPanelIframe = null;
 }
 
 function onPanelMessage(event) {
-  if (event.origin !== PANEL_ORIGIN) return;
+  // data URL 面板的 origin 为 null，改用 iframe 实例校验，防止其他 iframe 冒用消息
+  if (currentPanelIframe && event.source !== currentPanelIframe.contentWindow) return;
   const data = event.data;
   if (!data || data.source !== 'cf-bubble-panel') return;
   const doc = findHostDocument();
@@ -704,7 +714,7 @@ function onPanelMessage(event) {
   } else if (data.type === 'close-panel') {
     closePanel(doc);
   } else if (data.type === 'request-config') {
-    event.source.postMessage({ source: 'cf-bubble-script', type: 'init-config', config: loadConfig() }, event.origin);
+    event.source.postMessage({ source: 'cf-bubble-script', type: 'init-config', config: loadConfig() }, '*');
   }
 }
 
