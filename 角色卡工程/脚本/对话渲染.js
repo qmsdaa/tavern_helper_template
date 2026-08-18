@@ -697,6 +697,37 @@ function onPanelMessage(event) {
 // █  Part 8: 启动                                            █
 // ████████████████████████████████████████████████████████████
 
+function registerBubbleButton() {
+  const tryRegister = () => {
+    const on = typeof eventOn === 'function' ? eventOn : (typeof window !== 'undefined' && typeof window.eventOn === 'function' ? window.eventOn : null);
+    const getBtn = typeof getButtonEvent === 'function' ? getButtonEvent : (typeof window !== 'undefined' && typeof window.getButtonEvent === 'function' ? window.getButtonEvent : null);
+    if (typeof on !== 'function' || typeof getBtn !== 'function') return false;
+    on(getBtn('对话气泡'), () => {
+      const doc = findHostDocument();
+      if (!doc) {
+        console.warn('[CF-Bubble] 找不到宿主文档，无法打开面板');
+        return;
+      }
+      openPanel(doc);
+    });
+    console.info('[CF-Bubble] 魔棒按钮「对话气泡」已注册');
+    return true;
+  };
+  if (tryRegister()) return;
+  const events = typeof tavern_events !== 'undefined' ? tavern_events : (typeof window !== 'undefined' ? window.tavern_events : undefined);
+  if (events && events.APP_READY) {
+    const on = typeof eventOn === 'function' ? eventOn : (typeof window !== 'undefined' && typeof window.eventOn === 'function' ? window.eventOn : null);
+    if (typeof on === 'function') {
+      on(events.APP_READY, () => {
+        if (!tryRegister()) console.warn('[CF-Bubble] APP_READY 后按钮注册仍失败');
+      });
+      return;
+    }
+  }
+  console.warn('[CF-Bubble] 按钮注册条件不满足，将在 2 秒后重试');
+  setTimeout(registerBubbleButton, 2000);
+}
+
 function boot() {
   const doc = findHostDocument();
   if (!doc) {
@@ -709,19 +740,15 @@ function boot() {
   startObserver(doc);
   doc.defaultView.addEventListener('message', onPanelMessage);
 
-  // 酒馆助手按钮
-  try {
-    if (typeof eventOn === 'function' && typeof getButtonEvent === 'function') {
-      eventOn(getButtonEvent('对话气泡'), () => openPanel(doc));
-    }
-  } catch (err) {
-    console.warn('[CF-Bubble] 按钮事件注册失败:', err);
-  }
+  // 酒馆助手按钮：与文档查找解耦，确保在 API 就绪后注册
+  registerBubbleButton();
 
   // 聊天切换：重注入 + 重渲染（injectPrompts 注入仅对当前聊天有效）
   try {
-    if (typeof tavern_events !== 'undefined' && tavern_events.CHAT_CHANGED) {
-      eventOn(tavern_events.CHAT_CHANGED, () => {
+    const events = typeof tavern_events !== 'undefined' ? tavern_events : (typeof window !== 'undefined' ? window.tavern_events : undefined);
+    const on = typeof eventOn === 'function' ? eventOn : (typeof window !== 'undefined' && typeof window.eventOn === 'function' ? window.eventOn : null);
+    if (events && events.CHAT_CHANGED && typeof on === 'function') {
+      on(events.CHAT_CHANGED, () => {
         applyInjection();
         const nextDoc = findHostDocument() || doc;
         if (loadConfig().enabled) scheduleRender(nextDoc);
