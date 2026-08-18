@@ -698,128 +698,66 @@ function onPanelMessage(event) {
 // ████████████████████████████████████████████████████████████
 
 /**
- * 把当前脚本从 global/preset 脚本树移入 character 脚本树，确保魔棒菜单显示其按钮。
- * 酒馆助手的魔棒通常只渲染当前角色卡（character）脚本树里的按钮。
+ * 直接把「对话气泡」入口注入到 SillyTavern 魔棒菜单 DOM 中。
+ * 这是从「对话渲染系统 v7.1」学到的做法：仅注册 eventOn 按钮事件并不足以让按钮
+ * 在魔棒 UI 中显示，还需要在 #extensionsMenu 中 append 一个 list-group-item。
  */
-function ensureButtonVisibleInCharacterTree(scope, buttonName) {
-  if (typeof scope.getScriptTrees !== 'function' || typeof scope.replaceScriptTrees !== 'function') {
-    console.warn('[CF-Bubble] 脚本树操作函数不可用，跳过 character 树同步');
-    return;
-  }
-  if (typeof scope.getAllEnabledScriptButtons !== 'function') {
-    console.warn('[CF-Bubble] getAllEnabledScriptButtons 不可用，无法定位当前脚本');
-    return;
-  }
+function injectWandMenuItem() {
+  const BTN_NAME = '对话气泡';
+  const BTN_ID = 'cf-bubble-wand-btn';
 
-  // 通过按钮名反查当前脚本 ID
-  const allBtns = scope.getAllEnabledScriptButtons();
-  let selfId = null;
-  for (const [sid, btns] of Object.entries(allBtns)) {
-    if (Array.isArray(btns) && btns.some(b => b && b.button_name === buttonName)) {
-      selfId = sid;
-      break;
-    }
-  }
-  console.info('[CF-Bubble] 当前脚本 ID:', selfId);
-  if (!selfId) return;
+  let hostDoc = null;
+  const candidates = [];
+  try { if (typeof window !== 'undefined' && window.top && window.top.document) candidates.push(window.top.document); } catch (_) {}
+  try { if (typeof window !== 'undefined' && window.parent && window.parent.document && window.parent.document !== document) candidates.push(window.parent.document); } catch (_) {}
+  candidates.push(document);
 
-  // 诊断：当前脚本在三种脚本树中的分布
-  for (const type of ['character', 'preset', 'global']) {
+  let menu = null;
+  for (const d of candidates) {
     try {
-      const trees = scope.getScriptTrees({ type });
-      const found = trees.some(t => {
-        if (t.id === selfId) return true;
-        if (t.type === 'folder' && Array.isArray(t.scripts)) {
-          return t.scripts.some(s => s.id === selfId);
-        }
-        return false;
-      });
-      console.info(`[CF-Bubble] 脚本在 ${type} 树中:`, found);
-    } catch (e) {
-      console.warn(`[CF-Bubble] 读取 ${type} 脚本树失败:`, e);
-    }
+      menu = d.getElementById('extensionsMenu')
+        || d.getElementById('extensions_menu')
+        || d.querySelector('#extensionsMenu')
+        || d.querySelector('.extensions_block .list-group');
+      if (menu) { hostDoc = d; break; }
+    } catch (_) {}
   }
 
-  // 若已在 character 树则无需移动
-  const charTrees = scope.getScriptTrees({ type: 'character' });
-  const alreadyInChar = charTrees.some(t => {
-    if (t.id === selfId) return true;
-    if (t.type === 'folder' && Array.isArray(t.scripts)) {
-      return t.scripts.some(s => s.id === selfId);
+  if (!menu) {
+    setTimeout(injectWandMenuItem, 1000);
+    return;
+  }
+
+  // 移除旧按钮（防止重复注入或热重载后事件失效）
+  const oldBtn = hostDoc.getElementById(BTN_ID);
+  if (oldBtn) oldBtn.remove();
+
+  const mi = hostDoc.createElement('a');
+  mi.id = BTN_ID;
+  mi.className = 'list-group-item';
+  mi.href = 'javascript:void(0)';
+  mi.innerHTML = `<span class="fa-solid fa-comments"></span> ${BTN_NAME}`;
+  mi.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const doc = findHostDocument();
+    if (!doc) {
+      console.warn('[CF-Bubble] 找不到宿主文档，无法打开面板');
+      return;
     }
-    return false;
+    openPanel(doc);
+    try { menu.parentElement?.click?.(); } catch (_) {}
   });
-  if (alreadyInChar) {
-    console.info('[CF-Bubble] 脚本已在 character 脚本树中，无需移动');
-    return;
-  }
-
-  // 从 global/preset 树中查找当前脚本完整对象
-  let selfScript = null;
-  for (const type of ['global', 'preset']) {
-    try {
-      const trees = scope.getScriptTrees({ type });
-      for (const t of trees) {
-        if (t.type === 'script' && t.id === selfId) {
-          selfScript = t;
-          break;
-        }
-        if (t.type === 'folder' && Array.isArray(t.scripts)) {
-          const s = t.scripts.find(x => x.id === selfId);
-          if (s) { selfScript = s; break; }
-        }
-      }
-      if (selfScript) break;
-    } catch (e) {
-      console.warn(`[CF-Bubble] 从 ${type} 树查找脚本失败:`, e);
-    }
-  }
-
-  if (!selfScript) {
-    console.warn('[CF-Bubble] 未在任何脚本树中找到当前脚本，无法移入 character 树');
-    return;
-  }
-
-  // 追加到 character 树（保留原有结构）
-  scope.replaceScriptTrees([...charTrees, selfScript], { type: 'character' });
-  console.info('[CF-Bubble] 已将当前脚本加入 character 脚本树，魔棒应显示按钮');
+  menu.appendChild(mi);
+  console.info('[CF-Bubble] 魔棒菜单项「对话气泡」已注入');
 }
 
 function registerBubbleButton() {
-  const BTN_NAME = 'Dialogue Bubble';
-
-  const pickScope = () => {
-    const candidates = [typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null];
-    for (const scope of candidates) {
-      if (!scope) continue;
-      if (typeof scope.eventOn === 'function' && typeof scope.getButtonEvent === 'function') return scope;
-    }
-    return null;
-  };
-
-  const logButtonState = (scope, label) => {
-    try {
-      const listFns = [
-        typeof scope.getScriptButtons === 'function' && scope.getScriptButtons,
-        typeof scope.getAllEnabledScriptButtons === 'function' && scope.getAllEnabledScriptButtons,
-      ].filter(Boolean);
-      for (const fn of listFns) {
-        try {
-          const list = fn();
-          console.info(`[CF-Bubble] ${label} 按钮列表（${fn.name || 'list'}）:`, JSON.stringify(list));
-        } catch (e) {
-          console.warn(`[CF-Bubble] ${label} 读取按钮列表失败:`, e);
-        }
-      }
-    } catch (e) { /* ignore */ }
-  };
+  const BTN_NAME = '对话气泡';
 
   const tryRegister = () => {
-    const scope = pickScope();
-    console.info('[CF-Bubble] 注册作用域:', scope === window ? 'window' : (scope === self ? 'self' : 'null'));
-    if (!scope) return false;
-    const on = scope.eventOn;
-    const getBtn = scope.getButtonEvent;
+    const on = typeof eventOn === 'function' ? eventOn : (typeof window !== 'undefined' && typeof window.eventOn === 'function' ? window.eventOn : null);
+    const getBtn = typeof getButtonEvent === 'function' ? getButtonEvent : (typeof window !== 'undefined' && typeof window.getButtonEvent === 'function' ? window.getButtonEvent : null);
     if (typeof on !== 'function' || typeof getBtn !== 'function') return false;
 
     on(getBtn(BTN_NAME), () => {
@@ -830,35 +768,7 @@ function registerBubbleButton() {
       }
       openPanel(doc);
     });
-    console.info('[CF-Bubble] 魔棒按钮「对话气泡」已注册');
-    logButtonState(scope, '注册后');
-
-    // 动态确保按钮在脚本列表中可见（兼容某些只读运行时按钮配置）
-    const syncFns = [
-      typeof scope.appendInexistentScriptButtons === 'function' && scope.appendInexistentScriptButtons,
-      typeof appendInexistentScriptButtons === 'function' && appendInexistentScriptButtons,
-      typeof scope.replaceScriptButtons === 'function' && scope.replaceScriptButtons,
-      typeof replaceScriptButtons === 'function' && replaceScriptButtons,
-    ].filter(Boolean);
-    console.info('[CF-Bubble] 可用动态同步函数数:', syncFns.length);
-    try {
-      if (syncFns.length) {
-        syncFns[0]([{ name: BTN_NAME, visible: true }]);
-        console.info('[CF-Bubble] 动态同步按钮成功，方式:', syncFns[0].name || 'anonymous');
-      } else {
-        console.warn('[CF-Bubble] 无动态同步函数可用');
-      }
-    } catch (e) {
-      console.warn('[CF-Bubble] 动态同步按钮失败:', e);
-    }
-
-    // 酒馆助手按 global/preset/character 三类脚本树过滤按钮显示。
-    // 直接导入的 JSON 经常落在 global 树，魔棒不显示；尝试移入 character 树。
-    try {
-      ensureButtonVisibleInCharacterTree(scope, BTN_NAME);
-    } catch (e) {
-      console.warn('[CF-Bubble] 确保 character 树可见失败:', e);
-    }
+    console.info('[CF-Bubble] 魔棒按钮事件「对话气泡」已注册');
     return true;
   };
 
@@ -881,12 +791,12 @@ function registerBubbleButton() {
     const on = typeof eventOn === 'function' ? eventOn : (typeof window !== 'undefined' && typeof window.eventOn === 'function' ? window.eventOn : null);
     if (typeof on === 'function') {
       on(events.APP_READY, () => {
-        if (!tryRegister()) console.warn('[CF-Bubble] APP_READY 后按钮注册仍失败');
+        if (!tryRegister()) console.warn('[CF-Bubble] APP_READY 后按钮事件注册仍失败');
       });
       return;
     }
   }
-  console.warn('[CF-Bubble] 按钮注册条件不满足，将在 2 秒后重试');
+  console.warn('[CF-Bubble] 按钮事件注册条件不满足，将在 2 秒后重试');
   setTimeout(registerBubbleButton, 2000);
 }
 
@@ -904,6 +814,7 @@ function boot() {
 
   // 酒馆助手按钮：与文档查找解耦，确保在 API 就绪后注册
   registerBubbleButton();
+  injectWandMenuItem();
 
   // 聊天切换：重注入 + 重渲染（injectPrompts 注入仅对当前聊天有效）
   try {
