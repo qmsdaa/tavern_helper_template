@@ -697,6 +697,94 @@ function onPanelMessage(event) {
 // █  Part 8: 启动                                            █
 // ████████████████████████████████████████████████████████████
 
+/**
+ * 把当前脚本从 global/preset 脚本树移入 character 脚本树，确保魔棒菜单显示其按钮。
+ * 酒馆助手的魔棒通常只渲染当前角色卡（character）脚本树里的按钮。
+ */
+function ensureButtonVisibleInCharacterTree(scope, buttonName) {
+  if (typeof scope.getScriptTrees !== 'function' || typeof scope.replaceScriptTrees !== 'function') {
+    console.warn('[CF-Bubble] 脚本树操作函数不可用，跳过 character 树同步');
+    return;
+  }
+  if (typeof scope.getAllEnabledScriptButtons !== 'function') {
+    console.warn('[CF-Bubble] getAllEnabledScriptButtons 不可用，无法定位当前脚本');
+    return;
+  }
+
+  // 通过按钮名反查当前脚本 ID
+  const allBtns = scope.getAllEnabledScriptButtons();
+  let selfId = null;
+  for (const [sid, btns] of Object.entries(allBtns)) {
+    if (Array.isArray(btns) && btns.some(b => b && b.button_name === buttonName)) {
+      selfId = sid;
+      break;
+    }
+  }
+  console.info('[CF-Bubble] 当前脚本 ID:', selfId);
+  if (!selfId) return;
+
+  // 诊断：当前脚本在三种脚本树中的分布
+  for (const type of ['character', 'preset', 'global']) {
+    try {
+      const trees = scope.getScriptTrees({ type });
+      const found = trees.some(t => {
+        if (t.id === selfId) return true;
+        if (t.type === 'folder' && Array.isArray(t.scripts)) {
+          return t.scripts.some(s => s.id === selfId);
+        }
+        return false;
+      });
+      console.info(`[CF-Bubble] 脚本在 ${type} 树中:`, found);
+    } catch (e) {
+      console.warn(`[CF-Bubble] 读取 ${type} 脚本树失败:`, e);
+    }
+  }
+
+  // 若已在 character 树则无需移动
+  const charTrees = scope.getScriptTrees({ type: 'character' });
+  const alreadyInChar = charTrees.some(t => {
+    if (t.id === selfId) return true;
+    if (t.type === 'folder' && Array.isArray(t.scripts)) {
+      return t.scripts.some(s => s.id === selfId);
+    }
+    return false;
+  });
+  if (alreadyInChar) {
+    console.info('[CF-Bubble] 脚本已在 character 脚本树中，无需移动');
+    return;
+  }
+
+  // 从 global/preset 树中查找当前脚本完整对象
+  let selfScript = null;
+  for (const type of ['global', 'preset']) {
+    try {
+      const trees = scope.getScriptTrees({ type });
+      for (const t of trees) {
+        if (t.type === 'script' && t.id === selfId) {
+          selfScript = t;
+          break;
+        }
+        if (t.type === 'folder' && Array.isArray(t.scripts)) {
+          const s = t.scripts.find(x => x.id === selfId);
+          if (s) { selfScript = s; break; }
+        }
+      }
+      if (selfScript) break;
+    } catch (e) {
+      console.warn(`[CF-Bubble] 从 ${type} 树查找脚本失败:`, e);
+    }
+  }
+
+  if (!selfScript) {
+    console.warn('[CF-Bubble] 未在任何脚本树中找到当前脚本，无法移入 character 树');
+    return;
+  }
+
+  // 追加到 character 树（保留原有结构）
+  scope.replaceScriptTrees([...charTrees, selfScript], { type: 'character' });
+  console.info('[CF-Bubble] 已将当前脚本加入 character 脚本树，魔棒应显示按钮');
+}
+
 function registerBubbleButton() {
   const BTN_NAME = 'Dialogue Bubble';
 
@@ -762,6 +850,14 @@ function registerBubbleButton() {
       }
     } catch (e) {
       console.warn('[CF-Bubble] 动态同步按钮失败:', e);
+    }
+
+    // 酒馆助手按 global/preset/character 三类脚本树过滤按钮显示。
+    // 直接导入的 JSON 经常落在 global 树，魔棒不显示；尝试移入 character 树。
+    try {
+      ensureButtonVisibleInCharacterTree(scope, BTN_NAME);
+    } catch (e) {
+      console.warn('[CF-Bubble] 确保 character 树可见失败:', e);
     }
     return true;
   };
