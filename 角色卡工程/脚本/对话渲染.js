@@ -698,11 +698,43 @@ function onPanelMessage(event) {
 // ████████████████████████████████████████████████████████████
 
 function registerBubbleButton() {
+  const BTN_NAME = 'Dialogue Bubble';
+
+  const pickScope = () => {
+    const candidates = [typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null];
+    for (const scope of candidates) {
+      if (!scope) continue;
+      if (typeof scope.eventOn === 'function' && typeof scope.getButtonEvent === 'function') return scope;
+    }
+    return null;
+  };
+
+  const logButtonState = (scope, label) => {
+    try {
+      const listFns = [
+        typeof scope.getScriptButtons === 'function' && scope.getScriptButtons,
+        typeof scope.getAllEnabledScriptButtons === 'function' && scope.getAllEnabledScriptButtons,
+      ].filter(Boolean);
+      for (const fn of listFns) {
+        try {
+          const list = fn();
+          console.info(`[CF-Bubble] ${label} 按钮列表（${fn.name || 'list'}）:`, JSON.stringify(list));
+        } catch (e) {
+          console.warn(`[CF-Bubble] ${label} 读取按钮列表失败:`, e);
+        }
+      }
+    } catch (e) { /* ignore */ }
+  };
+
   const tryRegister = () => {
-    const on = typeof eventOn === 'function' ? eventOn : (typeof window !== 'undefined' && typeof window.eventOn === 'function' ? window.eventOn : null);
-    const getBtn = typeof getButtonEvent === 'function' ? getButtonEvent : (typeof window !== 'undefined' && typeof window.getButtonEvent === 'function' ? window.getButtonEvent : null);
+    const scope = pickScope();
+    console.info('[CF-Bubble] 注册作用域:', scope === window ? 'window' : (scope === self ? 'self' : 'null'));
+    if (!scope) return false;
+    const on = scope.eventOn;
+    const getBtn = scope.getButtonEvent;
     if (typeof on !== 'function' || typeof getBtn !== 'function') return false;
-    on(getBtn('Dialogue Bubble'), () => {
+
+    on(getBtn(BTN_NAME), () => {
       const doc = findHostDocument();
       if (!doc) {
         console.warn('[CF-Bubble] 找不到宿主文档，无法打开面板');
@@ -711,18 +743,42 @@ function registerBubbleButton() {
       openPanel(doc);
     });
     console.info('[CF-Bubble] 魔棒按钮「对话气泡」已注册');
+    logButtonState(scope, '注册后');
+
     // 动态确保按钮在脚本列表中可见（兼容某些只读运行时按钮配置）
+    const syncFns = [
+      typeof scope.appendInexistentScriptButtons === 'function' && scope.appendInexistentScriptButtons,
+      typeof appendInexistentScriptButtons === 'function' && appendInexistentScriptButtons,
+      typeof scope.replaceScriptButtons === 'function' && scope.replaceScriptButtons,
+      typeof replaceScriptButtons === 'function' && replaceScriptButtons,
+    ].filter(Boolean);
+    console.info('[CF-Bubble] 可用动态同步函数数:', syncFns.length);
     try {
-      if (typeof appendInexistentScriptButtons === 'function') {
-        appendInexistentScriptButtons([{ name: 'Dialogue Bubble', visible: true }]);
-      } else if (typeof replaceScriptButtons === 'function') {
-        replaceScriptButtons([{ name: 'Dialogue Bubble', visible: true }]);
+      if (syncFns.length) {
+        syncFns[0]([{ name: BTN_NAME, visible: true }]);
+        console.info('[CF-Bubble] 动态同步按钮成功，方式:', syncFns[0].name || 'anonymous');
+      } else {
+        console.warn('[CF-Bubble] 无动态同步函数可用');
       }
     } catch (e) {
       console.warn('[CF-Bubble] 动态同步按钮失败:', e);
     }
     return true;
   };
+
+  // 全局兜底：用户可在控制台输入 openBubblePanel() 手动打开
+  if (typeof window !== 'undefined' && !window.openBubblePanel) {
+    window.openBubblePanel = () => {
+      const doc = findHostDocument();
+      if (!doc) {
+        console.warn('[CF-Bubble] 找不到宿主文档，无法打开面板');
+        return;
+      }
+      openPanel(doc);
+      console.info('[CF-Bubble] 已通过 openBubblePanel() 打开面板');
+    };
+  }
+
   if (tryRegister()) return;
   const events = typeof tavern_events !== 'undefined' ? tavern_events : (typeof window !== 'undefined' ? window.tavern_events : undefined);
   if (events && events.APP_READY) {
