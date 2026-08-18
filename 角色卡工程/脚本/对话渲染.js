@@ -262,6 +262,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
 const PROMPT_INJECTION_ID = 'counterfeit-bubble-format';
 const PANEL_URL = 'http://localhost:6621/dist/Counterfeit/界面/对话渲染/index.html';
+const PANEL_ORIGIN = new URL(PANEL_URL).origin;
 
 function buildMoodPoolText() {
   return MOOD_GROUPS.map(group => `【${group.label}】${group.words.join('、')}`).join('\n');
@@ -338,22 +339,6 @@ const STYLE_TEXT = `
 .cf-bub-inner .cf-bub-name{color:var(--cf-accent,#b0708a)}
 /* 面板 */
 .cf-panel-mask{position:fixed;inset:0;background:rgba(60,40,50,.35);z-index:99990}
-.cf-panel{position:fixed;top:6vh;left:50%;transform:translateX(-50%);width:min(560px,92vw);max-height:84vh;overflow-y:auto;
-  background:#fdfaf4;color:#5b4a4f;border:1px solid #ecdfe2;border-radius:14px;z-index:99991;
-  box-shadow:0 8px 40px rgba(90,60,70,.25);padding:18px 20px;font-size:14px;line-height:1.7}
-.cf-panel h2{margin:0 0 10px;font-size:17px;color:#c05a72;letter-spacing:2px}
-.cf-panel h3{margin:16px 0 8px;font-size:14px;color:#a5737f}
-.cf-panel-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed #f0e4e7}
-.cf-panel-row img{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#f3ece2}
-.cf-panel-row .cf-name{flex:0 0 7.5em;font-weight:600}
-.cf-panel-row input[type=text]{flex:1;min-width:0;border:1px solid #e3d3d8;border-radius:8px;padding:4px 8px;background:#fffdf8;color:#5b4a4f;font-size:12px}
-.cf-panel button{border:1px solid #e87a90;background:#fdf1f3;color:#c05a72;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:12px}
-.cf-panel button:hover{background:#e87a90;color:#fff}
-.cf-panel .cf-theme-row{display:flex;gap:10px;margin:4px 0 2px}
-.cf-panel .cf-theme-row button{flex:1}
-.cf-panel .cf-theme-active{background:#e87a90 !important;color:#fff !important}
-.cf-panel .cf-close{position:absolute;top:10px;right:12px;border:none;background:none;font-size:18px;color:#a5737f;cursor:pointer}
-.cf-panel-note{font-size:12px;color:#a08a90;margin-top:10px}
 .cf-panel-iframe{position:fixed;top:8vh;left:50%;transform:translateX(-50%);width:min(520px,92vw);height:min(680px,84vh);border:none;border-radius:14px;z-index:99991;box-shadow:0 8px 40px rgba(90,60,70,.25);background:#fdfaf4}
 `;
 
@@ -691,6 +676,7 @@ function closePanel(doc) {
 }
 
 function onPanelMessage(event) {
+  if (event.origin !== PANEL_ORIGIN) return;
   const data = event.data;
   if (!data || data.source !== 'cf-bubble-panel') return;
   const doc = findHostDocument();
@@ -703,7 +689,7 @@ function onPanelMessage(event) {
   } else if (data.type === 'close-panel') {
     closePanel(doc);
   } else if (data.type === 'request-config') {
-    event.source.postMessage({ source: 'cf-bubble-script', type: 'init-config', config: loadConfig() }, '*');
+    event.source.postMessage({ source: 'cf-bubble-script', type: 'init-config', config: loadConfig() }, event.origin);
   }
 }
 
