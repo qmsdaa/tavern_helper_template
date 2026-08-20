@@ -23,6 +23,8 @@ const hasOpeningPayload = openingUserMessages.some((item) =>
 );
 const isFirstReply = hasOpeningPayload && openingUserMessages.length === 1;
 const openingCustom = getvar('stat_data.custom_protagonist', { defaults: null });
+// 玩家编辑过自定义序幕（自由世界生效标记）：开局以序幕文本为唯一依据
+const openingDraftCustom = getvar('stat_data.opening_custom', { defaults: false });
 const povAnchors = {
   hachiman: '地点在二年F班或由玩家首条消息明确指定的位置。八幡只知道二年J班来了英国转学生的公开传闻；J班的自我介绍不在他眼前发生。先给出F班可观察的日常与一个可回应的外部动静，不写八幡的吐槽、判断、反应或行动。',
   yukino: '地点在二年J班。拉芙希妮刚被教师带到讲台前，教室正在等待她的自我介绍或教师安排。只呈现教师、拉芙希妮和同学的可观察言行，停在雪乃可以回应的位置；不替雪乃形成关于拉芙的比喻、判断或行动。',
@@ -30,12 +32,44 @@ const povAnchors = {
   laff: '地点在二年J班讲台前。教师与全班正在等待拉芙希妮开口。描写教室、教师和学生的公开反应即可，必须把自我介绍的内容、语气、动作与内心留给玩家。',
 };
 _%>
-<%_ if (openingCampaign === 'dlc_genderbend_hachiman' && openingPov === 'hachiman' && isFirstReply) { _%>
+<%_ if (openingCampaign === 'dlc_genderbend_hachiman' && isFirstReply && openingDraftCustom) { _%>
 <opening_route>
-这是《错位的日常》提交后的第一轮正式演绎。日期2014-07-12，星期六早晨；地点为比企谷家·八幡房间。
-只建立这些可观察事实：手机闹铃响起；八幡发现手指、声音、头发、衣物贴合与镜中外观已经变化；房间、手机记录、记忆、法律姓名和昨天发生的事情均未改变；小町在门外叫他，因沉默把手放到门把上。
+这是《错位的日常》提交后的第一轮正式演绎，但玩家提供了自定义序幕。
+以玩家序幕文本为开局唯一依据：序幕中写明的时间、地点、情境与人物关系即为当前世界事实；不得复述或强行套用官方 7月12日清晨八幡房间的锚点，不得套用拉芙转学开场。
+若序幕没有指定玩家是谁，按 stat_data 的 current_pov / custom_protagonist 判断玩家身份（hachiman_f=比企谷八幡（性转）· yukino=雪之下雪乃 · yui=由比滨结衣 · laff=拉芙希妮·都柏林 · 自建=其自建角色）。
+结尾留给玩家一个可立刻回应的局面；不替玩家补写序幕之外的内心、台词、行动或决定。
+</opening_route>
+<%_ } else if (openingCampaign === 'dlc_genderbend_hachiman' && openingPov === 'hachiman_f' && isFirstReply) { _%>
+<opening_route>
+这是《错位的日常》比企谷八幡（性转）路线提交后的第一轮正式演绎。日期2014-07-12，星期六早晨；地点为比企谷家·八幡房间。
+只建立这些可观察事实：手机闹铃响起；她发现手指、声音、头发、衣物贴合与镜中外观已经变化；房间、手机记录、记忆、法律姓名和昨天发生的事情均未改变；小町在门外叫哥哥，因沉默把手放到门把上。
 结尾停在小町问“哥哥还活着吗”后，门把刚开始转动的瞬间。
 不得替玩家回答、堵门、继续检查、联系任何人、接受新的身份标签、决定是否出门或开始调查。第一轮只给一个可以立刻回应的青春喜剧困境，不生成治愈任务或事件清单。
+</opening_route>
+<%_ } else if (openingCampaign === 'dlc_genderbend_hachiman' && openingPov === 'yukino' && isFirstReply) { _%>
+<opening_route>
+这是《错位的日常》雪之下雪乃路线提交后的第一轮正式演绎。日期2014-07-12，星期六早晨；地点为雪之下雪乃的公寓（稻毛区高层）。
+只建立这些可观察事实：暑假中的周六早晨；手机上结衣发来普通的迪斯尼乐园邀约，邀请雪乃、八幡与即将回来的拉芙一起去；雪乃决定先泡红茶，再决定要不要答应。
+结尾停在雪乃可以回复结衣、答应、婉拒、另约日期或联系八幡确认行程的位置。不替玩家决定回复、是否出门或如何看待这次平常邀约；第一轮保持普通邀约起点，不提前揭示八幡的异常。
+</opening_route>
+<%_ } else if (openingCampaign === 'dlc_genderbend_hachiman' && openingPov === 'yui' && isFirstReply) { _%>
+<opening_route>
+这是《错位的日常》由比滨结衣路线提交后的第一轮正式演绎。日期2014-07-12，星期六早晨；地点为由比滨家。
+只建立这些可观察事实：暑假中的周六早晨，结衣遛完萨布雷回家后窝进沙发，正给雪乃和八幡发送一起去迪斯尼乐园的邀约，并提到等拉芙回来也约上。
+结尾停在消息刚发出、结衣可以继续拉人、安排日期与集合地点或先等回复的位置。不替玩家决定下一条消息或当天行动；第一轮保持普通邀约起点，不提前揭示八幡的异常。
+</opening_route>
+<%_ } else if (openingCampaign === 'dlc_genderbend_hachiman' && openingPov === 'laff' && isFirstReply) { _%>
+<opening_route>
+这是《错位的日常》拉芙希妮·都柏林路线提交后的第一轮正式演绎。日期2014-07-12，星期六；地点为成田机场到达口（从英国返回）。
+只建立这些可观察事实：拉芙按计划结束英国行程并走出到达口；雪乃、结衣、小町和八幡已经来接机；结衣第一个挥手欢迎，拉芙从人群里注意到八幡的外表似乎与记忆不同。
+结尾停在拉芙希妮可以回应接机的几人、确认八幡状况或暂时不问的位置。不替玩家确认变化、当场点破或决定接机后的行程；停在到达口的首次回应，不追加尚未发生的后续安排。
+</opening_route>
+<%_ } else if (openingCampaign === 'dlc_genderbend_hachiman' && isFirstReply && openingCustom) { _%>
+<opening_route>
+这是《错位的日常》自建角色路线提交后的第一轮正式演绎，时间为2014年7月12日。
+玩家的自建角色为「<%- String(openingCustom.name || '未命名角色') %>」，身份见 custom_protagonist；她/他正在千叶市度暑假，街头的传言、群里的消息与熟人欲言又止的表情都指向同一件事——比企谷八幡好像变得有点不一样了（女性形态「比企谷八幡（性转）」）。
+起点由自建角色的身份与玩家首条消息决定：学生从与其班级/住处相符的暑假位置开始，非学生从身份允许抵达的公开地点开始。不自动认识核心角色、不自动加入奉仕部。
+本轮只建立一个清晰、可观察、可回应的局面，然后把行动权交还玩家；不替玩家补写内心、台词、决定或未提交的背景。
 </opening_route>
 <%_ } else if (openingCampaign === 'dlc_body_swap_mrs_yukinoshita' && openingPov === 'hachiman' && isFirstReply) { _%>
 <opening_route>
@@ -69,6 +103,12 @@ _%>
 根据自建角色的年龄、身份、年级/班级、性格与玩家首条消息选择合理起点：学生优先从其明确填写的班级或校内位置开始，非学生从身份允许抵达的公开地点开始。
 自建角色开局不自动认识核心角色、不自动加入奉仕部，也不因卡片主线而被强制送到二年J班。先给出一个与其身份相符的可观察环境和一个自然钩子，然后停下等待玩家行动。
 开场白界面的OP文字只负责气氛，不得替<user>补写内心、台词、决定或未提交的背景。
+</opening_route>
+<%_ } else if (openingCampaign === 'main' && openingMode === 'free' && isFirstReply && openingDraftCustom) { _%>
+<opening_route>
+这是主线世界开放模式的第一轮正式演绎，玩家已提供自定义序幕。
+以玩家序幕文本为开局唯一依据：序幕写明的时间、地点、情境与人物关系即为当前世界事实；不再默认 2013年5月20日拉芙希妮转学开场，不得复述或套用官方序幕的拉芙转学设定。
+按玩家视点或自建角色的身份与序幕起始位置建立一个可观察、可回应的日常局面。不自动加入奉仕部、不自动认识核心角色、不复演主线场景1、不替玩家补写关键台词/行动/内心结论。
 </opening_route>
 <%_ } else if (openingCampaign === 'main' && openingMode === 'free' && isFirstReply) { _%>
 <opening_route>

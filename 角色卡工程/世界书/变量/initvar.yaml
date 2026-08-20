@@ -7,6 +7,7 @@ mode: null
 difficulty: null
 current_pov: null
 custom_protagonist: null
+opening_custom: false
 current_scene: 1
 campaign_completed: false
 mainline_completed: false

@@ -38,6 +38,7 @@ export function formatDateLabel(dateStr: string): string {
 
 const POV_NAMES: Record<string, string> = {
   hachiman: '比企谷八幡',
+  hachiman_f: '比企谷八幡（性转）',
   yukino: '雪之下雪乃',
   yui: '由比滨结衣',
   laff: '拉芙希妮·都柏林',
@@ -64,11 +65,16 @@ export function isStoryProgress(data: Schema): boolean {
 export function identityBadge(data: Schema): string | null {
   const state = data.identity_state;
   if (!state) return null;
-  if (state.kind === 'transformation') return '本人：比企谷八幡 · 外观：女性化 · 公开身份：比企谷八幡';
+  if (state.kind === 'transformation') return '本人：比企谷八幡（性转） · 外观：女性化';
   const bodyKey = Object.entries(state.occupants).find(([, mind]) => mind === data.current_pov)?.[0];
   const body = bodyKey === 'body_hachiman' ? '比企谷八幡的身体' : bodyKey === 'body_mrs_yukinoshita' ? '雪之下夫人的身体' : '未确认身体';
   const apparent = bodyKey === 'body_hachiman' ? '比企谷八幡' : bodyKey === 'body_mrs_yukinoshita' ? '雪之下夫人' : '未确认';
   return `本人：${playerLabel(data)} · 身体：${body} · 旁人眼中：${apparent}`;
+}
+
+/** 是否性转八幡（比企谷八幡（性转））——状态栏用「性转」徽章独特标识 */
+export function isGenderbendHachiman(data: Schema): boolean {
+  return data.current_pov === 'hachiman_f' || (data.identity_state?.kind === 'transformation' && data.identity_state.current_body === 'hachiman_f');
 }
 
 export function playerLabel(data: Schema): string {
@@ -110,6 +116,8 @@ export const THOUGHT_EMPTY_PLACEHOLDER = '……';
 /** 规范全名（characters 记录键）→ 立绘文件名（assets/Counterfeit/状态栏/portraits/<name>.webp） */
 const PORTRAIT_KEYS: Record<string, string> = {
   '比企谷八幡': 'hachiman',
+  // DLC《错位的日常》独立角色：性转八幡用专属新立绘（assets 键 genderbend_hachiman）
+  '比企谷八幡（性转）': 'genderbend_hachiman',
   '雪之下雪乃': 'yukino',
   '由比滨结衣': 'yui',
   '拉芙希妮·都柏林': 'laff',

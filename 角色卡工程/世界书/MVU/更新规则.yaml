@@ -16,7 +16,7 @@
     - bond/romance 共用难度增量表：单次有效互动 简单+10·普通+3·困难+1（difficulty 缺失按普通）·重大且不可替代的里程碑=事件增量×2 封顶15·负向证据按同表扣减·普通寒暄、同场、加好友、聊天次数、礼貌回应、重复刷同类互动一律不加值
 
   开场白commit（仅开局一次·由开场白界面写入·AI 无需处理）:
-    - commit 一次性写入 campaign_id、campaign_revision、mode、current_pov 或 custom_protagonist 七字段＋participation、campaign_completed=false、mainline_completed=false、identity_state、world 日期/位置/时段、player 初始余额与 carried_items=[]、characters 预建记录、Ω=0、九锤全 pending、三锁全 false、branch_choice=null、collection 初始空表
+    - commit 一次性写入 campaign_id、campaign_revision、mode、current_pov 或 custom_protagonist 七字段＋participation、opening_custom、campaign_completed=false、mainline_completed=false、identity_state、world 日期/位置/时段、player 初始余额与 carried_items=[]、characters 预建记录、Ω=0、九锤全 pending、三锁全 false、branch_choice=null、collection 初始空表
     - main 战役从2013-05-20开始；两个DLC固定继承 main:118 快照并从2014-07-12开始，mode恒为free、current_scene恒为1兼容占位
     - user身份：current_pov 是唯一且不可变的玩家视点/稳定意识；自建（剧情模式或开放世界）中 user 才由 custom_protagonist 定义·酒馆用户名/persona名称不得生成额外世界内角色
 
@@ -33,7 +33,7 @@
   current_pov:
     check:
       - 开局定档·唯一玩家视点/稳定意识·中途永不改变
-      - main 战役内建角色只允许 hachiman|yukino|yui|laff；mrs_yukinoshita 只允许《君的名字？》战役选择
+      - main 战役内建角色只允许 hachiman|yukino|yui|laff；hachiman_f 只允许《错位的日常》战役选择；mrs_yukinoshita 只允许《君的名字？》战役选择
       - 场景“事件焦点”与“玩家入口”只是剧情元数据和观察入口·绝不是视点切换指令
   custom_protagonist:
     check:
@@ -43,6 +43,9 @@
   difficulty:
     check:
       - 开局定档（简单|普通|困难）·旧存档缺失或为 null 按普通处理
+  opening_custom:
+    check:
+      - 开局定档·仅由开场白 commit 写入·存档内一律不变·禁止主AI输出其路径的更新
 
   current_scene:
     type: number
@@ -77,9 +80,9 @@
 
   identity_state:
     check:
-      - main 战役恒为 null；《错位的日常》使用 transformation；《君的名字？》使用 body_swap
+      - main 战役恒为 null；《错位的日常》仅 current_pov=hachiman_f 时使用 transformation，current_pov=yukino|yui|laff 或 mode=custom 时恒为 null；《君的名字？》使用 body_swap
       - current_pov 永远表示稳定意识，不随身体变化；关系记录也归属于参与互动的意识/本人，不归属于身体外壳
-      - transformation.disclosure 仅在观察者实际看到证据或被明确告知后更新；不得凭外表自动让所有人知情
+      - transformation 仅允许 kind=transformation；disclosure 仅在观察者实际看到证据或被明确告知后更新·不得凭外表自动让所有人知情
       - body_swap.occupants、swap_phase 与 last_swap_date 只能在正文实际发生睡眠→醒来边界后更新，禁止对话中途为了制造转折换身
       - body_locations 按身体外壳记录实际位置：玩家所在身体与 world.current_location 同步，另一身体只在其位置通过可验证事实建立后更新；位置是导演态事实，不自动等于玩家知情
       - shared_notes 只记录正文中实际写下或被玩家发现的便签；verification_evidence 只记录实际取得的验证证据
@@ -103,7 +106,8 @@
     check:
       - 表示回复结束时玩家角色实际所在的最具体可确认地点
       - main 开局若POV=hachiman或yui则为总武高中·2年F班教室；POV=yukino或laff则为总武高中·2年J班教室；custom开局保持未确认
-      - DLC开局地点由campaign commit固定：《错位的日常》为比企谷家·八幡房间；《君的名字？》八幡意识为雪之下家·夫人卧室，夫人意识为比企谷家·八幡房间
+      - 开场白 commit 定档地点按玩家视点写入：《错位的日常》hachiman_f=比企谷家·八幡房间、yukino=雪之下雪乃的公寓、yui=由比滨家、laff=成田机场到达口（从英国返回）、custom=未确认
+      - 《君的名字？》八幡意识=雪之下家本邸·夫人卧室、夫人意识=比企谷家·八幡房间
       - 玩家与叙事明确完成移动并抵达新地点时 replace；只是提出前往、正在路上、回忆、电话中提到或论坛帖子描述时不更新
       - 同一大地点内只有房间/区域变化且对演绎有意义时才更新；不得根据常识猜测未写明地点
       - 时间跳跃或场景切换后若新地点尚未明确·写入未确认，不沿用已失效的旧地点

@@ -3,7 +3,8 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const script = fs.readFileSync(new URL('../脚本/开场白挂载.template.js', import.meta.url), 'utf8');
-assert.match(script, /我选择扮演比企谷八幡，进入《错位的日常》。/, '缺少性转DLC可见路由标记');
+assert.match(script, /，进入《错位的日常》。/, '缺少性转DLC可见路由标记');
+assert.match(script, /比企谷八幡（性转）/, '缺少性转DLC角色名（POV_LABELS）');
 assert.match(script, /我选择扮演比企谷八幡的意识，进入《君的名字？》。/, '缺少身体互换八幡意识标记');
 assert.match(script, /我选择扮演雪之下夫人的意识，进入《君的名字？》。/, '缺少身体互换夫人意识标记');
 assert.match(script, /参与主线剧情（参与方式：/, '缺少剧情自建可见路由标记');

@@ -20,7 +20,10 @@ campaigns:
     timeline_anchor: "main:118"
     start_date: "2014-07-12"
     allowed_povs:
-      - hachiman
+      - hachiman_f
+      - yukino
+      - yui
+      - laff
     forced_mode: free
     opening_route: dlc_genderbend_hachiman
     premise_entry: "世界书/DLC/性转八幡/演绎规则.yaml"

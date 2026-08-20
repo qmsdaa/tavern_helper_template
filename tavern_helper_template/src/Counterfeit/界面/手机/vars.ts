@@ -116,6 +116,7 @@ export interface MvuSnapshot {
 
 const POV_NAMES: Record<string, string> = {
   hachiman: '比企谷八幡',
+  hachiman_f: '比企谷八幡（性转）',
   yukino: '雪之下雪乃',
   yui: '由比滨结衣',
   laff: '拉芙希妮·都柏林',

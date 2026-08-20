@@ -21,6 +21,78 @@ function legacyMain(): Record<string, any> {
   return stat;
 }
 
+const genderbendIdentity = () => ({
+  kind: 'transformation', current_body: 'hachiman_f', presentation: 'female',
+  legal_identity: '比企谷八幡（性转）', self_naming: '八幡', cause_status: 'unknown', disclosure: {},
+});
+
+function genderbendDlc(pov: 'hachiman_f' | 'yukino' | 'yui' | 'laff' | null): Record<string, any> {
+  return Schema.parse({
+    mode: 'free', campaign_id: 'dlc_genderbend_hachiman', current_scene: 1,
+    current_pov: pov, identity_state: pov === 'hachiman_f' ? genderbendIdentity() : null,
+    custom_protagonist: pov === null ? { name: '自建主角' } : null,
+    campaign_completed: false, mainline_completed: false,
+  });
+}
+
+test('all five genderbend DLC viewpoints are legal and survive portable commit roundtrips', async () => {
+  for (const pov of ['hachiman_f', 'yukino', 'yui', 'laff', null] as const) {
+    const stat = genderbendDlc(pov);
+    const migrated = migrateParsedSave(parsedSource(stat));
+    assert.equal(migrated.report.status, 'exact');
+    assert.deepEqual(migrated.statData, stat);
+
+    const state: any = { message0: [{ message_id: 0, message: '<OpeningUI/>' }], floor0: {}, chat: {} };
+    await commitPortableResume(migrated, {
+      getMessage0: () => clone(state.message0), getFloor0Variables: () => clone(state.floor0), getChatVariables: () => clone(state.chat),
+      async setMessage0(value) { state.message0 = clone(value); },
+      async setFloor0Variables(updater) { state.floor0 = clone(updater(clone(state.floor0))); },
+      async setChatVariables(updater) { state.chat = clone(updater(clone(state.chat))); },
+    });
+    assert.deepEqual(state.floor0.stat_data, stat);
+    assert.deepEqual(state.chat.stat_data, stat);
+    assert.equal(migrateParsedSave(parsedSource(state.chat.stat_data)).report.status, 'exact');
+  }
+});
+
+test('legacy canonical genderbend identity migrates exactly once and mixed triples fail closed', () => {
+  const legacy = genderbendDlc('hachiman_f');
+  legacy.current_pov = 'hachiman';
+  legacy.identity_state.current_body = 'hachiman';
+  legacy.identity_state.legal_identity = '比企谷八幡';
+
+  const migrated = migrateParsedSave(parsedSource(legacy));
+  assert.equal(migrated.report.status, 'migratable');
+  assert.equal(migrated.statData?.current_pov, 'hachiman_f');
+  assert.equal(migrated.statData?.identity_state.current_body, 'hachiman_f');
+  assert.equal(migrated.statData?.identity_state.legal_identity, '比企谷八幡（性转）');
+  assert.ok(migrated.report.migrationSteps.some(step => step.includes('身份三元组迁移')));
+  assert.equal(migrateParsedSave(parsedSource(migrated.statData!)).report.status, 'exact');
+
+  const mixed = clone(legacy);
+  mixed.identity_state.current_body = 'hachiman_f';
+  const rejected = migrateParsedSave(parsedSource(mixed));
+  assert.equal(rejected.report.status, 'incompatible');
+  assert.equal(rejected.statData, null);
+  assert.equal(rejected.report.migrationSteps.some(step => step.includes('身份三元组迁移')), false);
+});
+
+test('main hachiman_f and cross-viewpoint genderbend identity mixes are rejected', () => {
+  const illegalMain = genderbendDlc('hachiman_f');
+  illegalMain.campaign_id = 'main';
+  illegalMain.mode = 'pov';
+  illegalMain.identity_state = null;
+  assert.equal(Schema.safeParse(illegalMain).success, false);
+  const migratedMain = migrateParsedSave(parsedSource(illegalMain));
+  assert.equal(migratedMain.report.status, 'incompatible');
+  assert.ok(migratedMain.report.conflicts.some(item => item.includes('主线玩家视点非法')));
+
+  const mixedDlc = genderbendDlc('hachiman_f');
+  mixedDlc.current_pov = 'yukino';
+  assert.equal(Schema.safeParse(mixedDlc).success, false);
+  assert.equal(migrateParsedSave(parsedSource(mixedDlc)).report.status, 'incompatible');
+});
+
 test('v0.4.6, v0.5.0-preview, v0.5.1, and v0.6.0 migrations are idempotent', () => {
   const base = legacyMain();
   const fixtures = [
@@ -128,8 +200,8 @@ test('raw JSONL skips a newer identity-forged snapshot and falls back to the ear
 test('raw JSONL uses header campaign identity while selecting the newest legal snapshot', async () => {
   const main = Schema.parse({ mode: 'pov', current_pov: 'hachiman', campaign_id: 'main', campaign_completed: false, mainline_completed: false });
   const dlc = Schema.parse({
-    mode: 'free', current_pov: 'hachiman', campaign_id: 'dlc_genderbend_hachiman', current_scene: 1,
-    identity_state: { kind: 'transformation', current_body: 'hachiman', presentation: 'female', legal_identity: '比企谷八幡', self_naming: '八幡', cause_status: 'unknown', disclosure: {} },
+    mode: 'free', current_pov: 'hachiman_f', campaign_id: 'dlc_genderbend_hachiman', current_scene: 1,
+    identity_state: genderbendIdentity(),
   });
   const raw = [
     JSON.stringify({ user_name: 'u', chat_metadata: { card_version: '0.6.0', campaign_id: 'main', campaign_revision: 1 } }),

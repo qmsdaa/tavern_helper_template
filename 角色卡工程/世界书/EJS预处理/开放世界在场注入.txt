@@ -8,8 +8,12 @@ const owIdentity = getvar('stat_data.identity_state', { defaults: null });
 const owDate = String(getvar('stat_data.world.current_date', { defaults: '2013-05-20' }));
 const owSlot = getvar('stat_data.world.time_slot', { defaults: null });
 const owLoc = String(getvar('stat_data.world.current_location', { defaults: '未确认' }));
-const owNames = { hachiman: '比企谷八幡', yukino: '雪之下雪乃', yui: '由比滨结衣', laff: '拉芙希妮·都柏林' };
+const owNames = { hachiman: '比企谷八幡', hachiman_f: '比企谷八幡（性转）', yukino: '雪之下雪乃', yui: '由比滨结衣', laff: '拉芙希妮·都柏林' };
 const owPovName = owNames[owPov] || null;
+// 性转八幡（hachiman_f）的日程与行动惯性沿用主线八幡（比企谷八幡），只是身体呈现不同
+const owScheduleKey = owPov === 'hachiman_f' ? '比企谷八幡' : owPovName;
+// 《错位的日常》任何非八幡玩家视点里，事件中心 NPC 也必须使用独立规范全名
+const owDisplayName = (name) => owCampaign === 'dlc_genderbend_hachiman' && name === '比企谷八幡' ? '比企谷八幡（性转）' : name;
 let owMonth = 5, owDay = 20, owWeekday = 1;
 try {
   const dp = owDate.split('-').map((x) => parseInt(x, 10));
@@ -120,10 +124,10 @@ if (owIsBodySwap) {
 if (owMode === 'free' && owEffectiveSlot) {
   for (const name of Object.keys(owSchedule)) {
     if (owIsBodySwap && name === '比企谷八幡') continue;
-    if (name === owPovName) continue;
+    if (name === owScheduleKey) continue;
     const act = (owSchedule[name][owBucket] || {})[owEffectiveSlot];
     const anchor = owAnchors[name];
-    if (act) owLines.push('- ' + name + ': ' + act + (anchor ? '（' + anchor + '）' : ''));
+    if (act) owLines.push('- ' + owDisplayName(name) + ': ' + act + (anchor ? '（' + anchor + '）' : ''));
   }
 }
 _%>
@@ -136,7 +140,7 @@ _%>
 <%- owBodyLines.join('\n') %>
 <%_ } _%>
 <%- owLines.join('\n') %>
-天气联动（正文设定天气后按此调整日常）：<%- Object.entries(owWeather).filter(([n]) => n !== owPovName).map(([n, w]) => n + '·' + w).join(' / ') %>
+天气联动（正文设定天气后按此调整日常）：<%- Object.entries(owWeather).filter(([n]) => n !== owScheduleKey).map(([n, w]) => owDisplayName(n) + '·' + w).join(' / ') %>
 比对动线后谁可能在场、谁会路过由演绎合理性决定；需要某角色出场时优先使用其日程的撞见锚点；无日程的NPC按各自条目与情节合理性出场；天气以正文为准·设定后应用各日程的"天气联动"段。
 变量同步要求：本楼与玩家同场互动的主要角色按更新规则 present 检查表置 true/false（记录不存在则按更新规则建档）；仅路过、被提及或远观不置 true。身体互换战役中 characters 键与关系/present 跟随意识本人，身体位置另写 identity_state.body_locations。
 </open_world_presence>

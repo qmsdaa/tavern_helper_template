@@ -21,6 +21,8 @@ PROJECT_ROOT = os.path.dirname(CARD_ROOT)               # Counterfeit-v0.6.0-完
 SOURCE_JS = os.path.join(CARD_ROOT, "脚本", "对话渲染.js")
 OUT_JSON = os.path.join(PROJECT_ROOT, "独立产物", "酒馆助手脚本-对话渲染-Counterfeit.json")
 OUT_PREVIEW = os.path.join(PROJECT_ROOT, "独立产物", "对话渲染-预览.html")
+STATE_JSON = os.path.join(CARD_ROOT, "tavern-cards-state.json")
+STATE_KEY = "对话渲染-Counterfeit"
 
 PREVIEW_SAMPLE = """<div class="mes_block"><div class="mes_text">
 <p>【2013年5月20日 15:30|总武高中·奉仕部活动室|阴|例行公事的平静】</p>
@@ -100,9 +102,31 @@ def main():
         "data": {},
         "export_with": {"data": True, "button": True},
     }
+
+    # 独立脚本与卡内注册共用同一份元数据，避免源码已更新而卡内 info/id 仍指向旧构建。
+    with open(STATE_JSON, encoding="utf-8") as f:
+        state = json.load(f)
+    scripts = state["extensions"]["tavern_helper"]["scripts"]
+    entry = scripts.setdefault(
+        STATE_KEY,
+        {"type": "script", "script_file": "脚本/对话渲染.js"},
+    )
+    entry.update(
+        {
+            "enabled": True,
+            "id": payload["id"],
+            "info": payload["info"],
+            "button": payload["button"],
+            "data": payload["data"],
+        }
+    )
+
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
+    with open(STATE_JSON, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2)
+        f.write("\n")
 
     preview = PREVIEW_TEMPLATE.replace("__SAMPLE__", PREVIEW_SAMPLE).replace("__SCRIPT__", content)
     with open(OUT_PREVIEW, "w", encoding="utf-8") as f:

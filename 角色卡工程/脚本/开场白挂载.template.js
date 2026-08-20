@@ -481,6 +481,7 @@ console.info('[Counterfeit·开场白] eval');
 
   const POV_LABELS = {
     hachiman: '比企谷八幡',
+    hachiman_f: '比企谷八幡（性转）',
     yukino: '雪之下雪乃',
     yui: '由比滨结衣',
     laff: '拉芙希妮·都柏林',
@@ -498,7 +499,13 @@ console.info('[Counterfeit·开场白] eval');
     if (commitKind === 'resume') return '我已迁移旧档，请从存档中最后一个可观察时刻继续。';
     const campaignId = (stat && stat.campaign_id) || 'main';
     if (campaignId === 'dlc_genderbend_hachiman') {
-      return '我选择扮演比企谷八幡，进入《错位的日常》。';
+      const dlcPovKey = (stat && stat.current_pov) || null;
+      if (!dlcPovKey) {
+        const customName = stat && stat.custom_protagonist && stat.custom_protagonist.name;
+        return '我将以自建角色' + (customName ? '“' + customName + '”' : '') + '，进入《错位的日常》。';
+      }
+      const dlcPovLabel = POV_LABELS[dlcPovKey] || dlcPovKey;
+      return '我选择扮演' + dlcPovLabel + '，进入《错位的日常》。';
     }
     if (campaignId === 'dlc_body_swap_mrs_yukinoshita') {
       return stat && stat.current_pov === 'mrs_yukinoshita'
@@ -528,8 +535,10 @@ console.info('[Counterfeit·开场白] eval');
       }
       return base + '开始故事。';
     }
+    // 自定义序幕生效（自由世界）：user 标记不带默认日期，开局场景路由以序幕文本为准
+    const openingCustom = !!(stat && stat.opening_custom);
     return mode === 'free'
-      ? '我选择扮演' + povLabel + '，从2013年5月20日开始开放世界故事。'
+      ? '我选择扮演' + povLabel + (openingCustom ? '，按自定义序幕开始开放世界故事。' : '，从2013年5月20日开始开放世界故事。')
       : '我选择扮演' + povLabel + '，请从2013年5月20日的场景1开始故事。';
   }
 

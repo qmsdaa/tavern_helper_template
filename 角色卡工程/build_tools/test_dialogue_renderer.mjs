@@ -10,9 +10,81 @@ import path from 'node:path';
 
 const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
-const { parseBubbleLine, renderBubblesInHtml, renderMessageHtml, parseSceneHeader, buildInjectionText, MOOD_MAP, AVATAR_TABLE, KNOWN_NO_AVATAR } = require(
+const { parseBubbleLine, renderBubblesInHtml, renderMessageHtml, parseSceneHeader, buildInjectionText, openAvatarZoom, MOOD_MAP, AVATAR_TABLE, KNOWN_NO_AVATAR } = require(
   path.join(here, '..', '脚本', '对话渲染.js'),
 );
+
+class FakeElement {
+  constructor(ownerDocument) {
+    this.ownerDocument = ownerDocument;
+    this.listeners = new Map();
+    this.parentNode = null;
+    this.id = '';
+    this.className = '';
+    this.innerHTML = '';
+  }
+
+  addEventListener(type, listener) {
+    const listeners = this.listeners.get(type) || new Set();
+    listeners.add(listener);
+    this.listeners.set(type, listeners);
+  }
+
+  removeEventListener(type, listener) {
+    this.listeners.get(type)?.delete(listener);
+  }
+
+  dispatchEvent(event) {
+    for (const listener of this.listeners.get(event.type) || []) listener(event);
+  }
+
+  appendChild(child) {
+    child.parentNode = this;
+    this.ownerDocument.elements.push(child);
+    return child;
+  }
+
+  remove() {
+    if (!this.parentNode) return;
+    this.ownerDocument.elements = this.ownerDocument.elements.filter(element => element !== this);
+    this.parentNode = null;
+  }
+}
+
+class FakeDocument {
+  constructor() {
+    this.elements = [];
+    this.listeners = new Map();
+    this.body = new FakeElement(this);
+    this.documentElement = this.body;
+  }
+
+  createElement() {
+    return new FakeElement(this);
+  }
+
+  getElementById(id) {
+    return this.elements.find(element => element.id === id) || null;
+  }
+
+  addEventListener(type, listener) {
+    const listeners = this.listeners.get(type) || new Set();
+    listeners.add(listener);
+    this.listeners.set(type, listeners);
+  }
+
+  removeEventListener(type, listener) {
+    this.listeners.get(type)?.delete(listener);
+  }
+
+  dispatchEvent(event) {
+    for (const listener of [...(this.listeners.get(event.type) || [])]) listener(event);
+  }
+
+  listenerCount(type) {
+    return this.listeners.get(type)?.size || 0;
+  }
+}
 
 test('parseBubbleLine 解析标准台词行', () => {
   const got = parseBubbleLine('@bubble:雪之下雪乃|平静|[车来了。]');
@@ -245,8 +317,38 @@ test('头像表与无头像名单不重叠且键名齐全', () => {
   for (const name of KNOWN_NO_AVATAR) {
     assert.equal(AVATAR_TABLE[name], undefined, `${name} 不应有预置头像`);
   }
-  for (const required of ['比企谷八幡', '雪之下雪乃', '由比滨结衣', '拉芙希妮·都柏林', '材木座义辉', '海老名姬菜', '相模南', '折本香织', '户部翔', '雪之下夫人']) {
+  for (const required of ['比企谷八幡', '比企谷八幡（性转）', '雪之下雪乃', '由比滨结衣', '拉芙希妮·都柏林', '材木座义辉', '海老名姬菜', '相模南', '折本香织', '户部翔', '雪之下夫人']) {
     assert.ok(AVATAR_TABLE[required], `缺少 ${required} 的预置头像`);
     assert.match(AVATAR_TABLE[required], /^https:\/\/cdn\.jsdelivr\.net\//);
   }
+  assert.match(AVATAR_TABLE['比企谷八幡（性转）'], /genderbend_hachiman\.webp$/);
+});
+
+test('openAvatarZoom 点击关闭时同步解绑 Escape 监听', () => {
+  const doc = new FakeDocument();
+  openAvatarZoom(doc, 'https://example.invalid/avatar.webp', '测试角色');
+
+  const mask = doc.getElementById('cf-bubble-zoom-mask');
+  assert.ok(mask);
+  assert.equal(doc.listenerCount('keydown'), 1);
+
+  mask.dispatchEvent({ type: 'click' });
+  assert.equal(doc.getElementById('cf-bubble-zoom-mask'), null);
+  assert.equal(doc.listenerCount('keydown'), 0);
+});
+
+test('openAvatarZoom 重复打开先执行旧 cleanup，不积累监听器', () => {
+  const doc = new FakeDocument();
+  openAvatarZoom(doc, 'https://example.invalid/first.webp', '第一位');
+  const firstMask = doc.getElementById('cf-bubble-zoom-mask');
+
+  openAvatarZoom(doc, 'https://example.invalid/second.webp', '第二位');
+  const secondMask = doc.getElementById('cf-bubble-zoom-mask');
+  assert.notEqual(secondMask, firstMask);
+  assert.equal(firstMask.parentNode, null);
+  assert.equal(doc.listenerCount('keydown'), 1);
+
+  doc.dispatchEvent({ type: 'keydown', key: 'Escape' });
+  assert.equal(doc.getElementById('cf-bubble-zoom-mask'), null);
+  assert.equal(doc.listenerCount('keydown'), 0);
 });

@@ -51,9 +51,9 @@ const CharacterStateSchema = z.object({
 const IdentityStateSchema = z.union([
   z.object({
     kind: z.literal('transformation'),
-    current_body: z.literal('hachiman').prefault('hachiman'),
+    current_body: z.literal('hachiman_f').prefault('hachiman_f'),
     presentation: z.literal('female').prefault('female'),
-    legal_identity: z.literal('比企谷八幡').prefault('比企谷八幡'),
+    legal_identity: z.literal('比企谷八幡（性转）').prefault('比企谷八幡（性转）'),
     self_naming: z.literal('八幡').prefault('八幡'),
     cause_status: z.enum(['unknown', 'investigating', 'explained', 'resolved']).prefault('unknown'),
     disclosure: z.record(z.string(), z.any()).prefault({}),
@@ -85,13 +85,19 @@ const CollectionSchema = z.object({
   ending_unlocks: z.record(z.string(), z.boolean()).prefault({}),
 }).prefault({ version: 1, cg_unlocks: {}, ending_unlocks: {} });
 
+// 剧情模式自建角色的参与方式；自由世界自建与旧档保持 null
+const ParticipationSchema = z.object({
+  track: z.enum(['member', 'classmate', 'outsider']),
+  note: z.string().prefault(''),
+}).nullable().prefault(null);
+
 export const Schema = z.object({
   // ── 战役、模式与玩家视点 ──
   campaign_id: z.enum(['main', 'dlc_genderbend_hachiman', 'dlc_body_swap_mrs_yukinoshita']).prefault('main'),
   campaign_revision: z.coerce.number().int().min(1).prefault(1),
   mode: z.enum(['pov', 'custom', 'free']).nullable().prefault(null),
   // 兼容字段名 current_pov 的唯一语义是“不可变玩家视点／稳定意识”
-  current_pov: z.enum(['hachiman', 'yukino', 'yui', 'laff', 'mrs_yukinoshita']).nullable().prefault(null),
+  current_pov: z.enum(['hachiman', 'hachiman_f', 'yukino', 'yui', 'laff', 'mrs_yukinoshita']).nullable().prefault(null),
   custom_protagonist: z.object({
     name: z.string().prefault(''),
     gender: z.string().prefault(''),
@@ -100,10 +106,16 @@ export const Schema = z.object({
     past: z.string().prefault(''),
     personality: z.string().prefault(''),
     appearance: z.string().prefault(''),
+    participation: ParticipationSchema,
   }).nullable().prefault(null),
 
   // ── 恋爱难度（开场白 commit 写入·仅开局可定）──
   difficulty: z.enum(['简单', '普通', '困难']).nullable().prefault(null),
+
+  // ── 自定义序幕标记（开场白 commit 写入：玩家编辑过自定义序幕文本时 true）──
+  // 自由世界（main free / DLC free）开局路由以此为准：以玩家序幕为开局唯一依据，
+  // 不再固定 2013-05-20 拉芙转学 / DLC 官方锚点；日期由 commit 从序幕文本解析或保持模式默认
+  opening_custom: z.boolean().prefault(false),
 
   // ── 剧本进度 ──
   current_scene: z.coerce.number().int().transform((v) => _.clamp(v, 1, 150)).prefault(1),
@@ -268,7 +280,8 @@ export const Schema = z.object({
 }).superRefine((stat, ctx) => {
   const issue = (path, message) => ctx.addIssue({ code: 'custom', path, message });
   if (stat.campaign_id === 'main') {
-    if (stat.current_pov === 'mrs_yukinoshita') issue(['current_pov'], '雪之下夫人不是主线可选玩家视点');
+    const mainPovOk = stat.current_pov === null || ['hachiman', 'yukino', 'yui', 'laff'].includes(stat.current_pov);
+    if (!mainPovOk) issue(['current_pov'], '主线玩家视点只能是八幡/雪乃/结衣/拉芙或空值');
     if (stat.identity_state !== null) issue(['identity_state'], 'main 战役不得携带 DLC 身份状态');
     if (stat.mainline_completed !== stat.campaign_completed) issue(['mainline_completed'], 'mainline_completed 必须镜像 main 的 campaign_completed');
   } else {
@@ -276,7 +289,13 @@ export const Schema = z.object({
     if (stat.current_scene !== 1) issue(['current_scene'], '开放世界 DLC 的 current_scene 只能是兼容占位 1');
     if (stat.mainline_completed) issue(['mainline_completed'], 'DLC 不得写入主线完成态');
   }
-  if (stat.campaign_id === 'dlc_genderbend_hachiman' && (stat.current_pov !== 'hachiman' || stat.identity_state?.kind !== 'transformation')) issue(['identity_state'], '《错位的日常》身份组合非法');
+  if (stat.campaign_id === 'dlc_genderbend_hachiman') {
+    const dlcPovOk =
+      (stat.current_pov === 'hachiman_f' && stat.identity_state?.kind === 'transformation') ||
+      (['yukino', 'yui', 'laff'].includes(stat.current_pov ?? '') && stat.identity_state === null) ||
+      (stat.current_pov === null && stat.identity_state === null && stat.custom_protagonist !== null);
+    if (!dlcPovOk) issue(['identity_state'], '《错位的日常》身份组合非法：仅 比企谷八幡（性转）/雪乃/结衣/拉芙/自建 五种开局');
+  }
   if (stat.campaign_id === 'dlc_body_swap_mrs_yukinoshita') {
     if (!['hachiman', 'mrs_yukinoshita'].includes(stat.current_pov ?? '') || stat.identity_state?.kind !== 'body_swap') issue(['identity_state'], '《君的名字？》身份组合非法');
     else if (stat.identity_state.occupants.body_hachiman === stat.identity_state.occupants.body_mrs_yukinoshita) issue(['identity_state', 'occupants'], '两具身体必须由两个不同意识占据');

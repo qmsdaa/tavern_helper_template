@@ -25,6 +25,19 @@ export interface PovCopy {
   exclusive?: string;
 }
 
+/** 《错位的日常》DLC 角色卡（错位世界可扮演集合：性转八幡为 DLC 专属，其余为主角正常形态） */
+export interface DlcPovCopy {
+  key: 'hachiman_f' | 'yukino' | 'yui' | 'laff';
+  name: string;
+  portrait: string;
+  /** 定位标签 */
+  role: string;
+  /** 是否 DLC 专属角色（性转八幡）——界面显示专属徽章 */
+  dlcExclusive?: boolean;
+  /** 无剧透的一句话简介 */
+  tagline: string;
+}
+
 export interface GalleryCopyItem {
   title: string;
   caption: string;
@@ -56,9 +69,14 @@ interface CopyFile {
   difficulty: Record<string, DifficultyCopy>;
   campaigns: Record<'main' | 'dlc_genderbend_hachiman' | 'dlc_body_swap_mrs_yukinoshita', CampaignCopy>;
   povs: PovCopy[];
+  dlc_povs?: DlcPovCopy[];
   openings: Record<PovCopy['key'], string> & {
     custom: string;
     dlc_genderbend_hachiman: string;
+    dlc_genderbend_yukino: string;
+    dlc_genderbend_yui: string;
+    dlc_genderbend_laff: string;
+    dlc_genderbend_custom: string;
     dlc_body_swap_hachiman: string;
     dlc_body_swap_mrs_yukinoshita: string;
   };
@@ -75,6 +93,8 @@ export type DifficultyKey = '简单' | '普通' | '困难';
 export const DIFFICULTY_LIST: DifficultyKey[] = ['简单', '普通', '困难'];
 export const DIFFICULTY_COPY = COPY.difficulty as Record<DifficultyKey, DifficultyCopy>;
 export const POV_LIST = COPY.povs;
+/** 《错位的日常》DLC 角色卡列表（含 DLC 专属 比企谷八幡（性转）） */
+export const DLC_POV_LIST: DlcPovCopy[] = COPY.dlc_povs ?? [];
 export const OPENING_TEXTS = COPY.openings;
 /** 画廊条目：优先用脚本生成的真实图片清单（assets/tools/build_gallery.py），空则回退 copy.yaml 占位项 */
 export const GALLERY_COPY = {
@@ -88,8 +108,18 @@ export function povByKey(key: PovKey): PovCopy {
   return POV_LIST.find(p => p.key === key) ?? POV_LIST[0];
 }
 
+export function dlcPovByKey(key: DlcPovCopy['key']): DlcPovCopy {
+  return DLC_POV_LIST.find(p => p.key === key) ?? DLC_POV_LIST[0];
+}
+
 /** 渲染自建角色开场文本：替换 {{姓名}} 占位符 */
 export function renderCustomOpening(name: string): string {
   const display = name.trim() || '我';
   return OPENING_TEXTS.custom.replaceAll('{{姓名}}', display);
+}
+
+/** 渲染《错位的日常》DLC 自建角色开场文本：替换 {{姓名}} 占位符 */
+export function renderDlcCustomOpening(name: string): string {
+  const display = name.trim() || '我';
+  return OPENING_TEXTS.dlc_genderbend_custom.replaceAll('{{姓名}}', display);
 }

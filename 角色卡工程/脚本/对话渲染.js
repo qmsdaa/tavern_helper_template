@@ -4,7 +4,7 @@
  *   - 格式注入：injectPrompts 三层降级（→ setExtensionPrompt → 警告），CHAT_CHANGED 重注
  *   - DOM 渲染：MutationObserver + 酒馆助手事件双驱动，把 @bubble 行渲染成樱花护眼气泡
  *   - 正文美化：渲染过气泡的消息整体铺羊皮纸卡片（可切 羊皮纸/暗夜/豆沙绿 三主题，面板切换）
- *   - 头像：20 名角色 CDN 预置（状态栏同源 512×512）+ 面板自定义（URL / 本地上传 IndexedDB）
+ *   - 头像：20 名角色 CDN 预置（状态栏同源 512×512）+ 面板自定义（URL / 本地上传 IndexedDB）+ 点击放大
  *   - 不做：情绪差分头像、CG 图库、字体管理（v7.1 的这些模块本卡用不上）
  * 与卡内契约的兼容：MVU <update> 变量块、第一人称视点、内心触发机制全部照旧——
  * 注入文本里显式声明"只改排版不改规则"，渲染只匹配 @bubble 行，不触碰其他内容。
@@ -41,11 +41,12 @@ const MOOD_MAP = (() => {
 })();
 
 /** CDN 头像根（与 前端工程/src/Counterfeit/config.ts 的 STATUS_AVATAR_BASE 同仓库同 commit，改 commit 两边同步） */
-const AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@0fa8d8a2aea96fb68f9877263ab3b5fe8c0ee353/assets/Counterfeit/状态栏/avatars';
+const AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@c947510/assets/Counterfeit/状态栏/avatars';
 
 /** 规范全名 → 头像文件名（与 状态栏/utils.ts PORTRAIT_KEYS 同构，缺素材的角色不在此列） */
 const AVATAR_KEYS = Object.freeze({
   '比企谷八幡': 'hachiman',
+  '比企谷八幡（性转）': 'genderbend_hachiman',
   '雪之下雪乃': 'yukino',
   '由比滨结衣': 'yui',
   '拉芙希妮·都柏林': 'laff',
@@ -253,7 +254,7 @@ function renderMessageHtml(html, avatarOf) {
 
 // node 无头测试导出（酒馆沙箱里 module 不存在，跳过即可）
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { parseBubbleLine, renderBubblesInHtml, renderBubbleText, renderMessageHtml, parseSceneHeader, buildInjectionText, MOOD_GROUPS, MOOD_MAP, AVATAR_TABLE, KNOWN_NO_AVATAR, escapeHtml };
+  module.exports = { parseBubbleLine, renderBubblesInHtml, renderBubbleText, renderMessageHtml, parseSceneHeader, buildInjectionText, openAvatarZoom, MOOD_GROUPS, MOOD_MAP, AVATAR_TABLE, KNOWN_NO_AVATAR, escapeHtml };
 }
 
 // ████████████████████████████████████████████████████████████
@@ -317,7 +318,7 @@ const STYLE_TEXT = `
 .cf-bub{display:flex;gap:12px;margin:14px 4px;align-items:flex-start;font-size:var(--cf-bubble-fs,15px);line-height:var(--cf-line-height,1.7)}
 .cf-bub-avatar{flex:0 0 auto;width:36px;height:52px;border-radius:8px;padding:2px;background:var(--cf-avatar-bg,#fdfaf4);
   box-shadow:0 0 0 2px var(--cf-ring,#b8a6ab),0 2px 8px rgba(120,90,100,.12);overflow:hidden;
-  display:flex;align-items:center;justify-content:center}
+  display:flex;align-items:center;justify-content:center;cursor:zoom-in}
 .cf-bub-avatar-img{width:100%;height:100%;object-fit:cover;border-radius:6px;display:block}
 .cf-bub-avatar-fallback{font-size:18px;color:var(--cf-accent-soft,#a5737f);font-weight:600;user-select:none}
 .cf-bub-main{flex:1 1 auto;min-width:0;max-width:80%}
@@ -352,6 +353,12 @@ const STYLE_TEXT = `
 .cf-bub-inner .cf-bub-bubble::before{background:var(--cf-inner-bg,#f7f3e8);
   border-color:var(--cf-inner-border,#e3d3c6);border-left-style:dashed;border-top-style:dashed}
 .cf-bub-inner .cf-bub-name{color:var(--cf-accent,#b0708a)}
+/* 头像放大浮层（点击 cf-bub-avatar 触发，点击遮罩外/按 Esc 关闭） */
+.cf-zoom-mask{position:fixed;inset:0;background:rgba(104,91,85,.24);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:zoom-out;backdrop-filter:blur(6px);padding:clamp(18px,4vw,36px);box-sizing:border-box}
+.cf-zoom-mask img{display:block;width:auto;max-width:min(420px,82vw);height:auto;max-height:74vh;object-fit:contain;border:1px solid rgba(143,119,108,.2);border-radius:18px;padding:clamp(10px,2vw,18px);box-sizing:border-box;box-shadow:0 16px 48px rgba(85,64,58,.22);background:#f4f1ea}
+.cf-zoom-mask .cf-zoom-caption{color:#5b4a4f;font-size:13px;margin-top:14px;letter-spacing:1px;font-weight:600}
+.cf-zoom-mask .cf-zoom-hint{color:#7f7074;font-size:11px;margin-top:6px;opacity:.82}
+.cf-zoom-mask-fallback{width:min(320px,70vw);aspect-ratio:9/13;max-height:74vh;border:1px solid rgba(143,119,108,.2);border-radius:18px;background:#f4f1ea;color:#a5737f;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:120px;box-shadow:0 16px 48px rgba(85,64,58,.22)}
 /* 面板 */
 .cf-panel-mask{position:fixed;inset:0;background:rgba(60,40,50,.35);z-index:99990}
 .cf-panel-iframe{position:fixed;top:8vh;left:50%;transform:translateX(-50%);width:min(520px,92vw);height:min(680px,84vh);border:none;border-radius:14px;z-index:99991;box-shadow:0 8px 40px rgba(90,60,70,.25);background:#fdfaf4}
@@ -665,6 +672,63 @@ function applyInjection() {
 // █  Part 7: 设置与头像自定义面板                             █
 // ████████████████████████████████████████████████████████████
 
+/* 头像放大浮层：点击任意 .cf-bub-avatar 触发，键盘 Esc 关闭 */
+const AVATAR_ZOOM_CLEANUP = '__cfAvatarZoomCleanup';
+
+function openAvatarZoom(doc, src, name) {
+  const old = doc.getElementById('cf-bubble-zoom-mask');
+  if (old) {
+    const oldCleanup = old[AVATAR_ZOOM_CLEANUP];
+    if (typeof oldCleanup === 'function') oldCleanup();
+    else old.remove();
+  }
+  const mask = doc.createElement('div');
+  mask.id = 'cf-bubble-zoom-mask';
+  mask.className = 'cf-zoom-mask';
+  const isImageSrc = typeof src === 'string' && /^blob:|^data:image|^https?:/.test(src);
+  const imageHtml = isImageSrc
+    ? `<img src="${escapeHtml(src)}" alt="${escapeHtml(name)}" />`
+    : `<div class="cf-zoom-mask-fallback">${escapeHtml((name || '？').replace(/[？\s]/g, '').charAt(0) || '？')}</div>`;
+  mask.innerHTML = `
+    ${imageHtml}
+    <div class="cf-zoom-caption">${escapeHtml(name || '未知角色')}</div>
+    <div class="cf-zoom-hint">点击任意处 / 按 Esc 关闭</div>`;
+  let closed = false;
+  const onKey = (e) => {
+    if (e.key === 'Escape') close();
+  };
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    mask.removeEventListener('click', close);
+    doc.removeEventListener('keydown', onKey, true);
+    if (mask[AVATAR_ZOOM_CLEANUP] === close) delete mask[AVATAR_ZOOM_CLEANUP];
+    mask.remove();
+  };
+  mask[AVATAR_ZOOM_CLEANUP] = close;
+  mask.addEventListener('click', close);
+  doc.addEventListener('keydown', onKey, true);
+  (doc.body || doc.documentElement).appendChild(mask);
+}
+
+/* 一次性事件代理：捕获所有 .cf-bub-avatar 的点击 → 打开放大浮层 */
+function bindAvatarZoom(doc) {
+  if (doc.getElementById('cf-bubble-zoom-bound')) return;
+  const marker = doc.createElement('meta');
+  marker.id = 'cf-bubble-zoom-bound';
+  (doc.head || doc.documentElement).appendChild(marker);
+  const handler = (event) => {
+    const t = event.target;
+    if (!t || !t.closest || !t.closest('.cf-bub-avatar')) return;
+    const avatar = t.closest('.cf-bub-avatar');
+    const bub = avatar.closest('.cf-bub');
+    const name = bub?.getAttribute('data-name') || avatar.getAttribute('title') || '';
+    const img = avatar.querySelector('img.cf-bub-avatar-img');
+    openAvatarZoom(doc, img ? img.getAttribute('src') : null, name);
+  };
+  doc.addEventListener('click', handler, true);
+}
+
 function openPanel(doc) {
   if (doc.getElementById('cf-bubble-panel-mask')) return;
 
@@ -825,6 +889,7 @@ function boot() {
   applyInjection();
   if (loadConfig().enabled) scheduleRender(doc);
   startObserver(doc);
+  bindAvatarZoom(doc);
   doc.defaultView.addEventListener('message', onPanelMessage);
 
   // 酒馆助手按钮：与文档查找解耦，确保在 API 就绪后注册
@@ -840,6 +905,7 @@ function boot() {
         applyInjection();
         const nextDoc = findHostDocument() || doc;
         if (loadConfig().enabled) scheduleRender(nextDoc);
+        bindAvatarZoom(nextDoc);
       });
     }
   } catch (err) {

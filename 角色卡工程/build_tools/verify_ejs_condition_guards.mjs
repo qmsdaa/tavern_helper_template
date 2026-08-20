@@ -55,7 +55,12 @@ const RUNTIME_CONTEXTS = [
   { label: 'main/pov/yui', stat: { campaign_id: 'main', mode: 'pov', current_pov: 'yui', characters: ctxChars([]) } },
   { label: 'main/free', stat: { campaign_id: 'main', mode: 'free', current_pov: null, characters: ctxChars(ALL_CHARS) } },
   { label: 'main/custom', stat: { campaign_id: 'main', mode: 'custom', current_pov: null, characters: ctxChars(ALL_CHARS) } },
-  { label: 'dlc/genderbend', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'hachiman', characters: ctxChars(ALL_CHARS) } },
+  // 《错位的日常》多可扮演视角（2026-08-18）：性转八幡 DLC 专属 + 三主角 + 自建
+  { label: 'dlc/genderbend/hachiman_f', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'hachiman_f', identity_state: { kind: 'transformation', current_body: 'hachiman_f' }, characters: ctxChars(ALL_CHARS) } },
+  { label: 'dlc/genderbend/yukino', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'yukino', identity_state: null, characters: ctxChars(ALL_CHARS) } },
+  { label: 'dlc/genderbend/yui', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'yui', identity_state: null, characters: ctxChars(ALL_CHARS) } },
+  { label: 'dlc/genderbend/laff', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'laff', identity_state: null, characters: ctxChars(ALL_CHARS) } },
+  { label: 'dlc/genderbend/custom', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: null, custom_protagonist: { name: '自建' }, identity_state: null, characters: ctxChars(ALL_CHARS) } },
   { label: 'dlc/swap/hachiman', stat: { campaign_id: 'dlc_body_swap_mrs_yukinoshita', mode: 'free', current_pov: 'hachiman', characters: ctxChars(ALL_CHARS) } },
   { label: 'dlc/swap/mrs', stat: { campaign_id: 'dlc_body_swap_mrs_yukinoshita', mode: 'free', current_pov: 'mrs_yukinoshita', characters: ctxChars(ALL_CHARS) } },
   // 尾声分支门控（2026-08-15）：mainline_completed=true + branch_choice 各值

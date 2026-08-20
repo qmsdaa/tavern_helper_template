@@ -14,7 +14,8 @@ const stale = [];
 const refinement = `.superRefine((stat, ctx) => {
   const issue = (path, message) => ctx.addIssue({ code: 'custom', path, message });
   if (stat.campaign_id === 'main') {
-    if (stat.current_pov === 'mrs_yukinoshita') issue(['current_pov'], '雪之下夫人不是主线可选玩家视点');
+    const mainPovOk = stat.current_pov === null || ['hachiman', 'yukino', 'yui', 'laff'].includes(stat.current_pov);
+    if (!mainPovOk) issue(['current_pov'], '主线玩家视点只能是八幡/雪乃/结衣/拉芙或空值');
     if (stat.identity_state !== null) issue(['identity_state'], 'main 战役不得携带 DLC 身份状态');
     if (stat.mainline_completed !== stat.campaign_completed) issue(['mainline_completed'], 'mainline_completed 必须镜像 main 的 campaign_completed');
   } else {
@@ -22,7 +23,13 @@ const refinement = `.superRefine((stat, ctx) => {
     if (stat.current_scene !== 1) issue(['current_scene'], '开放世界 DLC 的 current_scene 只能是兼容占位 1');
     if (stat.mainline_completed) issue(['mainline_completed'], 'DLC 不得写入主线完成态');
   }
-  if (stat.campaign_id === 'dlc_genderbend_hachiman' && (stat.current_pov !== 'hachiman' || stat.identity_state?.kind !== 'transformation')) issue(['identity_state'], '《错位的日常》身份组合非法');
+  if (stat.campaign_id === 'dlc_genderbend_hachiman') {
+    const dlcPovOk =
+      (stat.current_pov === 'hachiman_f' && stat.identity_state?.kind === 'transformation') ||
+      (['yukino', 'yui', 'laff'].includes(stat.current_pov ?? '') && stat.identity_state === null) ||
+      (stat.current_pov === null && stat.identity_state === null && stat.custom_protagonist !== null);
+    if (!dlcPovOk) issue(['identity_state'], '《错位的日常》身份组合非法：仅 比企谷八幡（性转）/雪乃/结衣/拉芙/自建 五种开局');
+  }
   if (stat.campaign_id === 'dlc_body_swap_mrs_yukinoshita') {
     if (!['hachiman', 'mrs_yukinoshita'].includes(stat.current_pov ?? '') || stat.identity_state?.kind !== 'body_swap') issue(['identity_state'], '《君的名字？》身份组合非法');
     else if (stat.identity_state.occupants.body_hachiman === stat.identity_state.occupants.body_mrs_yukinoshita) issue(['identity_state', 'occupants'], '两具身体必须由两个不同意识占据');
