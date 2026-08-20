@@ -15,18 +15,27 @@
   .mes_text{color:#5b4a4f}
   #chat.cf-theme-dark .mes_text{color:#e8ded9}
   #chat.cf-theme-green .mes_text{color:#43503f}
-  .mes_text p{margin:8px 0;font-size:14px;line-height:1.75}
+  .mes_text p{margin:8px 0;font-size:15.5px;line-height:1.8}
   #theme-bar{display:flex;gap:10px;justify-content:center;margin:0 auto 14px;max-width:300px}
   #theme-bar button{flex:1;padding:5px 0;border:1px solid #e87a90;border-radius:8px;background:#fdf1f3;color:#c05a72;cursor:pointer}
   #theme-bar button:hover{background:#e87a90;color:#fff}
+  #config-bar{display:flex;gap:12px;justify-content:center;align-items:center;margin:0 auto 16px;max-width:560px;flex-wrap:wrap;font-size:12px;color:#5b4a4f}
+  #config-bar label{display:flex;align-items:center;gap:6px}
+  #config-bar input[type=range]{accent-color:#e87a90;width:120px}
+  #config-bar .cf-theme-btn{padding:4px 10px;border:1px solid #e87a90;border-radius:8px;background:#fdf1f3;color:#c05a72;cursor:pointer}
+  #config-bar .cf-theme-btn:hover{background:#e87a90;color:#fff}
 </style>
 </head>
 <body>
 <h1>对话渲染预览（本地静态 · 真实跑渲染引擎）</h1>
-<div id="theme-bar">
-  <button data-t="parchment">羊皮纸</button>
-  <button data-t="dark">暗夜</button>
-  <button data-t="green">豆沙绿</button>
+<div id="config-bar">
+  <button class="cf-theme-btn" data-t="parchment">羊皮纸</button>
+  <button class="cf-theme-btn" data-t="dark">暗夜</button>
+  <button class="cf-theme-btn" data-t="green">豆沙绿</button>
+  <label>气泡字号 <input id="bubble-fs" type="range" min="12" max="22" step="0.5" value="17" /></label>
+  <label>旁白字号 <input id="narrative-fs" type="range" min="12" max="22" step="0.5" value="15.5" /></label>
+  <label>行距 <input id="line-height" type="range" min="1.4" max="2.0" step="0.05" value="1.75" /></label>
+  <label>头像大小 <input id="avatar-size" type="range" min="36" max="72" step="2" value="48" /></label>
 </div>
 <div id="chat"><div class="mes_block"><div class="mes_text">
 <p>【2013年5月20日 15:30|总武高中·奉仕部活动室|阴|例行公事的平静】</p>
@@ -46,6 +55,7 @@
  *   - DOM 渲染：MutationObserver + 酒馆助手事件双驱动，把 @bubble 行渲染成樱花护眼气泡
  *   - 正文美化：渲染过气泡的消息整体铺羊皮纸卡片（可切 羊皮纸/暗夜/豆沙绿 三主题，面板切换）
  *   - 头像：20 名角色 CDN 预置（状态栏同源 512×512）+ 面板自定义（URL / 本地上传 IndexedDB）+ 点击放大
+ *   - 面板：同源内联 HTML/CSS/JS 设置面板（主题 / 气泡字号 / 旁白字号 / 行距 / 头像大小 / 头像自定义）
  *   - 不做：情绪差分头像、CG 图库、字体管理（v7.1 的这些模块本卡用不上）
  * 与卡内契约的兼容：MVU <update> 变量块、第一人称视点、内心触发机制全部照旧——
  * 注入文本里显式声明"只改排版不改规则"，渲染只匹配 @bubble 行，不触碰其他内容。
@@ -87,10 +97,14 @@ const AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_c
 /** 规范全名 → 头像文件名（与 状态栏/utils.ts PORTRAIT_KEYS 同构，缺素材的角色不在此列） */
 const AVATAR_KEYS = Object.freeze({
   '比企谷八幡': 'hachiman',
+  '八幡': 'hachiman',
   '比企谷八幡（性转）': 'genderbend_hachiman',
   '雪之下雪乃': 'yukino',
+  '雪乃': 'yukino',
   '由比滨结衣': 'yui',
+  '结衣': 'yui',
   '拉芙希妮·都柏林': 'laff',
+  '拉芙希妮': 'laff',
   '一色彩羽': 'iroha',
   '三浦优美子': 'yumiko',
   '叶山隼人': 'hayama',
@@ -295,7 +309,7 @@ function renderMessageHtml(html, avatarOf) {
 
 // node 无头测试导出（酒馆沙箱里 module 不存在，跳过即可）
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { parseBubbleLine, renderBubblesInHtml, renderBubbleText, renderMessageHtml, parseSceneHeader, buildInjectionText, openAvatarZoom, MOOD_GROUPS, MOOD_MAP, AVATAR_TABLE, KNOWN_NO_AVATAR, escapeHtml };
+  module.exports = { parseBubbleLine, renderBubblesInHtml, renderBubbleText, renderMessageHtml, parseSceneHeader, buildInjectionText, canonicalCastNames, openAvatarZoom, MOOD_GROUPS, MOOD_MAP, AVATAR_TABLE, KNOWN_NO_AVATAR, escapeHtml };
 }
 
 // ████████████████████████████████████████████████████████████
@@ -304,29 +318,25 @@ if (typeof module !== 'undefined' && module.exports) {
 
 const PROMPT_INJECTION_ID = 'counterfeit-bubble-format';
 
-/**
- * 设置面板 URL。
- * 发布到社区前，请把 DEFAULT_PANEL_URL 替换为你上传的 CDN/Github Pages 地址。
- * 本地开发时可在浏览器控制台执行：
- *   localStorage.setItem('cf_bubble_panel_url', 'http://localhost:6621/dist/Counterfeit/界面/对话渲染/index.html')
- * 然后刷新页面即可覆盖。
- */
-const DEFAULT_PANEL_URL = 'https://cdn.jsdelivr.net/gh/<user>/counterfeit-bubble-panel@latest/index.html';
-const PANEL_URL = (() => {
-  try {
-    return localStorage.getItem('cf_bubble_panel_url') || DEFAULT_PANEL_URL;
-  } catch (_) {
-    return DEFAULT_PANEL_URL;
+/** 具名角色规范名单：按头像 URL 去重别名（爱布拉娜·都柏林 / 爱布拉娜 只保留全名爱布拉娜·都柏林） */
+function canonicalCastNames() {
+  const names = [];
+  const seenKey = new Set();
+  for (const name of Object.keys(AVATAR_TABLE)) {
+    const key = AVATAR_TABLE[name];
+    if (seenKey.has(key)) continue;
+    seenKey.add(key);
+    names.push(name);
   }
-})();
-const PANEL_ORIGIN = new URL(PANEL_URL).origin;
+  return names;
+}
 
 function buildMoodPoolText() {
   return MOOD_GROUPS.map(group => `【${group.label}】${group.words.join('、')}`).join('\n');
 }
 
 function buildInjectionText() {
-  const castNames = Object.keys(AVATAR_KEYS).filter(name => name !== '爱布拉娜').concat([...KNOWN_NO_AVATAR]);
+  const castNames = canonicalCastNames().concat([...KNOWN_NO_AVATAR, ...loadExtraNames()]);
   return `[对话气泡排版规则——在既有输出契约之上叠加，优先级低于一切世界观/禁则/视点规则]
 本规则只改变台词与内心的排版，其余一切照旧：第一人称视点、内心触发机制（未命中不写内心）、MVU 变量更新块、称呼规范与禁则全部不受影响。
 
@@ -356,22 +366,23 @@ const STYLE_TEXT = `
   --cf-page-bg:#e6f1da;--cf-page-text:#475341;--cf-page-border:#cfdfc0;--cf-page-shadow:rgba(90,120,80,.12)}
 /* 统一字体栈：优先现代系统字体，保持中文清晰可读 */
 .cf-bub-host,.cf-bub{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif}
-.cf-bub{display:flex;gap:12px;margin:14px 4px;align-items:flex-start;font-size:var(--cf-bubble-fs,15px);line-height:var(--cf-line-height,1.7)}
-.cf-bub-avatar{flex:0 0 auto;width:36px;height:52px;border-radius:8px;padding:2px;background:var(--cf-avatar-bg,#fdfaf4);
+.cf-bub{display:flex;gap:14px;margin:16px 4px;align-items:flex-start;font-size:var(--cf-bubble-fs,17px);line-height:var(--cf-line-height,1.75)}
+.cf-bub-avatar{flex:0 0 auto;box-sizing:border-box;width:var(--cf-avatar-size,48px);height:calc(var(--cf-avatar-size,48px) * 1.44);border-radius:8px;padding:2px;background:var(--cf-avatar-bg,#fdfaf4);
   box-shadow:0 0 0 2px var(--cf-ring,#b8a6ab),0 2px 8px rgba(120,90,100,.12);overflow:hidden;
-  display:flex;align-items:center;justify-content:center;cursor:zoom-in}
+  display:flex;align-items:center;justify-content:center;cursor:zoom-in;transition:transform .15s ease,box-shadow .15s ease}
+.cf-bub-avatar:hover{transform:scale(1.04);box-shadow:0 0 0 2px var(--cf-ring,#b8a6ab),0 4px 14px rgba(120,90,100,.22)}
 .cf-bub-avatar-img{width:100%;height:100%;object-fit:cover;border-radius:6px;display:block}
-.cf-bub-avatar-fallback{font-size:18px;color:var(--cf-accent-soft,#a5737f);font-weight:600;user-select:none}
+.cf-bub-avatar-fallback{font-size:calc(var(--cf-avatar-size,48px) * .42);color:var(--cf-accent-soft,#a5737f);font-weight:600;user-select:none;line-height:1}
 .cf-bub-main{flex:1 1 auto;min-width:0;max-width:80%}
-.cf-bub-plate{display:flex;align-items:baseline;gap:8px;margin:0 0 5px 4px}
-.cf-bub-name{color:var(--cf-accent,#c05a72);font-weight:700;font-size:14px;letter-spacing:.5px}
-.cf-bub-mood{font-size:10.5px;color:var(--cf-mood,#b8a6ab);border:1px solid currentColor;border-radius:10px;
-  padding:1px 7px;line-height:15px;opacity:.9;font-weight:500}
-.cf-bub-inner-tag{font-size:10.5px;color:var(--cf-accent-soft,#a5737f);border:1px dashed #d9b8c0;border-radius:10px;padding:1px 7px;line-height:15px;font-weight:500}
+.cf-bub-plate{display:flex;align-items:baseline;gap:8px;margin:0 0 6px 4px}
+.cf-bub-name{color:var(--cf-accent,#c05a72);font-weight:700;font-size:calc(var(--cf-bubble-fs,17px) * .85);letter-spacing:.5px}
+.cf-bub-mood{font-size:calc(var(--cf-bubble-fs,17px) * .62);color:var(--cf-mood,#b8a6ab);border:1px solid currentColor;border-radius:10px;
+  padding:1px 8px;line-height:1.4;opacity:.9;font-weight:500}
+.cf-bub-inner-tag{font-size:calc(var(--cf-bubble-fs,17px) * .62);color:var(--cf-accent-soft,#a5737f);border:1px dashed #d9b8c0;border-radius:10px;padding:1px 8px;line-height:1.4;font-weight:500}
 .cf-bub-bubble{position:relative;background:var(--cf-bub-bg,#fbf5ec);color:var(--cf-bub-text,#5b4a4f);
   border:1px solid var(--cf-bub-border,#efe0e3);border-radius:4px 16px 16px 16px;
-  padding:10px 14px;box-shadow:0 1px 4px rgba(140,100,110,.08);word-break:break-word;white-space:pre-wrap;
-  font-size:var(--cf-bubble-fs,15px);line-height:var(--cf-line-height,1.7)}
+  padding:12px 16px;box-shadow:0 1px 4px rgba(140,100,110,.08);word-break:break-word;white-space:pre-wrap;
+  font-size:var(--cf-bubble-fs,17px);line-height:var(--cf-line-height,1.75)}
 .cf-bub-bubble::before{content:"";position:absolute;left:-6px;top:0;width:10px;height:10px;
   background:var(--cf-bub-bg,#fbf5ec);border-left:1px solid var(--cf-bub-border,#efe0e3);
   border-top:1px solid var(--cf-bub-border,#efe0e3);border-radius:2px 0 0 0;transform:skewX(-12deg)}
@@ -379,18 +390,18 @@ const STYLE_TEXT = `
   border-color:var(--cf-inner-border,#e3d3c6);font-style:italic;color:var(--cf-inner-text,#6b5a58)}
 .cf-bub-em{font-style:italic}
 /* 场景头横幅（樱粉标题 + 半透明细线，三色主题通用） */
-.cf-scene-banner{text-align:center;margin:16px 8px 14px;padding:8px 4px;letter-spacing:2px;
+.cf-scene-banner{text-align:center;margin:18px 8px 14px;padding:8px 4px;letter-spacing:2px;
   border-top:1px solid rgba(192,90,114,.35);border-bottom:1px solid rgba(192,90,114,.35)}
-.cf-scene-time{display:block;font-size:14px;font-weight:600;color:var(--cf-accent-bright,#d97a92)}
-.cf-scene-meta{display:block;font-size:11.5px;opacity:.75;margin-top:3px;letter-spacing:1px}
+.cf-scene-time{display:block;font-size:calc(var(--cf-bubble-fs,17px) * .85);font-weight:600;color:var(--cf-accent-bright,#d97a92)}
+.cf-scene-meta{display:block;font-size:calc(var(--cf-bubble-fs,17px) * .7);opacity:.75;margin-top:3px;letter-spacing:1px}
 .cf-scene-sep{margin:0 6px;opacity:.6}
 /* 正文羊皮纸卡片：渲染过气泡/横幅的消息整体铺纸感底色（与气泡同套变量，风格统一），
    纯文本段落按小说排版（首行缩进+两端对齐+舒适行距），图片段落豁免；
    #chat 前缀压过酒馆核心样式的 ID 选择器 */
 #chat .cf-bub-host{background:var(--cf-page-bg,#f6efdc);color:var(--cf-page-text,#5b4a4f);
-  border:1px solid var(--cf-page-border,#e7dbc0);border-radius:12px;padding:14px 16px;margin:8px 0;
+  border:1px solid var(--cf-page-border,#e7dbc0);border-radius:12px;padding:14px 18px;margin:10px 0;
   box-shadow:0 1px 6px var(--cf-page-shadow,rgba(140,110,80,.10))}
-#chat .cf-bub-host>p:not(:has(img)){text-indent:2em;text-align:justify;line-height:var(--cf-line-height,1.75);margin:8px 2px;font-size:var(--cf-narrative-fs,13.5px);opacity:.95}
+#chat .cf-bub-host>p:not(:has(img)){text-indent:2em;text-align:justify;line-height:var(--cf-line-height,1.8);margin:8px 2px;font-size:var(--cf-narrative-fs,15.5px);opacity:.95}
 .cf-bub-inner .cf-bub-bubble::before{background:var(--cf-inner-bg,#f7f3e8);
   border-color:var(--cf-inner-border,#e3d3c6);border-left-style:dashed;border-top-style:dashed}
 .cf-bub-inner .cf-bub-name{color:var(--cf-accent,#b0708a)}
@@ -400,9 +411,51 @@ const STYLE_TEXT = `
 .cf-zoom-mask .cf-zoom-caption{color:#5b4a4f;font-size:13px;margin-top:14px;letter-spacing:1px;font-weight:600}
 .cf-zoom-mask .cf-zoom-hint{color:#7f7074;font-size:11px;margin-top:6px;opacity:.82}
 .cf-zoom-mask-fallback{width:min(320px,70vw);aspect-ratio:9/13;max-height:74vh;border:1px solid rgba(143,119,108,.2);border-radius:18px;background:#f4f1ea;color:#a5737f;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:120px;box-shadow:0 16px 48px rgba(85,64,58,.22)}
-/* 面板 */
-.cf-panel-mask{position:fixed;inset:0;background:rgba(60,40,50,.35);z-index:99990}
-.cf-panel-iframe{position:fixed;top:8vh;left:50%;transform:translateX(-50%);width:min(520px,92vw);height:min(680px,84vh);border:none;border-radius:14px;z-index:99991;box-shadow:0 8px 40px rgba(90,60,70,.25);background:#fdfaf4}
+/* 面板（同源内联版，无 iframe/CDN 依赖，关闭后随 #cf-bubble-panel-mask 一起销毁） */
+.cf-panel-mask{position:fixed;inset:0;background:rgba(58,38,48,.40);z-index:99990}
+.cf-panel{position:fixed;top:5vh;left:50%;transform:translateX(-50%);width:min(620px,94vw);max-height:88vh;overflow-y:auto;
+  background:#fffdf9;color:#5b4a4f;border:1px solid #ecdde2;border-radius:16px;z-index:99991;
+  box-shadow:0 12px 48px rgba(90,60,70,.30);padding:0;font-size:14px;line-height:1.6;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+.cf-panel *{box-sizing:border-box}
+.cf-panel .cf-panel-head{position:relative;background:linear-gradient(135deg,#fdf3f5,#fbf6f2);border-bottom:1px solid #f0e2e6;padding:16px 22px 14px;border-radius:16px 16px 0 0}
+.cf-panel h2{margin:0 0 4px;font-size:18px;color:#c05a72;letter-spacing:2px;font-weight:700}
+.cf-panel .cf-panel-subtitle{font-size:12px;color:#a08a90;margin:0}
+.cf-panel .cf-panel-body{padding:6px 22px 20px}
+.cf-panel .cf-sec{background:#fdf8f3;border:1px solid #f3e6e0;border-radius:12px;padding:12px 16px;margin:14px 0}
+.cf-panel h3{margin:0 0 10px;font-size:12px;color:#a5737f;letter-spacing:2px;font-weight:700;display:flex;align-items:center;gap:7px}
+.cf-panel h3::before{content:"";width:3px;height:14px;background:#e87a90;border-radius:2px;flex:0 0 auto}
+.cf-panel .cf-row{display:flex;align-items:center;gap:12px;margin:11px 0}
+.cf-panel .cf-row label{flex:0 0 5em;font-size:13px;color:#6b5a58}
+.cf-panel .cf-row input[type=range]{flex:1;min-width:0;accent-color:#e87a90;cursor:pointer}
+.cf-panel .cf-row .cf-val{flex:0 0 3.6em;text-align:right;font-size:12px;color:#c05a72;font-weight:600}
+.cf-panel .cf-theme-row{display:flex;gap:8px;margin:4px 0 2px}
+.cf-panel .cf-theme-row button{flex:1;padding:9px 0;border:1px solid #ecdde2;background:#fff;color:#8a6f76;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s}
+.cf-panel .cf-theme-row button:hover{border-color:#e87a90;color:#c05a72;background:#fff6f8}
+.cf-panel .cf-theme-active{background:linear-gradient(135deg,#e87a90,#d96b80) !important;color:#fff !important;border-color:#e87a90 !important;box-shadow:0 2px 8px rgba(232,122,144,.35)}
+.cf-panel .cf-panel-enabled{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:2px 0 4px;color:#5b4a4f}
+.cf-panel .cf-panel-enabled input{accent-color:#e87a90;width:16px;height:16px;cursor:pointer}
+.cf-panel .cf-close{position:absolute;top:14px;right:16px;border:none;background:rgba(255,255,255,.7);font-size:18px;color:#a5737f;cursor:pointer;line-height:1;padding:4px 9px;border-radius:8px;transition:all .15s}
+.cf-panel .cf-close:hover{color:#fff;background:#e87a90}
+.cf-panel .cf-add-row{display:flex;gap:8px;margin:4px 0 2px}
+.cf-panel .cf-add-row input[type=text]{flex:1;min-width:0;border:1px solid #e3d3d8;border-radius:10px;padding:9px 12px;background:#fff;color:#5b4a4f;font-size:13px;outline:none;box-shadow:inset 0 1px 3px rgba(140,100,110,.06);transition:border-color .15s,box-shadow .15s}
+.cf-panel .cf-add-row input[type=text]:focus{border-color:#e87a90;box-shadow:0 0 0 3px rgba(232,122,144,.12)}
+.cf-panel .cf-add-row button{padding:9px 18px;border:none;background:linear-gradient(135deg,#e87a90,#d96b80);color:#fff;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 2px 8px rgba(232,122,144,.28);transition:filter .15s}
+.cf-panel .cf-add-row button:hover{filter:brightness(1.06)}
+.cf-panel .cf-avatar-list{max-height:40vh;overflow-y:auto;padding:2px 4px;margin:2px -4px 0;scrollbar-width:thin}
+.cf-panel .cf-avatar-row{display:flex;align-items:center;gap:10px;padding:7px 6px;border-bottom:1px solid #f6ecee}
+.cf-panel .cf-avatar-row:last-child{border-bottom:none}
+.cf-panel .cf-avatar-row img{width:40px;height:56px;border-radius:6px;object-fit:cover;background:#f3ece2;flex:0 0 auto;cursor:zoom-in;box-shadow:0 1px 3px rgba(120,90,100,.15)}
+.cf-panel .cf-avatar-row .cf-name{flex:0 0 6.5em;font-weight:600;font-size:13px;color:#5b4a4f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cf-panel .cf-avatar-row input[type=text]{flex:1;min-width:0;border:1px solid #e3d3d8;border-radius:8px;padding:6px 10px;background:#fff;color:#5b4a4f;font-size:12px;outline:none}
+.cf-panel .cf-avatar-row input[type=text]:focus{border-color:#e87a90}
+.cf-panel .cf-avatar-row button{padding:6px 12px;border:1px solid #e87a90;background:#fff6f8;color:#c05a72;border-radius:8px;cursor:pointer;font-size:12px;transition:all .15s;white-space:nowrap}
+.cf-panel .cf-avatar-row button:hover{background:#e87a90;color:#fff}
+.cf-panel .cf-avatar-row button.cf-reset{border-color:#e3d3d8;color:#a08a90;background:#fff}
+.cf-panel .cf-avatar-row button.cf-reset:hover{background:#f3ece2;color:#5b4a4f;border-color:#e87a90}
+.cf-panel .cf-avatar-row button.cf-del{border-color:#e5b6b6;color:#b06060;background:#fff}
+.cf-panel .cf-avatar-row button.cf-del:hover{background:#d9534f;color:#fff;border-color:#d9534f}
+.cf-panel .cf-panel-note{font-size:11.5px;color:#a08a90;margin-top:14px;line-height:1.7}
+.cf-panel .cf-stats{font-size:11.5px;color:#a08a90;margin-top:6px;text-align:right}
 `;
 
 // ████████████████████████████████████████████████████████████
@@ -411,11 +464,11 @@ const STYLE_TEXT = `
 
 const LS_CONFIG_KEY = 'cf_bubble_config_v1';
 const LS_URL_KEY = 'cf_bubble_custom_urls_v1';
-const IDB_NAME = 'CounterfeitBubbleAvatars';
-const IDB_STORE = 'uploads';
+const LS_EXTRA_NAMES_KEY = 'cf_bubble_extra_names_v1';
+const LS_UPLOAD_KEY = 'cf_bubble_uploaded_avatars_v1';
 
 function loadConfig() {
-  const defaults = { enabled: true, theme: 'parchment', bubbleFontSize: 15, narrativeFontSize: 13.5, lineHeight: 1.7 };
+  const defaults = { enabled: true, theme: 'parchment', bubbleFontSize: 17, narrativeFontSize: 15.5, lineHeight: 1.75, avatarSize: 48 };
   try {
     const raw = localStorage.getItem(LS_CONFIG_KEY);
     return raw ? { ...defaults, ...JSON.parse(raw) } : defaults;
@@ -440,81 +493,58 @@ function saveCustomUrls(map) {
   try { localStorage.setItem(LS_URL_KEY, JSON.stringify(map)); } catch (_) {}
 }
 
-function idbOpen() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(IDB_NAME, 1);
-    req.onupgradeneeded = () => { req.result.createObjectStore(IDB_STORE); };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function idbPut(name, blob) {
-  const db = await idbOpen();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(IDB_STORE, 'readwrite');
-    tx.objectStore(IDB_STORE).put(blob, name);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-async function idbGet(name) {
-  const db = await idbOpen();
-  return new Promise((resolve, reject) => {
-    const req = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(name);
-    req.onsuccess = () => resolve(req.result || null);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function idbDelete(name) {
-  const db = await idbOpen();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(IDB_STORE, 'readwrite');
-    tx.objectStore(IDB_STORE).delete(name);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
-  });
-}
-
-// ████████████████████████████████████████████████████████████
-// █  Part 4: 头像解析（自定义 URL > 上传图 > 预置表 > 占位）  █
-// ████████████████████████████████████████████████████████████
-
-const uploadUrlCache = new Map(); // name → objectURL
-
-async function resolveAvatar(name) {
-  const customUrls = loadCustomUrls();
-  if (customUrls[name]) return customUrls[name];
-  if (uploadUrlCache.has(name)) return uploadUrlCache.get(name);
+/* 玩家自建角色名单（面板「新增角色」写入；node 无头测试下无 localStorage，返回空数组） */
+function loadExtraNames() {
   try {
-    const blob = await idbGet(name);
-    if (blob) {
-      const url = URL.createObjectURL(blob);
-      uploadUrlCache.set(name, url);
-      return url;
-    }
-  } catch (_) {}
-  return AVATAR_TABLE[name] || null;
+    if (typeof localStorage === 'undefined') return [];
+    const arr = JSON.parse(localStorage.getItem(LS_EXTRA_NAMES_KEY) || '[]');
+    return Array.isArray(arr) ? arr.filter(n => typeof n === 'string' && n.trim()) : [];
+  } catch (_) {
+    return [];
+  }
 }
 
-/** 同步版（渲染循环用）：只看内存层，异步预取在 renderAll 前完成 */
+function saveExtraNames(arr) {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    localStorage.setItem(LS_EXTRA_NAMES_KEY, JSON.stringify(arr));
+  } catch (_) {}
+}
+
+/* 本地上传头像：以 Base64 data URL 存 localStorage（同步、跨刷新持久、无 objectURL 生命周期问题） */
+function loadUploadedAvatars() {
+  try {
+    if (typeof localStorage === 'undefined') return {};
+    const raw = localStorage.getItem(LS_UPLOAD_KEY);
+    const map = raw ? JSON.parse(raw) : {};
+    return map && typeof map === 'object' ? map : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function saveUploadedAvatars(map) {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    localStorage.setItem(LS_UPLOAD_KEY, JSON.stringify(map));
+  } catch (_) {}
+}
+
+// ████████████████████████████████████████████████████████████
+// █  Part 4: 头像解析（自定义 URL > 本地上传 > 预置表 > 占位） █
+// ████████████████████████████████████████████████████████████
+
 function resolveAvatarSync(name) {
   const customUrls = loadCustomUrls();
   if (customUrls[name]) return customUrls[name];
-  if (uploadUrlCache.has(name)) return uploadUrlCache.get(name);
+  const uploaded = loadUploadedAvatars();
+  if (uploaded[name]) return uploaded[name];
   return AVATAR_TABLE[name] || null;
 }
 
-async function warmUploadCache(names) {
-  for (const name of names) {
-    if (uploadUrlCache.has(name) || AVATAR_TABLE[name] || loadCustomUrls()[name]) continue;
-    try {
-      const blob = await idbGet(name);
-      if (blob) uploadUrlCache.set(name, URL.createObjectURL(blob));
-    } catch (_) {}
-  }
+/** 异步版（与同步版逻辑一致，保留给可能的外部调用） */
+async function resolveAvatar(name) {
+  return resolveAvatarSync(name);
 }
 
 // ████████████████████████████████████████████████████████████
@@ -614,17 +644,14 @@ function applyConfig(doc) {
   chat.style.setProperty('--cf-bubble-fs', `${cfg.bubbleFontSize}px`);
   chat.style.setProperty('--cf-narrative-fs', `${cfg.narrativeFontSize}px`);
   chat.style.setProperty('--cf-line-height', cfg.lineHeight);
+  chat.style.setProperty('--cf-avatar-size', `${cfg.avatarSize}px`);
 }
 
 function scheduleRender(doc) {
   if (debounceTimer) clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
     if (!loadConfig().enabled) return;
-    const { seen } = renderAllMessages(doc);
-    warmUploadCache([...seen]).then(() => {
-      // 上传图就位后强制补一轮（同步解析首轮 miss 的头像）
-      if (uploadUrlCache.size > 0) renderAllMessages(doc, true);
-    });
+    renderAllMessages(doc);
   }, 350);
 }
 
@@ -710,7 +737,7 @@ function applyInjection() {
 }
 
 // ████████████████████████████████████████████████████████████
-// █  Part 7: 设置与头像自定义面板                             █
+// █  Part 7: 设置与头像自定义面板（同源内联版，无 iframe/CDN）█
 // ████████████████████████████████████████████████████████████
 
 /* 头像放大浮层：点击任意 .cf-bub-avatar 触发，键盘 Esc 关闭 */
@@ -770,47 +797,296 @@ function bindAvatarZoom(doc) {
   doc.addEventListener('click', handler, true);
 }
 
+/* 收集当前已渲染/缓存中出现的角色名（跟 openPanel 同步） */
+function collectSeenNames(doc) {
+  const seen = new Set();
+  const chat = doc.getElementById('chat');
+  if (!chat) return seen;
+  for (const elem of chat.querySelectorAll('.cf-bub[data-name]')) {
+    const n = elem.getAttribute('data-name');
+    if (n) seen.add(n);
+  }
+  for (const text of doc.querySelectorAll('#chat .mes_text, #chat .mes-text')) {
+    const original = originalHtmlCache.get(text) || text.innerHTML || '';
+    for (const match of original.matchAll(/@bubble[:：]([^|｜<\n]+)[|｜]/g)) {
+      seen.add(match[1].trim());
+    }
+  }
+  return seen;
+}
+
+/* 应用设置变更（输入栏滑块、主题、头像 URL/上传）：女巫改动以后立刻生效 */
+function applyConfigChange(doc, patch) {
+  const next = { ...loadConfig(), ...patch };
+  saveConfig(next);
+  applyConfig(doc);
+  applyTheme(doc);
+  if (next.enabled) renderAllMessages(doc, true);
+}
+
+/* 面板角色名去重：预置别名按头像 URL 折叠（爱布拉娜·都柏林 / 爱布拉娜 只留全名），其余按名字去重 */
+function collectPanelNames(doc) {
+  const seen = collectSeenNames(doc);
+  const names = [];
+  const seenKey = new Set();
+  const add = (name) => {
+    if (!name) return;
+    const key = AVATAR_TABLE[name] || name;
+    if (seenKey.has(key)) return;
+    seenKey.add(key);
+    names.push(name);
+  };
+  Object.keys(AVATAR_TABLE).forEach(add);
+  KNOWN_NO_AVATAR.forEach(add);
+  loadExtraNames().forEach(add);
+  seen.forEach(add);
+  return names;
+}
+
+/* 单行头像 HTML；extra=true 追加「删除」按钮（玩家自建角色可移除） */
+function makeAvatarRowHtml(name, customUrls, extra) {
+  const preset = AVATAR_TABLE[name] || '';
+  const custom = customUrls[name] || '';
+  const uploaded = loadUploadedAvatars()[name] || '';
+  const initial = custom || uploaded || preset || '';
+  const uploadMark = uploaded ? '（已上传本地图）' : '';
+  const placeholder = preset ? '预置头像（粘贴 URL 可覆盖）' : '粘贴图片 URL 或点上传';
+  const delBtn = extra ? '<button data-act="del" class="cf-del">删除</button>' : '';
+  return `<div class="cf-avatar-row" data-name="${escapeHtml(name)}">
+    <img src="${escapeHtml(initial || 'data:image/gif;base64,R0lGODlhAQABAAAAACw=')}" alt="" />
+    <span class="cf-name" title="${escapeHtml(name)}">${escapeHtml(name)}</span>
+    <input type="text" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(custom)}" />
+    <button data-act="upload">上传</button>
+    <button data-act="reset" class="cf-reset">重置</button>
+    ${delBtn}
+    ${uploadMark}
+  </div>`;
+}
+
+/* 为单行头像绑定事件：URL / 上传 / 重置 / 删除（自建）/ 点击放大 */
+function wireAvatarRow(row, doc) {
+  const name = row.dataset.name;
+  const input = row.querySelector('input[type=text]');
+  const img = row.querySelector('img');
+  input.addEventListener('change', () => {
+    const urls = loadCustomUrls();
+    const value = input.value.trim();
+    if (value) urls[name] = value; else delete urls[name];
+    saveCustomUrls(urls);
+    if (value) img.src = value;
+    applyConfigChange(doc, { _avatarTick: Date.now() });
+  });
+  row.querySelector('[data-act=upload]')?.addEventListener('click', () => {
+    const picker = doc.createElement('input');
+    picker.type = 'file';
+    picker.accept = 'image/*';
+    picker.onchange = () => {
+      const file = picker.files && picker.files[0];
+      if (!file) return;
+      if (file.size > 3 * 1024 * 1024) {
+        alert('图片过大（超过 3MB），请选择更小的图片');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const uploaded = loadUploadedAvatars();
+        uploaded[name] = reader.result;
+        saveUploadedAvatars(uploaded);
+        img.src = reader.result;
+        applyConfigChange(doc, { _avatarTick: Date.now() });
+      };
+      reader.onerror = () => alert('头像读取失败，请重试');
+      reader.readAsDataURL(file);
+    };
+    picker.click();
+  });
+  row.querySelector('[data-act=reset]')?.addEventListener('click', () => {
+    const urls = loadCustomUrls();
+    delete urls[name];
+    saveCustomUrls(urls);
+    const uploaded = loadUploadedAvatars();
+    delete uploaded[name];
+    saveUploadedAvatars(uploaded);
+    input.value = '';
+    img.src = AVATAR_TABLE[name] || 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+    applyConfigChange(doc, { _avatarTick: Date.now() });
+  });
+  row.querySelector('[data-act=del]')?.addEventListener('click', () => {
+    const urls = loadCustomUrls();
+    delete urls[name];
+    saveCustomUrls(urls);
+    const uploaded = loadUploadedAvatars();
+    delete uploaded[name];
+    saveUploadedAvatars(uploaded);
+    saveExtraNames(loadExtraNames().filter(n => n !== name));
+    row.remove();
+    applyInjection();
+    applyConfigChange(doc, { _avatarTick: Date.now() });
+  });
+  img.addEventListener('click', () => {
+    openAvatarZoom(doc, img.src, name);
+  });
+}
+
 function openPanel(doc) {
   if (doc.getElementById('cf-bubble-panel-mask')) return;
+
+  const config = loadConfig();
+  const customUrls = loadCustomUrls();
+  const extraSet = new Set(loadExtraNames());
+  const names = collectPanelNames(doc);
 
   const mask = doc.createElement('div');
   mask.id = 'cf-bubble-panel-mask';
   mask.className = 'cf-panel-mask';
+  const panel = doc.createElement('div');
+  panel.id = 'cf-bubble-panel';
+  panel.className = 'cf-panel';
 
-  const iframe = doc.createElement('iframe');
-  iframe.id = 'cf-bubble-panel-iframe';
-  iframe.className = 'cf-panel-iframe';
-  iframe.src = `${PANEL_URL}?v=${Date.now()}`;
-  iframe.setAttribute('allow', 'clipboard-read; clipboard-write');
+  const rows = names.map(name => makeAvatarRowHtml(name, customUrls, extraSet.has(name))).join('');
 
-  const close = () => { mask.remove(); iframe.remove(); };
+  panel.innerHTML = `
+    <div class="cf-panel-head">
+      <button class="cf-close" title="关闭">×</button>
+      <h2>🌸 对话气泡 · Counterfeit</h2>
+      <p class="cf-panel-subtitle">主题、字号、头像设置均立即生效并保存在本地浏览器</p>
+      <label class="cf-panel-enabled">
+        <input type="checkbox" id="cf-enabled" ${config.enabled ? 'checked' : ''} />
+        启用对话气泡（关闭后不再注入格式规则，也不渲染）
+      </label>
+    </div>
+    <div class="cf-panel-body">
+      <div class="cf-sec">
+        <h3>主题</h3>
+        <div class="cf-theme-row" id="cf-theme-row">
+          <button data-theme="parchment" class="${config.theme === 'parchment' ? 'cf-theme-active' : ''}">羊皮纸</button>
+          <button data-theme="dark" class="${config.theme === 'dark' ? 'cf-theme-active' : ''}">暗夜</button>
+          <button data-theme="green" class="${config.theme === 'green' ? 'cf-theme-active' : ''}">豆沙绿</button>
+        </div>
+      </div>
+
+      <div class="cf-sec">
+        <h3>排版</h3>
+        <div class="cf-row">
+          <label>气泡字号</label>
+          <input type="range" id="cf-bubble-fs" min="12" max="22" step="0.5" value="${config.bubbleFontSize}" />
+          <span class="cf-val" id="cf-bubble-fs-val">${config.bubbleFontSize}px</span>
+        </div>
+        <div class="cf-row">
+          <label>旁白字号</label>
+          <input type="range" id="cf-narrative-fs" min="12" max="22" step="0.5" value="${config.narrativeFontSize}" />
+          <span class="cf-val" id="cf-narrative-fs-val">${config.narrativeFontSize}px</span>
+        </div>
+        <div class="cf-row">
+          <label>行距</label>
+          <input type="range" id="cf-line-height" min="1.4" max="2.0" step="0.05" value="${config.lineHeight}" />
+          <span class="cf-val" id="cf-line-height-val">${config.lineHeight}</span>
+        </div>
+        <div class="cf-row">
+          <label>头像大小</label>
+          <input type="range" id="cf-avatar-size" min="36" max="72" step="2" value="${config.avatarSize}" />
+          <span class="cf-val" id="cf-avatar-size-val">${config.avatarSize}px</span>
+        </div>
+      </div>
+
+      <div class="cf-sec">
+        <h3>新增角色</h3>
+        <div class="cf-add-row">
+          <input type="text" id="cf-add-name" placeholder="输入角色全名（AI 输出时使用的名字）" />
+          <button id="cf-add-btn">添加角色</button>
+        </div>
+      </div>
+
+      <div class="cf-sec">
+        <h3>头像自定义（点击预览可放大）</h3>
+        <div class="cf-avatar-list">${rows}</div>
+      </div>
+
+      <p class="cf-panel-note">
+        粘贴 URL 立即覆盖预置头像；「上传」把图片存进浏览器 IndexedDB（不上传服务器）；「重置」清除该角色的自定义 URL 与上传图。<br>
+        新增角色会加入格式注入名单，模型按其全名输出 @bubble 行即可渲染出对应头像；自建角色可点「删除」移除。<br>
+        头像描边与徽记颜色由情绪字段决定（喜悦金／愤怒红／悲伤蓝／紧张赭／平和绿／害羞青／嫌弃紫／爱恋粉）。
+      </p>
+    </div>`;
+
+  const close = () => { mask.remove(); panel.remove(); };
   mask.addEventListener('click', close);
+  panel.querySelector('.cf-close').addEventListener('click', close);
+
+  /* 启用开关 */
+  panel.querySelector('#cf-enabled').addEventListener('change', (ev) => {
+    applyConfigChange(doc, { enabled: ev.target.checked });
+    if (ev.target.checked) {
+      applyInjection();
+    } else {
+      let handle = injectionHandle;
+      if (handle) { try { handle.uninject(); } catch (_) {} injectionHandle = null; }
+    }
+  });
+
+  /* 主题切换 */
+  panel.querySelectorAll('#cf-theme-row [data-theme]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const theme = btn.dataset.theme;
+      applyConfigChange(doc, { theme });
+      panel.querySelectorAll('#cf-theme-row [data-theme]').forEach(b => {
+        b.classList.toggle('cf-theme-active', b === btn);
+      });
+    });
+  });
+
+  /* 字体 / 头像大小滑块 */
+  const wire = (id, key, valId, fmt = v => `${v}px`) => {
+    const input = panel.querySelector(id);
+    const label = panel.querySelector(valId);
+    if (!input || !label) return;
+    input.addEventListener('input', () => {
+      const v = key === 'lineHeight' ? Number(input.value) : Number(input.value);
+      label.textContent = fmt(v);
+      applyConfigChange(doc, { [key]: v });
+    });
+  };
+  wire('#cf-bubble-fs', 'bubbleFontSize', '#cf-bubble-fs-val');
+  wire('#cf-narrative-fs', 'narrativeFontSize', '#cf-narrative-fs-val');
+  wire('#cf-line-height', 'lineHeight', '#cf-line-height-val', v => String(v));
+  wire('#cf-avatar-size', 'avatarSize', '#cf-avatar-size-val');
+
+  /* 头像行：URL / 上传 / 重置 / 删除 / 点击预览放大 */
+  panel.querySelectorAll('.cf-avatar-row').forEach(row => wireAvatarRow(row, doc));
+
+  /* 新增角色：写入名单 → 追加一行 → 重新注入格式名单 */
+  const addInput = panel.querySelector('#cf-add-name');
+  const addBtn = panel.querySelector('#cf-add-btn');
+  const addCharacter = () => {
+    const name = addInput.value.trim();
+    if (!name) { alert('请输入角色名'); return; }
+    if (AVATAR_TABLE[name] || KNOWN_NO_AVATAR.includes(name) || loadExtraNames().includes(name)) {
+      alert('该角色已存在，无需重复添加');
+      return;
+    }
+    const extras = loadExtraNames();
+    extras.push(name);
+    saveExtraNames(extras);
+    const wrapper = doc.createElement('div');
+    wrapper.innerHTML = makeAvatarRowHtml(name, loadCustomUrls(), true);
+    const rowEl = wrapper.firstElementChild;
+    panel.querySelector('.cf-avatar-list').appendChild(rowEl);
+    wireAvatarRow(rowEl, doc);
+    addInput.value = '';
+    applyInjection();
+  };
+  addBtn.addEventListener('click', addCharacter);
+  addInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); addCharacter(); }
+  });
 
   doc.body.appendChild(mask);
-  doc.body.appendChild(iframe);
+  doc.body.appendChild(panel);
 }
 
 function closePanel(doc) {
   doc.getElementById('cf-bubble-panel-mask')?.remove();
-  doc.getElementById('cf-bubble-panel-iframe')?.remove();
-}
-
-function onPanelMessage(event) {
-  if (event.origin !== PANEL_ORIGIN) return;
-  const data = event.data;
-  if (!data || data.source !== 'cf-bubble-panel') return;
-  const doc = findHostDocument();
-  if (!doc) return;
-  if (data.type === 'config-update') {
-    saveConfig({ ...loadConfig(), ...data.config });
-    applyTheme(doc);
-    applyConfig(doc);
-    if (loadConfig().enabled) renderAllMessages(doc, true);
-  } else if (data.type === 'close-panel') {
-    closePanel(doc);
-  } else if (data.type === 'request-config') {
-    event.source.postMessage({ source: 'cf-bubble-script', type: 'init-config', config: loadConfig() }, event.origin);
-  }
+  doc.getElementById('cf-bubble-panel')?.remove();
 }
 
 // ████████████████████████████████████████████████████████████
@@ -931,7 +1207,6 @@ function boot() {
   if (loadConfig().enabled) scheduleRender(doc);
   startObserver(doc);
   bindAvatarZoom(doc);
-  doc.defaultView.addEventListener('message', onPanelMessage);
 
   // 酒馆助手按钮：与文档查找解耦，确保在 API 就绪后注册
   registerBubbleButton();
@@ -965,11 +1240,31 @@ if (typeof module === 'undefined' || !module.exports) {
 }
 </script>
 <script>
-document.getElementById('theme-bar').addEventListener('click', function (e) {
+function applyPreviewConfig() {
+  var chat = document.getElementById('chat');
+  chat.style.setProperty('--cf-bubble-fs', document.getElementById('bubble-fs').value + 'px');
+  chat.style.setProperty('--cf-narrative-fs', document.getElementById('narrative-fs').value + 'px');
+  chat.style.setProperty('--cf-line-height', document.getElementById('line-height').value);
+  chat.style.setProperty('--cf-avatar-size', document.getElementById('avatar-size').value + 'px');
+}
+['input','change'].forEach(function (evt) {
+  document.getElementById('bubble-fs').addEventListener(evt, applyPreviewConfig);
+  document.getElementById('narrative-fs').addEventListener(evt, applyPreviewConfig);
+  document.getElementById('line-height').addEventListener(evt, applyPreviewConfig);
+  document.getElementById('avatar-size').addEventListener(evt, applyPreviewConfig);
+});
+applyPreviewConfig();
+
+function applyPreviewTheme(t) {
+  var chat = document.getElementById('chat');
+  chat.classList.remove('cf-theme-dark', 'cf-theme-green');
+  if (t !== 'parchment') chat.classList.add('cf-theme-' + t);
+}
+document.getElementById('config-bar').addEventListener('click', function (e) {
   var t = e.target && e.target.getAttribute('data-t');
   if (!t) return;
+  applyPreviewTheme(t);
   try { localStorage.setItem('cf_bubble_config_v1', JSON.stringify({ enabled: true, theme: t })); } catch (_) {}
-  location.reload();
 });
 </script>
 </body>

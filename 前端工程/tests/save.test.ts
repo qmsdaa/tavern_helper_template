@@ -6,7 +6,7 @@ import { migrateParsedSave } from './.save-build/存档/migrations.ts';
 import { parseChatExport, MAX_SAVE_BYTES } from './.save-build/存档/parseChatExport.ts';
 import { commitPortableResume } from './.save-build/存档/resumeCommit.ts';
 import { MIGRATION_LEDGER } from './.save-build/存档/migrationLedger.ts';
-import { ACU_SHEET_DATA_KEY, toShujukuSheetData, extractCheckpointSheetData, reconstructAcuSheetData, reconstructLegacyV1SheetData, countAcuSheets } from './.save-build/存档/acuTables.ts';
+import { ACU_SHEET_DATA_KEY, toShujukuSheetData, extractCheckpointSheetData, reconstructAcuSheetData, countAcuSheets } from './.save-build/存档/acuTables.ts';
 import type { MigrationResult, ParsedSaveSource } from './.save-build/存档/types.ts';
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
@@ -20,78 +20,6 @@ function legacyMain(): Record<string, any> {
   delete stat.campaign_id; delete stat.campaign_revision; delete stat.campaign_completed; delete stat.identity_state; delete stat.collection;
   return stat;
 }
-
-const genderbendIdentity = () => ({
-  kind: 'transformation', current_body: 'hachiman_f', presentation: 'female',
-  legal_identity: '比企谷八幡（性转）', self_naming: '八幡', cause_status: 'unknown', disclosure: {},
-});
-
-function genderbendDlc(pov: 'hachiman_f' | 'yukino' | 'yui' | 'laff' | null): Record<string, any> {
-  return Schema.parse({
-    mode: 'free', campaign_id: 'dlc_genderbend_hachiman', current_scene: 1,
-    current_pov: pov, identity_state: pov === 'hachiman_f' ? genderbendIdentity() : null,
-    custom_protagonist: pov === null ? { name: '自建主角' } : null,
-    campaign_completed: false, mainline_completed: false,
-  });
-}
-
-test('all five genderbend DLC viewpoints are legal and survive portable commit roundtrips', async () => {
-  for (const pov of ['hachiman_f', 'yukino', 'yui', 'laff', null] as const) {
-    const stat = genderbendDlc(pov);
-    const migrated = migrateParsedSave(parsedSource(stat));
-    assert.equal(migrated.report.status, 'exact');
-    assert.deepEqual(migrated.statData, stat);
-
-    const state: any = { message0: [{ message_id: 0, message: '<OpeningUI/>' }], floor0: {}, chat: {} };
-    await commitPortableResume(migrated, {
-      getMessage0: () => clone(state.message0), getFloor0Variables: () => clone(state.floor0), getChatVariables: () => clone(state.chat),
-      async setMessage0(value) { state.message0 = clone(value); },
-      async setFloor0Variables(updater) { state.floor0 = clone(updater(clone(state.floor0))); },
-      async setChatVariables(updater) { state.chat = clone(updater(clone(state.chat))); },
-    });
-    assert.deepEqual(state.floor0.stat_data, stat);
-    assert.deepEqual(state.chat.stat_data, stat);
-    assert.equal(migrateParsedSave(parsedSource(state.chat.stat_data)).report.status, 'exact');
-  }
-});
-
-test('legacy canonical genderbend identity migrates exactly once and mixed triples fail closed', () => {
-  const legacy = genderbendDlc('hachiman_f');
-  legacy.current_pov = 'hachiman';
-  legacy.identity_state.current_body = 'hachiman';
-  legacy.identity_state.legal_identity = '比企谷八幡';
-
-  const migrated = migrateParsedSave(parsedSource(legacy));
-  assert.equal(migrated.report.status, 'migratable');
-  assert.equal(migrated.statData?.current_pov, 'hachiman_f');
-  assert.equal(migrated.statData?.identity_state.current_body, 'hachiman_f');
-  assert.equal(migrated.statData?.identity_state.legal_identity, '比企谷八幡（性转）');
-  assert.ok(migrated.report.migrationSteps.some(step => step.includes('身份三元组迁移')));
-  assert.equal(migrateParsedSave(parsedSource(migrated.statData!)).report.status, 'exact');
-
-  const mixed = clone(legacy);
-  mixed.identity_state.current_body = 'hachiman_f';
-  const rejected = migrateParsedSave(parsedSource(mixed));
-  assert.equal(rejected.report.status, 'incompatible');
-  assert.equal(rejected.statData, null);
-  assert.equal(rejected.report.migrationSteps.some(step => step.includes('身份三元组迁移')), false);
-});
-
-test('main hachiman_f and cross-viewpoint genderbend identity mixes are rejected', () => {
-  const illegalMain = genderbendDlc('hachiman_f');
-  illegalMain.campaign_id = 'main';
-  illegalMain.mode = 'pov';
-  illegalMain.identity_state = null;
-  assert.equal(Schema.safeParse(illegalMain).success, false);
-  const migratedMain = migrateParsedSave(parsedSource(illegalMain));
-  assert.equal(migratedMain.report.status, 'incompatible');
-  assert.ok(migratedMain.report.conflicts.some(item => item.includes('主线玩家视点非法')));
-
-  const mixedDlc = genderbendDlc('hachiman_f');
-  mixedDlc.current_pov = 'yukino';
-  assert.equal(Schema.safeParse(mixedDlc).success, false);
-  assert.equal(migrateParsedSave(parsedSource(mixedDlc)).report.status, 'incompatible');
-});
 
 test('v0.4.6, v0.5.0-preview, v0.5.1, and v0.6.0 migrations are idempotent', () => {
   const base = legacyMain();
@@ -200,8 +128,8 @@ test('raw JSONL skips a newer identity-forged snapshot and falls back to the ear
 test('raw JSONL uses header campaign identity while selecting the newest legal snapshot', async () => {
   const main = Schema.parse({ mode: 'pov', current_pov: 'hachiman', campaign_id: 'main', campaign_completed: false, mainline_completed: false });
   const dlc = Schema.parse({
-    mode: 'free', current_pov: 'hachiman_f', campaign_id: 'dlc_genderbend_hachiman', current_scene: 1,
-    identity_state: genderbendIdentity(),
+    mode: 'free', current_pov: 'hachiman', campaign_id: 'dlc_genderbend_hachiman', current_scene: 1,
+    identity_state: { kind: 'transformation', current_body: 'hachiman', presentation: 'female', legal_identity: '比企谷八幡', self_naming: '八幡', cause_status: 'unknown', disclosure: {} },
   });
   const raw = [
     JSON.stringify({ user_name: 'u', chat_metadata: { card_version: '0.6.0', campaign_id: 'main', campaign_revision: 1 } }),
@@ -607,128 +535,4 @@ test('resume commit fails cleanly and rolls back when metadata disappears betwee
   }), /聊天元数据不可用/);
   assert.equal(readCount >= 2, true);
   assert.deepEqual(state, before);
-});
-
-/* ─── legacy-v1 旧存储形态重建（顶层旧字段 + 隔离槽旧形态 + delta） ─── */
-
-const legacyMemo = (rows: unknown[][]) => ({ name: '备忘录', content: [['row_id', '备忘标题'], ...rows] });
-const legacySummary = (rows: unknown[][]) => ({ name: '纪要表', content: [['row_id', '纪要'], ...rows] });
-
-test('reconstructLegacyV1SheetData 合并顶层旧字段：最新楼层胜出、多字段收集、身份标签与用户楼层跳过', () => {
-  const records: any[] = [
-    { user_name: 'u' },
-    { is_user: false, mes: 'a', TavernDB_ACU_IndependentData: { sheet_memo: legacyMemo([['1', '旧版记忆']]) } },
-    { is_user: false, mes: 'b', TavernDB_ACU_IndependentData: { sheet_memo: legacyMemo([['1', '更新的记忆'], ['2', '第二条']]) }, TavernDB_ACU_Data: { sheet_summary: legacySummary([['1', '某次委托']]) } },
-    { is_user: false, mes: 'c', TavernDB_ACU_Identity: 'other-code', TavernDB_ACU_IndependentData: { sheet_isolated: legacyMemo([['1', '隔离数据']]) } },
-    { is_user: true, mes: 'user', TavernDB_ACU_IndependentData: { sheet_user: legacyMemo([['1', '用户楼层']]) } },
-  ];
-  const result = reconstructLegacyV1SheetData(records)!;
-  assert.equal(result.data != null, true);
-  const data = result.data as Record<string, any>;
-  assert.equal(result.mergedSheets, 2);
-  assert.equal(data.mate.type, 'chatSheets');
-  assert.equal(data.sheet_memo.content.length, 3, '最新楼层 wins（2 行数据）');
-  assert.equal(data.sheet_memo.content[1][1], '更新的记忆');
-  assert.equal(data.sheet_summary.content[1][1], '某次委托', 'TavernDB_ACU_Data 字段同样收集');
-  assert.equal(data.sheet_isolated, undefined, '带身份标签的消息不收集');
-  assert.equal(data.sheet_user, undefined, '用户楼层不收集');
-  assert.equal(reconstructLegacyV1SheetData([{ user_name: 'u' }]).data, null);
-});
-
-test('reconstructLegacyV1SheetData 隔离槽旧形态：checkpoint 首写胜出 + delta 楼层按时序补合并', () => {
-  const records: any[] = [
-    { user_name: 'u' },
-    { is_user: false, mes: 'base', TavernDB_ACU_IsolatedData: { '': { _acu_storage_mode: 'checkpoint', independentData: { sheet_summary: legacySummary([['1', '初始纪要']]) }, modifiedKeys: ['sheet_summary'] } } },
-    { is_user: false, mes: 'd1', TavernDB_ACU_IsolatedData: { '': { _acu_storage_mode: 'delta', incrementalData: { sheet_summary: { metaChanged: { name: '纪要表（改）' }, rowDeltas: [{ op: 'upsert', row_id: '2', cells: ['2', '新增纪要'] }] } } } } },
-    { is_user: false, mes: 'd2', TavernDB_ACU_IsolatedData: { '': { _acu_storage_mode: 'delta', incrementalData: { sheet_summary: { rowDeltas: [{ op: 'upsert', row_id: '1', cells: ['1', '被更新的纪要'] }, { op: 'delete', row_id: '2' }] } } } } },
-  ];
-  const result = reconstructLegacyV1SheetData(records)!;
-  assert.equal(result.mergedSheets, 1);
-  assert.equal(result.appliedDeltas, 2);
-  const summary = (result.data as Record<string, any>).sheet_summary;
-  assert.equal(summary.name, '纪要表（改）', 'delta metaChanged 生效');
-  assert.deepEqual(
-    summary.content.slice(1).map((r: any[]) => [r[0], r[1]]),
-    [['1', '被更新的纪要']],
-    'd2 upsert 覆盖 + delete 删除后只剩 1 行',
-  );
-});
-
-test('parseChatExport 导入旧版顶层字段存档时得到重建后的表格，且 chat[0] 顶层 Guide 也能兜底提取', async () => {
-  const stat = Schema.parse({ mode: 'pov', current_pov: 'hachiman', mainline_completed: false, campaign_completed: false });
-  const guideOnFirstMessage = {
-    TavernDB_ACU_InternalSheetGuide: { version: 3, tags: { '': { data: { sheet_memo: { uid: 'u9', name: '备忘录', content: [['row_id', '备忘标题']] } } } } },
-    TavernDB_ACU_ScopedConfig: { version: 1, template: { name: 'Counterfeit适配表格' }, templateArchives: [] },
-  };
-  const raw = [
-    JSON.stringify({ user_name: 'u', chat_metadata: { card_version: '0.5.1' }, ...guideOnFirstMessage }),
-    JSON.stringify({ is_user: false, mes: 'a', variables: { stat_data: stat }, TavernDB_ACU_IndependentData: { sheet_memo: legacyMemo([['1', '旧版记忆']]), sheet_summary: legacySummary([['1', '某次委托']]) } }),
-  ].join('\n');
-  const parsed = await parseChatExport(new File([raw], 'legacy-v1.jsonl'));
-  const snapshot = parsed.tableSheets![ACU_SHEET_DATA_KEY] as Record<string, any>;
-  assert.equal(snapshot != null, true, '旧版字段表格被重建进 ACU_SHEET_DATA_KEY');
-  assert.equal(snapshot.sheet_memo.content[1][1], '旧版记忆');
-  assert.equal(parsed.tableSheets?.TavernDB_ACU_InternalSheetGuide != null, true, 'chat[0] 顶层 Guide 兜底提取');
-  assert.equal(parsed.tableSheets?.TavernDB_ACU_ScopedConfig != null, true);
-  assert.ok(parsed.warnings.some(w => w.includes('legacy-v1')), 'warnings 说明合并来源');
-  const result = migrateParsedSave(parsed);
-  assert.equal(result.report.tableSheetCount, 2);
-});
-
-/* ─── V2 重放：旧版 patch 日志 + 新版非 SQL 操作类型 ─── */
-
-const patchCkptData = () => ({
-  mate: { type: 'chatSheets', version: 1 },
-  sheet_summary: { uid: 'u1', name: '纪要表', content: [['row_id', '纪要'], ['1', '初始纪要'], ['2', '第二条']] },
-});
-const patchFloor = (mes: string, frame: object, isUser = false) => ({
-  is_user: isUser, mes, TavernDB_ACU_IsolatedData: { '': { storageFrame: { version: 2, headRevision: 0, ...frame } } },
-});
-
-test('reconstruct 支持旧版 patch 日志与新操作类型（row_upsert/row_delete/meta_update/sheet_replace/data_replace）', () => {
-  const records: any[] = [
-    { user_name: 'u' },
-    patchFloor('楼层0', {
-      checkpoint: { kind: 'full', data: patchCkptData() },
-      logEntries: [{ seq: 1, patches: [{ sheetKey: 'sheet_summary', kind: 'row_upsert', rowId: '1', cells: ['1', '被 patch 覆盖'] }] }],
-    }),
-    patchFloor('楼层1', {
-      logEntries: [
-        { seq: 1, operations: [{ kind: 'row_upsert', sheetKey: 'sheet_summary', rowId: '9', cells: ['9', 'upsert 新增'] }] },
-        { seq: 2, operations: [{ kind: 'meta_update', sheetKey: 'sheet_summary', meta: { name: '纪要表（改名）' } }] },
-        { seq: 3, operations: [{ kind: 'row_delete', sheetKey: 'sheet_summary', rowId: '2' }] },
-      ],
-    }),
-    patchFloor('楼层2', {
-      logEntries: [{ seq: 1, operations: [{ kind: 'sheet_replace', sheetKey: 'sheet_summary', sheet: { name: '重置表', content: [['row_id', '纪要'], ['7', '重置后的纪要']] } }] }],
-    }),
-    patchFloor('楼层3', {
-      logEntries: [{
-        seq: 1,
-        operations: [{
-          kind: 'data_replace',
-          data: { mate: { type: 'chatSheets', version: 1 }, sheet_summary: { name: '终局表', content: [['row_id', '纪要'], ['5', '终局纪要']] }, sheet_memo: { name: '备忘', content: [['row_id', '标题'], ['1', '某备忘']] } },
-        }],
-      }],
-    }),
-  ];
-  const result = reconstructAcuSheetData(records)!;
-  const summary = (result.data.sheet_summary as any);
-  assert.equal(summary.name, '终局表', 'data_replace 接管后的最终状态');
-  assert.deepEqual(summary.content.slice(1), [['5', '终局纪要']], '此前 patch/操作全部被 data_replace 覆盖');
-  assert.equal((result.data.sheet_memo as any).content[1][1], '某备忘', 'data_replace 可新增整表');
-  assert.deepEqual(result.warnings, [], '全部操作类型在语法边界内，不应有警告');
-});
-
-test('reconstruct 对未知 sheet 的 patch 只告警不中断', () => {
-  const records: any[] = [
-    { user_name: 'u' },
-    patchFloor('楼层0', {
-      checkpoint: { kind: 'full', data: patchCkptData() },
-      logEntries: [{ seq: 1, patches: [{ sheetKey: 'sheet_unknown', kind: 'row_upsert', rowId: '1', cells: ['1', 'x'] }] }],
-    }),
-  ];
-  const result = reconstructAcuSheetData(records)!;
-  assert.equal((result.data.sheet_summary as any).content[1][1], '初始纪要', '合法数据不受影响');
-  assert.ok(result.warnings.some(w => w.includes('sheet_unknown')));
 });

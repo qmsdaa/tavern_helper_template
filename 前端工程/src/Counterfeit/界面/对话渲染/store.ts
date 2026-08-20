@@ -6,9 +6,10 @@ const LS_CONFIG_KEY = 'cf_bubble_config_v1';
 const ConfigSchema = z.object({
   enabled: z.boolean().default(true),
   theme: z.enum(['parchment', 'dark', 'green']).default('parchment'),
-  bubbleFontSize: z.number().min(12).max(18).default(15),
-  narrativeFontSize: z.number().min(12).max(18).default(13.5),
-  lineHeight: z.number().min(1.4).max(2.0).default(1.7),
+  bubbleFontSize: z.number().min(12).max(22).default(17),
+  narrativeFontSize: z.number().min(12).max(22).default(15.5),
+  lineHeight: z.number().min(1.4).max(2.0).default(1.75),
+  avatarSize: z.number().min(36).max(72).default(48),
 });
 
 export type BubbleConfig = z.infer<typeof ConfigSchema>;

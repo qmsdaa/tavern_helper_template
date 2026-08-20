@@ -1,25 +1,21 @@
 ---
 <update_variable_rules>
 rule:
-  - 在回复末尾输出变量更新块·更新分析与更新命令同时输出
-  - 更新命令使用 MVU JSONPatch 格式·仅允许 replace / delta / insert / remove / move 五种操作
-  - 路径用斜杠分隔·不带 stat_data 前缀（如 /current_scene·/world/current_location·/characters/雪之下雪乃/present）
-  - 不更新未在变量更新规则中列出的字段·不得在characters中创建玩家角色自身记录
-  - 禁止输出任何 /phone 路径的更新·手机数据由手机助手前端写入
-  - 无任何变量命中 check 时·输出空的 JSONPatch 数组
+  - 在回复末尾同时输出更新分析与 MVU JSONPatch；仅允许 replace、delta、insert、remove、move
+  - path 使用无 stat_data 前缀的斜杠路径，如 /current_scene、/world/current_location、/characters/雪之下雪乃/present
+  - 只更新变量更新规则当前已渲染并命中 check 的字段；禁止玩家本人 characters 记录及 /phone、/collection 路径
+  - 无变量命中时输出空 JSONPatch 数组
 format: |-
   <UpdateVariable>
   <Analysis>
-  - ${一句话：本场发生了什么·场景/时间是否推进}
-  - ${current_scene可结合当前场景此前已发生正文判断核心功能是否完成；current_scene=150时须单独判断mainline_completed；其他变量仅依据本楼新发生或明确确认的事实}
-  - ${逐变量对照其check：命中才列出·未命中不列出；Present须检查实际进出与时间/地点跳转——玩家换地点时未随行角色必须置 false，即使正文未写其离场；arc_milestones／iroha_milestones旗标仅在本楼正文实际发生对应行为证据时列出并置true}
-  - ${数值变量写计算式：旧值 (X) + 变动 (Y) = 新值 (Z)}
+  - ${一句话概括本楼事实及场景/时间是否推进}
+  - ${逐项列出命中的变量与证据；current_scene 可参考此前正文，其他变量仅用本楼新事实}
+  - ${数值变化写“旧值 + 变动 = 新值”；present 检查进出、换场与随行}
   </Analysis>
   <JSONPatch>
   [
-    { "op": "replace", "path": "/current_scene", "value": 2 },
+    { "op": "delta", "path": "/characters/雪之下雪乃/relationship/bond", "value": 3 },
     { "op": "replace", "path": "/world/current_location", "value": "总武高中·奉仕部活动室" },
-    { "op": "insert", "path": "/characters/雪之下雪乃", "value": { "display_name": "雪乃", "present": true, "known": true, "relationship": { "bond": 0, "romance": 0, "commitment": "未确认", "intimate_memory": "" }, "latest_user_memory": { "memory": "在奉仕部活动室里完成了第一次正式交谈。", "inner_thought": "至少，他没有急着替我下结论。" }, "outfit": { "outerwear": "总武高中女生校服外套", "inner_layer": "白色衬衫", "bottoms": "格纹百褶裙", "socks": "黑色及膝袜", "underwear": "未确认", "shoes": "校内鞋" } } },
     { "op": "insert", "path": "/player/carried_items/-", "value": "奉仕部活动室钥匙" }
   ]
   </JSONPatch>

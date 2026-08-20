@@ -19,9 +19,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CARD_ROOT = os.path.dirname(HERE)                       # 角色卡工程/
 PROJECT_ROOT = os.path.dirname(CARD_ROOT)               # Counterfeit-v0.6.0-完整工程-hotfix2/
 SOURCE_JS = os.path.join(CARD_ROOT, "脚本", "对话渲染.js")
+STATE_JSON = os.path.join(CARD_ROOT, "tavern-cards-state.json")
 OUT_JSON = os.path.join(PROJECT_ROOT, "独立产物", "酒馆助手脚本-对话渲染-Counterfeit.json")
 OUT_PREVIEW = os.path.join(PROJECT_ROOT, "独立产物", "对话渲染-预览.html")
-STATE_JSON = os.path.join(CARD_ROOT, "tavern-cards-state.json")
 STATE_KEY = "对话渲染-Counterfeit"
 
 PREVIEW_SAMPLE = """<div class="mes_block"><div class="mes_text">
@@ -53,27 +53,56 @@ PREVIEW_TEMPLATE = """<!DOCTYPE html>
   .mes_text{color:#5b4a4f}
   #chat.cf-theme-dark .mes_text{color:#e8ded9}
   #chat.cf-theme-green .mes_text{color:#43503f}
-  .mes_text p{margin:8px 0;font-size:14px;line-height:1.75}
+  .mes_text p{margin:8px 0;font-size:15.5px;line-height:1.8}
   #theme-bar{display:flex;gap:10px;justify-content:center;margin:0 auto 14px;max-width:300px}
   #theme-bar button{flex:1;padding:5px 0;border:1px solid #e87a90;border-radius:8px;background:#fdf1f3;color:#c05a72;cursor:pointer}
   #theme-bar button:hover{background:#e87a90;color:#fff}
+  #config-bar{display:flex;gap:12px;justify-content:center;align-items:center;margin:0 auto 16px;max-width:560px;flex-wrap:wrap;font-size:12px;color:#5b4a4f}
+  #config-bar label{display:flex;align-items:center;gap:6px}
+  #config-bar input[type=range]{accent-color:#e87a90;width:120px}
+  #config-bar .cf-theme-btn{padding:4px 10px;border:1px solid #e87a90;border-radius:8px;background:#fdf1f3;color:#c05a72;cursor:pointer}
+  #config-bar .cf-theme-btn:hover{background:#e87a90;color:#fff}
 </style>
 </head>
 <body>
 <h1>对话渲染预览（本地静态 · 真实跑渲染引擎）</h1>
-<div id="theme-bar">
-  <button data-t="parchment">羊皮纸</button>
-  <button data-t="dark">暗夜</button>
-  <button data-t="green">豆沙绿</button>
+<div id="config-bar">
+  <button class="cf-theme-btn" data-t="parchment">羊皮纸</button>
+  <button class="cf-theme-btn" data-t="dark">暗夜</button>
+  <button class="cf-theme-btn" data-t="green">豆沙绿</button>
+  <label>气泡字号 <input id="bubble-fs" type="range" min="12" max="22" step="0.5" value="17" /></label>
+  <label>旁白字号 <input id="narrative-fs" type="range" min="12" max="22" step="0.5" value="15.5" /></label>
+  <label>行距 <input id="line-height" type="range" min="1.4" max="2.0" step="0.05" value="1.75" /></label>
+  <label>头像大小 <input id="avatar-size" type="range" min="36" max="72" step="2" value="48" /></label>
 </div>
 <div id="chat">__SAMPLE__</div>
 <script>__SCRIPT__</script>
 <script>
-document.getElementById('theme-bar').addEventListener('click', function (e) {
+function applyPreviewConfig() {
+  var chat = document.getElementById('chat');
+  chat.style.setProperty('--cf-bubble-fs', document.getElementById('bubble-fs').value + 'px');
+  chat.style.setProperty('--cf-narrative-fs', document.getElementById('narrative-fs').value + 'px');
+  chat.style.setProperty('--cf-line-height', document.getElementById('line-height').value);
+  chat.style.setProperty('--cf-avatar-size', document.getElementById('avatar-size').value + 'px');
+}
+['input','change'].forEach(function (evt) {
+  document.getElementById('bubble-fs').addEventListener(evt, applyPreviewConfig);
+  document.getElementById('narrative-fs').addEventListener(evt, applyPreviewConfig);
+  document.getElementById('line-height').addEventListener(evt, applyPreviewConfig);
+  document.getElementById('avatar-size').addEventListener(evt, applyPreviewConfig);
+});
+applyPreviewConfig();
+
+function applyPreviewTheme(t) {
+  var chat = document.getElementById('chat');
+  chat.classList.remove('cf-theme-dark', 'cf-theme-green');
+  if (t !== 'parchment') chat.classList.add('cf-theme-' + t);
+}
+document.getElementById('config-bar').addEventListener('click', function (e) {
   var t = e.target && e.target.getAttribute('data-t');
   if (!t) return;
+  applyPreviewTheme(t);
   try { localStorage.setItem('cf_bubble_config_v1', JSON.stringify({ enabled: true, theme: t })); } catch (_) {}
-  location.reload();
 });
 </script>
 </body>

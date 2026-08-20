@@ -1,8 +1,9 @@
-export const AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@0fa8d8a2aea96fb68f9877263ab3b5fe8c0ee353/assets/Counterfeit/状态栏/avatars';
+export const AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@c947510/assets/Counterfeit/状态栏/avatars';
 
 export const AVATAR_KEYS: Record<string, string> = {
-  '比企谷八幡': 'hachiman', '雪之下雪乃': 'yukino', '由比滨结衣': 'yui',
-  '拉芙希妮·都柏林': 'laff', '一色彩羽': 'iroha', '三浦优美子': 'yumiko',
+  '比企谷八幡': 'hachiman', '八幡': 'hachiman', '比企谷八幡（性转）': 'genderbend_hachiman',
+  '雪之下雪乃': 'yukino', '雪乃': 'yukino', '由比滨结衣': 'yui', '结衣': 'yui',
+  '拉芙希妮·都柏林': 'laff', '拉芙希妮': 'laff', '一色彩羽': 'iroha', '三浦优美子': 'yumiko',
   '叶山隼人': 'hayama', '平冢静': 'shizuka', '户冢彩加': 'saika',
   '雪之下阳乃': 'haruno', '爱布拉娜·都柏林': 'eblana', '爱布拉娜': 'eblana',
   '比企谷小町': 'komachi', '川崎沙希': 'saki', '雪之下夫人': 'mrs_yukinoshita',

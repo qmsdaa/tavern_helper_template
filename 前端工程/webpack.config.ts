@@ -560,6 +560,7 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
       ) {
         return callback();
       }
+      const isBubblePanel = context && context.includes(path.join('Counterfeit', '界面', '对话渲染'));
       const global = {
         jquery: '$',
         lodash: '_',
@@ -570,7 +571,9 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
         yaml: 'YAML',
         zod: 'z',
       };
-      if (request in global) {
+      // 对话气泡面板通过 GitHub Pages 独立打开，没有外部注入的 Vue 全局变量，
+      // 因此让它走 jsDelivr ESM，而不是依赖全局 Vue。
+      if (request in global && !(isBubblePanel && request === 'vue')) {
         return callback(null, 'var ' + global[request as keyof typeof global]);
       }
       const cdn = {

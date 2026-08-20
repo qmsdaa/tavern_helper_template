@@ -10,7 +10,7 @@ import path from 'node:path';
 
 const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
-const { parseBubbleLine, renderBubblesInHtml, renderMessageHtml, parseSceneHeader, buildInjectionText, openAvatarZoom, MOOD_MAP, AVATAR_TABLE, KNOWN_NO_AVATAR } = require(
+const { parseBubbleLine, renderBubblesInHtml, renderMessageHtml, parseSceneHeader, buildInjectionText, canonicalCastNames, openAvatarZoom, MOOD_MAP, AVATAR_TABLE, KNOWN_NO_AVATAR } = require(
   path.join(here, '..', '脚本', '对话渲染.js'),
 );
 
@@ -317,11 +317,29 @@ test('头像表与无头像名单不重叠且键名齐全', () => {
   for (const name of KNOWN_NO_AVATAR) {
     assert.equal(AVATAR_TABLE[name], undefined, `${name} 不应有预置头像`);
   }
-  for (const required of ['比企谷八幡', '比企谷八幡（性转）', '雪之下雪乃', '由比滨结衣', '拉芙希妮·都柏林', '材木座义辉', '海老名姬菜', '相模南', '折本香织', '户部翔', '雪之下夫人']) {
+  for (const required of ['比企谷八幡', '雪之下雪乃', '由比滨结衣', '拉芙希妮·都柏林', '材木座义辉', '海老名姬菜', '相模南', '折本香织', '户部翔', '雪之下夫人']) {
     assert.ok(AVATAR_TABLE[required], `缺少 ${required} 的预置头像`);
     assert.match(AVATAR_TABLE[required], /^https:\/\/cdn\.jsdelivr\.net\//);
   }
-  assert.match(AVATAR_TABLE['比企谷八幡（性转）'], /genderbend_hachiman\.webp$/);
+});
+
+/* ── 别名去重：爱布拉娜·都柏林 / 爱布拉娜 共用一个头像，只保留全名 ── */
+
+test('canonicalCastNames 按头像 URL 折叠别名（爱布拉娜只留全名）', () => {
+  const names = canonicalCastNames();
+  assert.ok(names.includes('爱布拉娜·都柏林'), '应保留全名 爱布拉娜·都柏林');
+  assert.ok(!names.includes('爱布拉娜'), '短名 爱布拉娜 应被折叠，不再单独出现');
+  assert.ok(names.includes('雪之下雪乃'));
+  assert.ok(names.includes('拉芙希妮·都柏林'));
+});
+
+test('buildInjectionText 具名清单不含被折叠的短名别名', () => {
+  const text = buildInjectionText();
+  assert.match(text, /爱布拉娜·都柏林/);
+  // 清单里不应出现独立的短名（全名里含「爱布拉娜」是允许的）
+  const castList = text.match(/可用的具名角色：([^\n]+)/)[1];
+  const shortStandalone = castList.split('、').some(n => n.trim() === '爱布拉娜');
+  assert.equal(shortStandalone, false, '清单不应单独列出短名 爱布拉娜');
 });
 
 test('openAvatarZoom 点击关闭时同步解绑 Escape 监听', () => {

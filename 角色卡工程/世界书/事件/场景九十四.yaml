@@ -71,7 +71,7 @@ NPC动机:
     在场: false
     演绎入口:
       - 八幡无法观察伦敦办公室
-      - 此场景为叙事信息场景，为爱布拉娜赴日提供动机铺垫
+      - 爱布拉娜在本场得到足够的信息与理由，赴日不再只是远程威胁
   # <%_ } _%>
   # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
   yukino:

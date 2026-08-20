@@ -7,12 +7,14 @@
 
 用法：
     python build_tools/sync_phone_artifacts.py            # 分离模式：校验独立产物（默认）
-    python build_tools/sync_phone_artifacts.py --embed    # 内嵌模式：写回卡内（最终分发形态待定，预留能力）
+    python build_tools/sync_phone_artifacts.py --embed    # 内嵌默认源
+    python build_tools/sync_phone_artifacts.py --embed --source <json>  # 显式权威源
 
 内嵌模式会执行三项写入：
-    1. cards/Counterfeit/酒馆助手脚本-手机助手-Counterfeit.json（卡内副本）
-    2. cards/Counterfeit/脚本/手机助手.js（卡内脚本）
-    3. tavern-cards-state.json 的 extensions.tavern_helper.scripts["手机助手-Counterfeit"] 注册
+    1. 独立产物/酒馆助手脚本-手机助手-Counterfeit.json（对外交付副本）
+    2. 角色卡工程/酒馆助手脚本-手机助手-Counterfeit.json（卡内副本）
+    3. 角色卡工程/脚本/手机助手.js（卡内脚本）
+    4. tavern-cards-state.json 的 extensions.tavern_helper.scripts["手机助手-Counterfeit"] 注册
 """
 
 from __future__ import annotations
@@ -25,8 +27,11 @@ from pathlib import Path
 
 
 CARD_ROOT = Path(__file__).resolve().parents[1]
-PROJECT_ROOT = CARD_ROOT.parents[1]
-SOURCE_JSON = PROJECT_ROOT / "酒馆助手脚本-手机助手-Counterfeit.json"
+# 角色卡工程的直接父目录才是仓库/项目根。旧写法 parents[1] 会越过仓库，
+# 在同名外层目录中误读遗留 JSON，导致新构建被旧手机脚本反向覆盖。
+PROJECT_ROOT = CARD_ROOT.parent
+DEFAULT_SOURCE_JSON = PROJECT_ROOT / "酒馆助手脚本-手机助手-Counterfeit.json"
+DELIVERY_JSON = PROJECT_ROOT / "独立产物" / "酒馆助手脚本-手机助手-Counterfeit.json"
 CARD_JSON = CARD_ROOT / "酒馆助手脚本-手机助手-Counterfeit.json"
 CARD_SCRIPT = CARD_ROOT / "脚本" / "手机助手.js"
 STATE_JSON = CARD_ROOT / "tavern-cards-state.json"
@@ -53,29 +58,29 @@ def assert_no_bare_runtime_calls(content: str) -> None:
         raise RuntimeError(f"phone bundle contains unresolved runtime calls: {', '.join(failures)}")
 
 
-def load_source_payload() -> dict:
-    if not SOURCE_JSON.exists():
+def load_source_payload(source_json: Path) -> dict:
+    if not source_json.exists():
         raise SystemExit(
-            f"找不到独立安装产物：{SOURCE_JSON}\n"
+            f"找不到独立安装产物：{source_json}\n"
             "请先构建手机前端并打包：\n"
             "  cd tavern_helper_template\n"
             "  npx webpack --config webpack.phone.config.ts --mode production\n"
             "  python assets/tools/pack_phone_script.py"
         )
-    payload = json.loads(SOURCE_JSON.read_text(encoding="utf-8"))
+    payload = json.loads(source_json.read_text(encoding="utf-8"))
     content = payload.get("content")
     if not isinstance(content, str) or not content:
         raise RuntimeError("独立安装产物缺少 content 字段")
     return payload
 
 
-def report(payload: dict, embedded: bool) -> None:
+def report(payload: dict, embedded: bool, source_json: Path) -> None:
     content = payload["content"]
     print(
         json.dumps(
             {
                 "mode": "embed" if embedded else "standalone",
-                "source": str(SOURCE_JSON),
+                "source": str(source_json),
                 "phone_id": payload.get("id", ""),
                 "phone_info": payload.get("info", ""),
                 "script_bytes": len(content.encode("utf-8")),
@@ -88,7 +93,7 @@ def report(payload: dict, embedded: bool) -> None:
     )
 
 
-def embed(payload: dict) -> None:
+def embed(payload: dict, source_json: Path) -> None:
     content = payload["content"]
     state = json.loads(STATE_JSON.read_text(encoding="utf-8"))
     scripts = state["extensions"]["tavern_helper"]["scripts"]
@@ -99,6 +104,11 @@ def embed(payload: dict) -> None:
     entry["button"] = payload.get("button", {"enabled": True, "buttons": []})
     entry["data"] = payload.get("data", {})
 
+    DELIVERY_JSON.parent.mkdir(parents=True, exist_ok=True)
+    # 镜像使用用户显式指定的权威 JSON，不能从默认路径反向覆盖。
+    source_bytes = source_json.read_bytes()
+    DEFAULT_SOURCE_JSON.write_bytes(source_bytes)
+    DELIVERY_JSON.write_bytes(source_bytes)
     CARD_JSON.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -119,14 +129,21 @@ def embed(payload: dict) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="手机助手脚本同步（D10 分离版）")
     parser.add_argument("--embed", action="store_true", help="内嵌回卡（最终分发形态待定，预留能力）")
+    parser.add_argument(
+        "--source",
+        type=Path,
+        default=DEFAULT_SOURCE_JSON,
+        help="权威手机脚本 JSON；默认使用仓库根目录产物",
+    )
     args = parser.parse_args()
 
-    payload = load_source_payload()
+    source_json = args.source.expanduser().resolve()
+    payload = load_source_payload(source_json)
     assert_no_bare_runtime_calls(payload["content"])
 
     if args.embed:
-        embed(payload)
-    report(payload, embedded=args.embed)
+        embed(payload, source_json)
+    report(payload, embedded=args.embed, source_json=source_json)
 
 
 if __name__ == "__main__":

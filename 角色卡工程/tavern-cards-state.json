@@ -7025,12 +7025,24 @@
           },
           "data": {}
         },
+        "手机助手-Counterfeit": {
+          "type": "script",
+          "script_file": "脚本/手机助手.js",
+          "enabled": true,
+          "id": "fa414405-35a1-4f1d-831e-b469beeb85ff",
+          "info": "build=2026-08-19T17:49:44.682096+00:00; hash=3e3404cccefde36b46b107004d591a88a2a57eb8",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {}
+        },
         "对话渲染-Counterfeit": {
           "type": "script",
           "script_file": "脚本/对话渲染.js",
           "enabled": true,
-          "id": "6bd87840-7ec1-4065-8fe5-32aafad95581",
-          "info": "build=2026-08-20T17:59:42.869972+00:00; hash=4a3b42fb8f2600285039d5ba12b4063ee4d5b608; source=角色卡工程/脚本/对话渲染.js",
+          "id": "c467d77e-d271-42d2-90f7-785f815d4a8f",
+          "info": "build=2026-08-20T19:30:47.245944+00:00; hash=196950c456871e86fb2d9c1156250a901b961d39; source=角色卡工程/脚本/对话渲染.js",
           "button": {
             "enabled": true,
             "buttons": [

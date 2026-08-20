@@ -80,7 +80,7 @@ runtime_hotfix_v060_followup_20260816:
     tests: save.test.ts新增3例（jsonl提取不含绑定键/迁移写入+chatId改写+失败回滚/无metadata-deps降级兼容），连同存量14例全过；手机shujuku桥12例回归全过
   save_table_migration_metadata_hotfix:
     bug: 迁移旧档在部分酒馆环境报 `Cannot read properties of undefined (reading 'TavernDB_ACU_InternalSheetGuide')`，迁移完全失败
-    root_cause: SaveImportScreen 传 `getChatMetadata: () => st.chatMetadata`，而 `SillyTavern.chatMetadata` 在部分版本/时机下为 undefined；resumeCommit 的 `meta[key]`（快照/写入/校验/回滚四处）均未防空，直接抛 TypeError
+    root_cause: "SaveImportScreen 传 `getChatMetadata: () => st.chatMetadata`，而 `SillyTavern.chatMetadata` 在部分版本/时机下为 undefined；resumeCommit 的 `meta[key]`（快照/写入/校验/回滚四处）均未防空，直接抛 TypeError"
     fix:
       - resumeCommit 统一走 readMetadata() 空安全读取；getChatMetadata 返回 undefined/null 时与"未提供 deps"同等对待（canMigrateTables=false），stat_data 迁移不受影响，不崩溃，console.warn 说明表格未迁移
       - SaveImportScreen 元数据来源加固：优先 `st.chatMetadata`，缺失时回退 `st.getContext?.()?.chatMetadata`（酒馆扩展通用取值路径），两者皆空则省略表格 deps
@@ -99,7 +99,7 @@ runtime_hotfix_v060_followup_20260816:
       hotfix10 已出包（Counterfeit-v0.6.0-hotfix10-20260817.png，11.98MB）。
       状态栏 src/config 已于 2026-08-17 由用户侧改为自包含构建（webpack.statusbar.config.ts externals=undefined），
       本次嵌入的状态栏为新构建（281KB）；clone 已暂存 5 个 dist 变更待推送，推完更新 .template.js 的 pinned commit。
-    deployed: |
+    deployed_hotfix9: |
       已完成 hotfix9 出包（Counterfeit-v0.6.0-hotfix9-20260817.png）。
       前端工程 fork 的 Actions 未启用（runs=0），bundle.yaml 不会自动重建 dist → 本机 pnpm build 后手动推送 dist。
       推送历史：源码修复 862e39ed（3 文件）→ dist 重建 752499d4（含修复、通用构建）→ 自包含 dist 5c35fa12（专用配置重建 opening/phone）。
@@ -442,12 +442,12 @@ entries:
     第十幕_冬去春来: [134-150]
   # 150a 分支尾声：不计数·不注册为正式场景条目
 
-  mvu_entries: [MVU变量列表(世界书/MVU/变量列表.txt·双模式进度+world/player+动态characters+Ω/锤子/信息锁/尾声方向+phone容器·运行时展示当前完整stat_data), MVU更新规则(世界书/MVU/更新规则.yaml·场景推进·位置·资产·Present/关系/穿搭·锤子/信息锁/预设尾声), MVU初始变量(世界书/变量/initvar.yaml·开场白commit初始值·POV/custom两套), MVU输出格式(世界书/MVU/输出格式.yaml·导演指令·状态栏视图·调试模式·分支菜单生成规则)]
+  mvu_entries: [MVU变量列表(世界书/MVU/变量列表.txt·双模式进度+world/player+动态characters+Ω/锤子/信息锁/尾声方向+phone容器·运行时展示当前完整stat_data), MVU更新规则(世界书/MVU/更新规则.yaml·常驻角色关系核心+EJS按主线/free/DLC/拉芙Ω/尾声条件渲染), MVU初始变量(世界书/变量/initvar.yaml·开场白commit初始值·POV/custom两套), MVU输出格式(世界书/MVU/输出格式.yaml·精简Analysis+JSONPatch契约)]
 
 mvu:
   structure: |
     顶层结构（动态角色MVU＋phone容器）：
-    ├── 模式与主角组（3）：mode: pov | custom | free · current_pov: hachiman|yukino|yui|laff · custom_protagonist{name,gender,className,identity,past,personality,appearance}
+    ├── 模式与主角组：mode: pov | custom | free · current_pov: hachiman|hachiman_f|yukino|yui|laff|mrs_yukinoshita · custom_protagonist{name,gender,className,identity,past,personality,appearance,participation:{track:member|classmate|outsider,note}|null}
     ├── 剧本进度：current_scene 1-150 · mainline_completed(场景150完成后不可逆置true)
     ├── world: current_date(ISO) · current_location
     ├── player: cash(number|null) · carried_items(string[])
@@ -460,7 +460,7 @@ mvu:
     └── phone（手机助手按存档隔离·主AI禁止直接更新）: contacts(规范全名→active/removed/blocked) · threads(thread_id→direct/group·成员·滚动摘要·事实·待办) · messages(thread_id→真实发送者/故事时间/知情范围/来源) · forum.posts(帖子与回复及元数据) · context(主线注入快照·幂等解析记录·手动队列)
   variables:
     初始值: mode=null · current_pov=null · current_scene=1 · mainline_completed=false · world.current_date=2013-05-20 · current_location=未确认 · player.cash=null · carried_items=[] · characters={} · Ω_resonance=0 · phone={version:2, contacts:{}, threads:{}, messages:{}, forum:{posts:[]}, context:{active_snapshot:null, manual_queue:[], ingest_records:{}, facts:[], appointments:[]}} · arc_milestones/iroha_milestones=旗标全false
-    更新要点: current_scene 由主AI结合场景条目/已发生正文/玩家行动判断·默认不动·核心功能完成或原定事件被永久否定并替代收束后+1·不得按轮数推进·自建模式不更新 · mainline_completed 仅场景150核心功能完成时不可逆置true · characters 主AI按实际登场动态创建 · phone 主AI不得输出JSONPatch修改 · arc_milestones 仅由正文实际发生的可归属行为证据置true·scene/bond不再发放成长
+    更新要点: current_scene 由主AI结合场景条目/已发生正文/玩家行动判断·默认不动·核心功能完成或原定事件被永久否定并替代收束后+1·不得按轮数推进·剧情自建仅 participation.track 非空时参与主线推进 · mainline_completed 仅场景150核心功能完成时不可逆置true · characters 主AI按实际登场动态创建 · phone/collection 主AI不得输出JSONPatch修改 · arc_milestones 仅由正文实际发生的可归属行为证据置true·scene/bond不再发放成长
   # 锤子9个·信息锁3个·结局1个 → 保持顶层；角色关系改由characters动态承载
 
 ejs:
@@ -500,6 +500,21 @@ ejs:
       condition: "mode !== 'pov'（一色非四主角·POV剧本模式声线由场景条目NPC动向承担·2026-08-04注册并门控）"
     - name: 平冢静/雪之下阳乃_三面性（开放世界专用门控）
       condition: "mode !== 'pov'（与一色同规格·2026-08-05统一补装）"
+    - name: MVU更新规则
+      complexity: 段落控制
+      condition: 常驻角色关系核心；主线剧本/current_scene、free日期时段、DLC identity_state、拉芙Ω/锤子、尾声 branch_choice 按 stat_data 条件渲染
+
+mvu_update_rules_slimming_20260820:
+  purpose: 将常驻一万余token的单体变量更新规则拆成精简核心与EJS条件段，不改变变量语义或存档结构
+  schema_sync: 以前端ParticipationSchema为事实来源，将custom_protagonist.participation同步到角色卡schema.ts与脚本/Zod.txt
+  prompt_budget:
+    before: 更新规则源码15323字符/29267字节；输出格式2281字节
+    after: 更新规则源码9849字符；典型渲染主线6472、free约5838、DLC约5960-6320、拉芙主线7307字符；输出格式1181字节
+  routing:
+    always: 共享证据边界、世界地点、玩家资产、动态角色、关系/记忆/穿搭、精简成长旗标
+    conditional: 主线剧本推进、free日期时段、DLC身份、拉芙Ω/锤子、待选择尾声
+  exclusions: 本轮不改变量列表stat_data投影、不新增确定性hammer/日期/结局自动化、不迁移phone或collection
+  verification: build_tools/test_update_rules_slimming.mjs覆盖main POV/剧情自建/free/双DLC/拉芙/尾声分支；出包前执行MVU校验、全回归、pack与fresh readback
 
 opening_ui:
   registration:
@@ -523,11 +538,12 @@ status_bar:
 
 phone_assistant:
   registration:
-    mode: standalone（2026-08-05 D10分离·开发期独立安装·不随卡打包）
-    artifact: 项目根目录酒馆助手脚本-手机助手-Counterfeit.json
-    delivery: 独立脚本JSON（加载器+内嵌HTML+API桥）·酒馆助手单独导入即用·专用webpack.phone.config.ts隔离构建
+    mode: embedded_and_standalone（2026-08-20定稿·最终卡内嵌，同时保留独立安装JSON）
+    authoritative_artifact: D:/神了/Counterfeit-v0.6.0-完整工程-hotfix2-20260814/酒馆助手脚本-手机助手-Counterfeit.json（用户于2026-08-20明确指定）
+    mirrored_artifacts: [项目根目录酒馆助手脚本-手机助手-Counterfeit.json, 独立产物/酒馆助手脚本-手机助手-Counterfeit.json, 角色卡工程/酒馆助手脚本-手机助手-Counterfeit.json]
+    delivery: 卡内TavernHelper脚本 + 独立脚本JSON（加载器+内嵌HTML+API桥）·专用webpack.phone.config.ts隔离构建
     build_guard: 打包同步前拒绝未解析的defineStore/createPinia及Vue响应式API裸调用
-    embed_ready: build_tools/sync_phone_artifacts.py --embed 可重内嵌回卡（最终分发形态待定）
+    embed_pipeline: 前端工程构建 → pack_phone_script.py → build_tools/sync_phone_artifacts.py --embed → forge pack/unpack回读
   persona:
     sources: 新卡角色/NPC条目的基础信息、性格调色盘与三面性；若有精简[手机]专用条目也可追加读取
     legacy_policy: 不迁入旧233条目世界书中的30个[手机]条目（年级漂移/旧称呼/能力式表述）
@@ -574,3 +590,54 @@ first_messages:
       自建模式user消息：完整发送七字段原始设定，作为AI实际收到的开局角色声明。
       玩家始终控制所扮演角色的言行、选择与内心；主AI演绎环境及其他角色。
       仅开场白/0.txt注册为正式开场；开场白/1.txt保留为源码备份但不得作为alternate greeting，避免绕过模式commit。
+
+
+runtime_hotfix_v061_genderbend_20260818:
+  summary: |
+    性转八幡独立角色化 + 《错位的日常》多可扮演视角 + 自由世界自定义序幕生效。
+    命名定稿：性转八幡 = 「比企谷八幡（性转）」（用户 2026-08-18 拍板），DLC《错位的日常》专属独立角色。
+  genderbend_independent_character:
+    pov_key: hachiman_f
+    display_name: 比企谷八幡（性转）
+    scope: 仅 dlc_genderbend_hachiman 战役可选·主线无此角色·主线男性八幡不受影响
+    schema: current_pov 枚举加入 hachiman_f；transformation.identity_state 的 current_body=hachiman_f、legal_identity=比企谷八幡（性转）；Zod.txt/schema.ts(角色卡与前端)/initvar 三处同步
+    role_treat: 世界内旁人仍可能把她当作八幡（认知流）；档案/状态栏/开场白/手机一律以「比企谷八幡（性转）」命名，独立建档（基础信息.yaml 改为独立角色档案，不再"覆盖层/不另建第二个八幡"表述）
+  dlc_multi_pov:
+    campaigns_yaml_allowed_povs: "[hachiman_f, yukino, yui, laff]（自建经 custom_protagonist 进入，不列 allowed_povs）"
+    dlc_setup: 《错位的日常》角色选择网格（性转八幡 DLC 专属卡+新立绘 / 雪乃 / 结衣 / 拉芙 / 自建入口）
+    worldbook: 演绎规则.yaml 重写为多视角；开局锚点.yaml 每视角默认起点（性转八幡=比企谷家房间·雪乃=公寓·结衣=由比滨家·拉芙=爱尔兰宅邸·自建=千叶市）；玩家身份路由/开局场景路由/玩家视点滤镜/开放世界在场注入 按 hachiman_f 与多 POV 分支
+    state_gates: DLC_错位的日常_基础信息_八幡 仅 hachiman_f 注入；开局锚点 matchChatMessages 扩展多句式
+  free_world_custom_opening:
+    opening_custom: stat_data 新布尔字段（schema/Zod/initvar 同步），玩家编辑自定义序幕时 commit 置 true
+    date_parse: commit 从序幕文本解析日期（YYYY-MM-DD / YYYY年M月D日 / M月D日）→ 覆盖模式默认日期；main free 与两条 DLC 均生效
+    routing: 开局场景路由 free/DLC 分支优先"以玩家序幕为唯一开局依据"，不再固定 2013-05-20 拉芙转学 / DLC 官方锚点；挂载脚本 buildOpeningMarker 自由世界+自定义序幕 时 user 标记不带默认日期
+    ui: OpeningText.vue 编辑提示更新（自由世界模式下序幕决定开局日期/地点/情境）
+  new_portrait:
+    source: 独立产物/078817a9499338bf2e659517896137a9.jpg（1279×1870 灰底 AI 立绘）
+    pipeline: 四边 flood-fill 去底（BG_SEED_MIN=190·thresh=50·alpha 羽化2px）→ genderbend_hachiman.webp（立绘 1279×1870）+ 512×512 头像
+    deploy: 推送到 tavern_helper_template_cdn@3aab356；config.ts PORTRAIT_BASE/STATUS_AVATAR_BASE 更新为 3aab356，ASSET_VERSION=20260818a
+    statusbar: PORTRAIT_KEYS 加 '比企谷八幡（性转）'→genderbend_hachiman；POV_NAMES 加 hachiman_f；App.vue 扮演字段旁「性转」专属徽章（粉色渐变）
+  deploy_notes: |
+    前端构建须用专用配置（webpack.opening.config.ts / statusbar.config.ts / phone.config.ts，自包含不外部化），
+    pack_embedded_frontends.py 重内嵌，pack_phone_script.py + sync_phone_artifacts.py --embed 回手机脚本，
+    build_scene_index.mjs 重新生成 scene-index（allowed_povs 已含 hachiman_f），
+    verify 全家桶 + test_* 全过后再 forge pack + unpack 回读对比。
+  出包记录_20260818:
+    卡: 独立产物/Counterfeit-v0.6.0-hotfix12-20260818.png（12.1MB·SHA-256=3B7AB47FE2351BBA92F549D54A7684698D85263BBADEE0F30BE309E80A980560）
+    立绘修复1: DlcSetup.vue 立绘 URL 双 .webp 后缀 bug（portrait() 自动拼 .webp 而 copy.yaml 的 pov.portrait 已是完整文件名 → genderbend_hachiman.webp.webp 404）已修复——改 portraitFile() 完整文件名语义（与 data.ts portraitUrl 一致）
+    立绘修复2: 性转八幡立绘"灰蒙蒙"——v1 亮度 flood-fill（BG_SEED_MIN=190·thresh=50）误删人物浅色区（人物 61% 灰度≥190，与 238 灰底接近）→ 重抠图：中性度(≤12)+亮度(≥218)双条件 invert 背景（背景纯中性灰 R=G=B 中性度=0，人物 73% 深色系有色调）；洞分析确认全为背景缝隙（亮度 236·中性度 1.4）保持透明；边缘 MinFilter 收缩 1px + 羽化 1px 去灰边。CDN 新 commit c947510，ASSET_VERSION=20260818b
+    校验: verify_embedded_frontends 全过（opening 605071B/statusbar 421264B·readback 与源精确一致）；新立绘 URL 实测 200（230650B）
+    回读: .build/readback-20260818-hotfix12（246 条目·清单与 hotfix11 一致·手机脚本不在卡内·scripts=MVU/Zod/开场白挂载/状态栏挂载/CG挂载·regex 5·avatar 一致）
+    内嵌验证: verify_embedded_frontends 全过（opening 605055B/statusbar 421264B·readback 与源精确一致·无 CDN fetch·无远程执行模块）
+    EJS/世界书: 开局场景路由/玩家身份路由/玩家视点滤镜/开放世界在场注入 均含 hachiman_f 与多 POV 分支；DLC 三件套（演绎规则/基础信息/开局锚点）为多视角版本
+    场景: hotfix11 出包后工作区另有 42 场场景修订（本次未触碰，随包带上最新正文）
+    手机_当时状态: hotfix12 按当时要求与卡分开交付；自 2026-08-20 起改为卡内嵌与独立 JSON 双交付
+    校验: verify_v060_contracts/verify_ejs_condition_guards(199)/verify_scene_fields(150)/verify_romance_guide_split/verify_relationship_guide_sync/audit_ensemble_balance --strict 全过；test_* 全过；前端 node --test 67 例全过；forge validate-mvu 通过
+
+  内嵌双交付_20260820:
+    卡: 独立产物/Counterfeit-v0.6.0-embedded-phone-dialogue-20260820.png（SHA-256=08037143C6BF60751958CB8AED7DE9EA21DBAD083A3335BBA8D1C1DC29D7A5A2）
+    手机: 用户指定外层权威JSON → 仓库根/独立产物/卡内JSON与脚本；回读与外层JSON精确一致（360606B）
+    对话渲染: 独立JSON与脚本/对话渲染.js精确一致（59516B），卡内注册元数据同步到同一构建
+    老卡对比: 以 Counterfeit-v0.6.0-hotfix14-20260819.png 为基线；246条目/150幕/7脚本/5正则/卡面/基础元数据无非预期增删，场景文件零变化
+    烟测: forge fresh unpack、embedded frontends、手机/对话精确回读、MVU/契约/EJS/场景/运行时测试通过；仅保留既有 scene21 CG manifest 标题漂移失败
+    手机权威源纠正: 用户明确外层 D:/神了/Counterfeit-v0.6.0-完整工程-hotfix2-20260814/酒馆助手脚本-手机助手-Counterfeit.json 才是最新手机助手；此前由前端工程重建的455675B版本作废，重新以内层内容360606B、ID=fa414405-35a1-4f1d-831e-b469beeb85ff打包并回读
