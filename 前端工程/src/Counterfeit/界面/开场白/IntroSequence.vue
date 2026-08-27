@@ -1,7 +1,7 @@
 <template>
   <div class="intro-screen" @click="skip">
     <TransitionGroup name="layer">
-      <div v-for="layer in layers" :key="layer.id" class="frame-layer">
+      <div v-for="layer in layers" :key="layer.id" class="frame-layer" :data-layer-id="layer.id">
         <!-- poster 降级：视频加载失败时该拍显示首帧静态图 -->
         <img
           v-if="layer.failed"
@@ -25,7 +25,7 @@
     </TransitionGroup>
 
     <Transition name="caption">
-      <p v-if="currentLabel" :key="currentLabel" class="date-caption">{{ currentLabel }}</p>
+      <p v-if="currentLabel" :key="captionKey" class="date-caption">{{ currentLabel }}</p>
     </Transition>
 
     <span class="skip-hint"><i class="fa-solid fa-forward"></i> 点击屏幕跳过</span>
@@ -60,35 +60,41 @@ const variant: Variant = pickVariant(window.innerWidth, window.innerHeight);
 const layers = ref<Layer[]>([]);
 const finishing = ref(false);
 const currentLabel = ref('');
+/** 字幕过渡 key：用层 id 保证相邻拍 dateLabel 相同时也会重新触发 */
+const captionKey = ref(0);
 let uid = 0;
 let current = 0;
 let failCount = 0;
 let timer: number | undefined;
+let finishTimer: number | undefined;
 
-function play(index: number) {
+async function play(index: number) {
   if (index >= INTRO_CLIPS.length) {
     finish();
     return;
   }
   current = index;
   const clip = INTRO_CLIPS[index];
-  layers.value.push({ id: uid++, clip });
+  const layer: Layer = { id: uid++, clip };
+  layers.value.push(layer);
   currentLabel.value = clip.dateLabel;
+  captionKey.value = layer.id;
   // 只保留最近两层（叠化期间新旧共存）
   if (layers.value.length > 2) {
     layers.value = layers.value.slice(-2);
   }
   prefetchClip(index + 1, variant);
-  const el = latestVideo();
+  // Vue 异步渲染：等 DOM 更新后才能拿到新挂载的 <video>
+  await nextTick();
+  const el = layerVideo(layer.id);
   if (el) {
-    el.play().catch(() => onClipError(layers.value[layers.value.length - 1].id));
+    el.play().catch(() => onClipError(layer.id));
   }
 }
 
-/** 取最新一层的 video 元素（failed 层为 img，返回 null） */
-function latestVideo(): HTMLVideoElement | null {
-  const nodes = document.querySelectorAll<HTMLVideoElement>('.frame-layer video');
-  return nodes.length ? nodes[nodes.length - 1] : null;
+/** 按层 id 精确取该层的 video 元素（failed 层为 img，返回 null） */
+function layerVideo(layerId: number): HTMLVideoElement | null {
+  return document.querySelector<HTMLVideoElement>(`.frame-layer[data-layer-id="${layerId}"] video`);
 }
 
 function advance() {
@@ -120,10 +126,14 @@ function finish() {
   if (finishing.value) return;
   finishing.value = true;
   window.clearTimeout(timer);
+  pauseAll();
+  finishTimer = window.setTimeout(() => store.toTitle(), 620);
+}
+
+function pauseAll() {
   for (const el of document.querySelectorAll<HTMLVideoElement>('.frame-layer video')) {
     el.pause();
   }
-  window.setTimeout(() => store.toTitle(), 620);
 }
 
 onMounted(() => {
@@ -135,6 +145,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.clearTimeout(timer);
+  window.clearTimeout(finishTimer);
+  pauseAll();
 });
 </script>
 
