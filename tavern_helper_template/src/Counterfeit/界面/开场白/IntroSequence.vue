@@ -1,5 +1,5 @@
 <template>
-  <div class="intro-screen" @click="skip">
+  <div class="intro-screen" @click="skip" ref="root">
     <TransitionGroup name="layer">
       <div v-for="layer in layers" :key="layer.id" class="frame-layer" :data-layer-id="layer.id">
         <!-- poster 降级：视频加载失败时该拍显示首帧静态图 -->
@@ -67,8 +67,11 @@ let current = 0;
 let failCount = 0;
 let timer: number | undefined;
 let finishTimer: number | undefined;
+/** 组件根节点：DOM 查询限定在组件内，避免误触其他实例 */
+const root = ref<HTMLElement | null>(null);
 
 async function play(index: number) {
+  if (finishing.value) return;
   if (index >= INTRO_CLIPS.length) {
     finish();
     return;
@@ -94,15 +97,17 @@ async function play(index: number) {
 
 /** 按层 id 精确取该层的 video 元素（failed 层为 img，返回 null） */
 function layerVideo(layerId: number): HTMLVideoElement | null {
-  return document.querySelector<HTMLVideoElement>(`.frame-layer[data-layer-id="${layerId}"] video`);
+  return root.value?.querySelector<HTMLVideoElement>(`.frame-layer[data-layer-id="${layerId}"] video`) ?? null;
 }
 
 function advance() {
+  if (finishing.value) return;
   window.clearTimeout(timer);
-  play(current + 1);
+  void play(current + 1);
 }
 
 function onClipError(layerId: number) {
+  if (finishing.value) return;
   const layer = layers.value.find(l => l.id === layerId);
   if (!layer || layer.failed) return;
   layer.failed = true;
@@ -131,7 +136,7 @@ function finish() {
 }
 
 function pauseAll() {
-  for (const el of document.querySelectorAll<HTMLVideoElement>('.frame-layer video')) {
+  for (const el of root.value?.querySelectorAll<HTMLVideoElement>('.frame-layer video') ?? []) {
     el.pause();
   }
 }
