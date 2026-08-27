@@ -1,7 +1,7 @@
 // 前端工程/src/Counterfeit/界面/开场白/introVideos.ts
 import { ASSET_BASE, ASSET_VERSION } from '../../config';
 
-/** 视频化序奏播放清单（2026-08-27 单版：Seedance 图生视频 16:9 1080p，替代静态 CG 运镜 introAssets.ts） */
+/** 视频化序奏播放清单（2026-08-27 单版：Seedance 图生视频 16:9 720p 直出 + CRF 23 重压，替代静态 CG 运镜 introAssets.ts） */
 
 export interface IntroClip {
   /** 程序标识（勿改，测试依赖顺序） */
@@ -10,17 +10,17 @@ export interface IntroClip {
   base: string;
   /** 左下角字幕·手写体日期行（DOM 叠加，不烧进视频） */
   dateLabel: string;
-  /** 停留时长 ms（与视频一致，poster 降级时用它定时切拍） */
+  /** 停留时长 ms（与视频实际时长一致，poster 降级时用它定时切拍） */
   durationMs: number;
 }
 
 export const INTRO_CLIPS: IntroClip[] = [
-  { key: 'may',    base: 'intro_01_may',    dateLabel: '五月二十日',   durationMs: 10000 },
-  { key: 'spring', base: 'intro_02_spring', dateLabel: '春 · 相遇',    durationMs: 10000 },
-  { key: 'summer', base: 'intro_03_summer', dateLabel: '夏 · 海边',    durationMs: 10000 },
-  { key: 'winter', base: 'intro_04_winter', dateLabel: '十二月二十四日', durationMs: 10000 },
-  { key: 'heal',   base: 'intro_05_heal',   dateLabel: '冬末',         durationMs: 10000 },
-  { key: 'grad',   base: 'intro_06_grad',   dateLabel: '春 · 卒業',    durationMs: 10000 },
+  { key: 'may',    base: 'intro_01_may',    dateLabel: '五月二十日',   durationMs: 5100 },
+  { key: 'spring', base: 'intro_02_spring', dateLabel: '春 · 相遇',    durationMs: 5000 },
+  { key: 'summer', base: 'intro_03_summer', dateLabel: '夏 · 海边',    durationMs: 6000 },
+  { key: 'winter', base: 'intro_04_winter', dateLabel: '十二月二十四日', durationMs: 5100 },
+  { key: 'heal',   base: 'intro_05_heal',   dateLabel: '冬末',         durationMs: 5000 },
+  { key: 'grad',   base: 'intro_06_grad',   dateLabel: '春 · 卒業',    durationMs: 6000 },
 ];
 
 export const TITLE_LOOP_BASE = 'title_sakura_loop';

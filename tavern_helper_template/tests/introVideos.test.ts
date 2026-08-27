@@ -17,9 +17,10 @@ test('序奏六拍：key 顺序与分镜脚本一致', () => {
   );
 });
 
-test('每拍 10s，且有中文字幕日期标注', () => {
+test('每拍时长与视频实测一致（5~6s），且有中文字幕日期标注', () => {
+  const expected = { may: 5100, spring: 5000, summer: 6000, winter: 5100, heal: 5000, grad: 6000 };
   for (const clip of INTRO_CLIPS) {
-    assert.equal(clip.durationMs, 10000, clip.key);
+    assert.equal(clip.durationMs, expected[clip.key], clip.key);
     assert.ok(clip.dateLabel.length > 0, clip.key);
   }
 });
