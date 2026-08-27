@@ -20,15 +20,16 @@
 <script setup lang="ts">
 import { getBgm } from './audio';
 import { TITLE_COPY } from './copy';
-import { preloadIntroAssets } from './introAssets';
+// 旧：import { preloadIntroAssets } from './introAssets';
+import { pickVariant, preloadOpeningAssets } from './introVideos';
 import { useOpeningStore } from './store';
 import { showToast } from './toast';
 
 const store = useOpeningStore();
 
-// 等待点击期间预载序奏 CG，避免万花筒中途卡图
+// 等待点击期间预载第 1 拍视频 + 标题屏循环，避免序奏中途卡
 onMounted(() => {
-  preloadIntroAssets();
+  preloadOpeningAssets(pickVariant(window.innerWidth, window.innerHeight));
 });
 
 /** 首次用户交互：解锁 BGM（浏览器 autoplay 限制）→ 进入万花筒序奏 */
