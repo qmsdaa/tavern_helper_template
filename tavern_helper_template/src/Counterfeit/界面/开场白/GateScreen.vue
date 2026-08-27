@@ -20,7 +20,6 @@
 <script setup lang="ts">
 import { getBgm } from './audio';
 import { TITLE_COPY } from './copy';
-// 旧：import { preloadIntroAssets } from './introAssets';
 import { pickVariant, preloadOpeningAssets } from './introVideos';
 import { useOpeningStore } from './store';
 import { showToast } from './toast';
