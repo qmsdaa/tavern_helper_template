@@ -97,7 +97,7 @@ import { titleLoopPosterUrl, titleLoopVideoUrl } from './introVideos';
 
 const store = useOpeningStore();
 
-// 标题屏背景循环视频：画幅一次性选定；加载失败时静图兜底（bg-tree <img> 始终在底层）
+// 标题屏背景循环视频（单 16:9 源，object-fit 居中裁切）；加载失败时静图兜底（bg-tree <img> 始终在底层）
 const bgVideoReady = ref(false);
 
 // 漂浮光斑：柔和景深圆点，缓慢漂移
