@@ -5,7 +5,7 @@
     <video
       class="bg-tree bg-tree-video"
       :class="{ 'is-ready': bgVideoReady }"
-      :src="titleLoopVideoUrl(titleVariant)"
+      :src="titleLoopVideoUrl()"
       :poster="titleLoopPosterUrl()"
       muted
       loop
@@ -93,12 +93,11 @@ import { portraitUrl } from './data';
 import { getBgm } from './audio';
 import { useOpeningStore } from './store';
 import { showToast } from './toast';
-import { pickVariant, titleLoopPosterUrl, titleLoopVideoUrl } from './introVideos';
+import { titleLoopPosterUrl, titleLoopVideoUrl } from './introVideos';
 
 const store = useOpeningStore();
 
 // 标题屏背景循环视频：画幅一次性选定；加载失败时静图兜底（bg-tree <img> 始终在底层）
-const titleVariant = pickVariant(window.innerWidth, window.innerHeight);
 const bgVideoReady = ref(false);
 
 // 漂浮光斑：柔和景深圆点，缓慢漂移

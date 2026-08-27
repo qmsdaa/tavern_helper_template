@@ -6,15 +6,15 @@
         <img
           v-if="layer.failed"
           class="clip-media"
-          :src="clipPosterUrl(layer.clip, variant)"
+          :src="clipPosterUrl(layer.clip)"
           alt="序奏 CG"
           draggable="false"
         />
         <video
           v-else
           class="clip-media"
-          :src="clipVideoUrl(layer.clip, variant)"
-          :poster="clipPosterUrl(layer.clip, variant)"
+          :src="clipVideoUrl(layer.clip)"
+          :poster="clipPosterUrl(layer.clip)"
           muted
           playsinline
           preload="auto"
@@ -38,10 +38,8 @@ import {
   INTRO_CLIPS,
   clipPosterUrl,
   clipVideoUrl,
-  pickVariant,
   prefetchClip,
   type IntroClip,
-  type Variant,
 } from './introVideos';
 import { useOpeningStore } from './store';
 
@@ -53,9 +51,6 @@ interface Layer {
   /** 视频加载失败 → 改用 poster 静态图 + 定时切拍 */
   failed?: boolean;
 }
-
-/** 画幅序奏开始时一次选定，中途不随旋转切换 */
-const variant: Variant = pickVariant(window.innerWidth, window.innerHeight);
 
 const layers = ref<Layer[]>([]);
 const finishing = ref(false);
@@ -86,7 +81,7 @@ async function play(index: number) {
   if (layers.value.length > 2) {
     layers.value = layers.value.slice(-2);
   }
-  prefetchClip(index + 1, variant);
+  prefetchClip(index + 1);
   // Vue 异步渲染：等 DOM 更新后才能拿到新挂载的 <video>
   await nextTick();
   const el = layerVideo(layer.id);
