@@ -1,26 +1,32 @@
 <template>
   <div class="intro-screen" @click="skip">
     <TransitionGroup name="layer">
-      <div v-for="layer in layers" :key="layer.id" class="frame-layer" :class="{ 'is-healing': layer.healing }">
-        <!-- 面部特写推镜（有 focus 的帧）：镜头向该角色脸部推进 -->
+      <div v-for="layer in layers" :key="layer.id" class="frame-layer">
+        <!-- poster 降级：视频加载失败时该拍显示首帧静态图 -->
         <img
-          v-if="layer.frame.focus && !reduced"
-          class="closeup-img"
-          :src="url(layer.frame.image)"
-          :style="closeupStyle(layer.frame)"
+          v-if="layer.failed"
+          class="clip-media"
+          :src="clipPosterUrl(layer.clip, variant)"
           alt="序奏 CG"
           draggable="false"
         />
-
-        <!-- 完整图（群像/四宫格/自拍）：竖屏 contain + 同源模糊图填空边 -->
-        <div v-else class="full-wrap" :class="{ 'is-converge': !reduced && layer.frame.full }">
-          <img class="full-fill" :src="url(layer.frame.image)" alt="" aria-hidden="true" draggable="false" />
-          <img class="full-img" :src="url(layer.frame.image)" alt="序奏 CG" draggable="false" />
-          <!-- 「走出创伤」转场：推近暖光点时渐白 -->
-          <div v-if="layer.frame.transitionOut === 'heal'" class="heal-veil" aria-hidden="true"></div>
-        </div>
+        <video
+          v-else
+          class="clip-media"
+          :src="clipVideoUrl(layer.clip, variant)"
+          :poster="clipPosterUrl(layer.clip, variant)"
+          muted
+          playsinline
+          preload="auto"
+          @ended="advance"
+          @error="onClipError(layer.id)"
+        ></video>
       </div>
     </TransitionGroup>
+
+    <Transition name="caption">
+      <p v-if="currentLabel" :key="currentLabel" class="date-caption">{{ currentLabel }}</p>
+    </Transition>
 
     <span class="skip-hint"><i class="fa-solid fa-forward"></i> 点击屏幕跳过</span>
     <div class="outro-veil" :class="{ 'is-on': finishing }" aria-hidden="true"></div>
@@ -28,82 +34,81 @@
 </template>
 
 <script setup lang="ts">
-import { HEAL_DURATION, INTRO_FRAMES, introAssetUrl, type IntroFrame } from './introAssets';
+import {
+  INTRO_CLIPS,
+  clipPosterUrl,
+  clipVideoUrl,
+  pickVariant,
+  prefetchClip,
+  type IntroClip,
+  type Variant,
+} from './introVideos';
 import { useOpeningStore } from './store';
 
 const store = useOpeningStore();
-const url = introAssetUrl;
-
-const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 interface Layer {
   id: number;
-  frame: IntroFrame;
-  /** 「走出创伤」长转场进行中（当前层推近暖光点 + 渐白） */
-  healing?: boolean;
+  clip: IntroClip;
+  /** 视频加载失败 → 改用 poster 静态图 + 定时切拍 */
+  failed?: boolean;
 }
+
+/** 画幅序奏开始时一次选定，中途不随旋转切换 */
+const variant: Variant = pickVariant(window.innerWidth, window.innerHeight);
 
 const layers = ref<Layer[]>([]);
 const finishing = ref(false);
+const currentLabel = ref('');
 let uid = 0;
+let current = 0;
+let failCount = 0;
 let timer: number | undefined;
 
-/** 视口尺寸（特写推镜的像素级 cover 计算用） */
-const viewport = reactive({ w: window.innerWidth, h: window.innerHeight });
-function onResize() {
-  viewport.w = window.innerWidth;
-  viewport.h = window.innerHeight;
-}
-
-/**
- * 特写推镜：显式像素尺寸 cover 视口（不用 object-fit，transform-origin 百分比才能精确映射源图坐标）。
- * 先 translate 把焦点移到屏幕中心，再以焦点为原点 scale 推进（0.92z → z），镜头始终对准该角色的脸。
- */
-function closeupStyle(frame: IntroFrame) {
-  const h = Math.max(viewport.h, viewport.w / frame.ratio);
-  const w = h * frame.ratio;
-  const [fx, fy] = frame.focus ?? [0.5, 0.5];
-  const zoom = frame.zoom ?? 2;
-  const base = `translate(-50%, -50%) translate(${(0.5 - fx) * 100}%, ${(0.5 - fy) * 100}%)`;
-  return {
-    width: `${w}px`,
-    height: `${h}px`,
-    transformOrigin: `${fx * 100}% ${fy * 100}%`,
-    '--kb-from': `${base} scale(${zoom * 0.92})`,
-    '--kb-to': `${base} scale(${zoom})`,
-    animationDuration: `${frame.duration + 500}ms`,
-  };
-}
-
-function schedule(index: number) {
-  timer = window.setTimeout(() => advance(index), INTRO_FRAMES[index].duration);
-}
-
-function advance(index: number) {
-  const next = index + 1;
-  if (next >= INTRO_FRAMES.length) {
+function play(index: number) {
+  if (index >= INTRO_CLIPS.length) {
     finish();
     return;
   }
-  // 「走出创伤」长转场：当前层先播 2.8s 推近+渐白，再进下一帧（减弱动态下跳过，直接交叉淡入）
-  if (INTRO_FRAMES[index].transitionOut === 'heal' && !reduced) {
-    const current = layers.value[layers.value.length - 1];
-    if (current) {
-      current.healing = true;
-    }
-    timer = window.setTimeout(() => pushNext(next), HEAL_DURATION);
-    return;
+  current = index;
+  const clip = INTRO_CLIPS[index];
+  layers.value.push({ id: uid++, clip });
+  currentLabel.value = clip.dateLabel;
+  // 只保留最近两层（叠化期间新旧共存）
+  if (layers.value.length > 2) {
+    layers.value = layers.value.slice(-2);
   }
-  pushNext(next);
+  prefetchClip(index + 1, variant);
+  const el = latestVideo();
+  if (el) {
+    el.play().catch(() => onClipError(layers.value[layers.value.length - 1].id));
+  }
 }
 
-function pushNext(next: number) {
-  layers.value.push({ id: uid++, frame: INTRO_FRAMES[next] });
-  const oldId = layers.value[0]?.id;
-  window.setTimeout(() => {
-    layers.value = layers.value.filter(layer => layer.id !== oldId);
-  }, 350);
-  schedule(next);
+/** 取最新一层的 video 元素（failed 层为 img，返回 null） */
+function latestVideo(): HTMLVideoElement | null {
+  const nodes = document.querySelectorAll<HTMLVideoElement>('.frame-layer video');
+  return nodes.length ? nodes[nodes.length - 1] : null;
+}
+
+function advance() {
+  window.clearTimeout(timer);
+  play(current + 1);
+}
+
+function onClipError(layerId: number) {
+  const layer = layers.value.find(l => l.id === layerId);
+  if (!layer || layer.failed) return;
+  layer.failed = true;
+  failCount += 1;
+  if (failCount >= INTRO_CLIPS.length) {
+    // 全灭：序奏播不了，直接进标题屏
+    store.toTitle();
+    return;
+  }
+  // 静态图没有 ended 事件，按拍时长定时切
+  window.clearTimeout(timer);
+  timer = window.setTimeout(advance, layer.clip.durationMs);
 }
 
 function skip() {
@@ -112,25 +117,23 @@ function skip() {
 
 /** 收束：白幕淡入 → 交还标题屏（BGM 不停，继续播） */
 function finish() {
-  if (finishing.value) {
-    return;
-  }
+  if (finishing.value) return;
   finishing.value = true;
   window.clearTimeout(timer);
+  for (const el of document.querySelectorAll<HTMLVideoElement>('.frame-layer video')) {
+    el.pause();
+  }
   window.setTimeout(() => store.toTitle(), 620);
 }
 
 onMounted(() => {
-  window.addEventListener('resize', onResize);
-  // 调试：?screen=intro&from=N 从第 N 帧开始（验证转场时序用）
+  // 调试：?screen=intro&from=N 从第 N 拍开始
   const from = Number(new URLSearchParams(window.location.search).get('from') ?? 0);
-  const start = Number.isInteger(from) && from >= 0 && from < INTRO_FRAMES.length ? from : 0;
-  layers.value.push({ id: uid++, frame: INTRO_FRAMES[start] });
-  schedule(start);
+  const start = Number.isInteger(from) && from >= 0 && from < INTRO_CLIPS.length ? from : 0;
+  play(start);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', onResize);
   window.clearTimeout(timer);
 });
 </script>
@@ -151,12 +154,16 @@ onUnmounted(() => {
   inset: 0;
 }
 
-.layer-enter-active {
-  transition: opacity 0.2s ease;
+.clip-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
+/* 拍间交叉叠化 400ms */
+.layer-enter-active,
 .layer-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
 
 .layer-enter-from,
@@ -164,121 +171,31 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* —— 面部特写推镜 —— */
-
-.closeup-img {
+/* 左下角字幕·手写体日期行 */
+.date-caption {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  max-width: none;
-  animation-name: kb-push;
-  animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1);
-  animation-fill-mode: both;
-}
-
-@keyframes kb-push {
-  from {
-    transform: var(--kb-from);
-  }
-  to {
-    transform: var(--kb-to);
-  }
-}
-
-/* —— 完整图 —— */
-
-.full-wrap {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #0c0a10;
-
-  /* 收束帧：虹膜展开（⑤⑥⑧） */
-  &.is-converge {
-    animation: converge 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-}
-
-@keyframes converge {
-  from {
-    clip-path: circle(7% at 50% 50%);
-  }
-  to {
-    clip-path: circle(142% at 50% 50%);
-  }
-}
-
-.full-img {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  /* 竖屏可读性优先：整图 contain（四宫格必须读全），空边由 .full-fill 模糊同源图填充 */
-  object-fit: contain;
-  animation: full-settle 2.4s ease-out both;
-}
-
-@keyframes full-settle {
-  from {
-    transform: scale(1.06);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-/* 空边填充：同源模糊放大副本 */
-.full-fill {
-  position: absolute;
-  inset: -6%;
-  width: 112%;
-  height: 112%;
-  object-fit: cover;
-  filter: blur(34px) brightness(0.42);
-}
-
-/* —— 「走出创伤」长转场：推近右下角玩具熊的暖光点，画面渐白，情绪由暗入明 —— */
-
-.heal-veil {
-  position: absolute;
-  inset: 0;
-  background: #fdfdfe;
-  opacity: 0;
+  left: 22px;
+  bottom: 34px;
+  z-index: 4;
+  font-family: var(--font-title);
+  font-size: clamp(15px, 2.4vw, 22px);
+  letter-spacing: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
   pointer-events: none;
 }
 
-.is-healing {
-  .full-img,
-  .full-fill {
-    animation: heal-zoom 2.8s cubic-bezier(0.45, 0, 0.8, 0.4) both;
-    transform-origin: 75% 72%;
-  }
-
-  .heal-veil {
-    animation: heal-whiten 2.8s ease-in both;
-  }
+.caption-enter-active {
+  transition: opacity 0.5s ease 0.2s;
 }
 
-@keyframes heal-zoom {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(2.6);
-  }
+.caption-leave-active {
+  transition: opacity 0.2s ease;
 }
 
-@keyframes heal-whiten {
-  0% {
-    opacity: 0;
-  }
-  45% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+.caption-enter-from,
+.caption-leave-to {
+  opacity: 0;
 }
 
 .skip-hint {
@@ -296,12 +213,8 @@ onUnmounted(() => {
 }
 
 @keyframes hint-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* 收束白幕：序奏结束 → 白场 → 标题屏 */
@@ -319,11 +232,10 @@ onUnmounted(() => {
   }
 }
 
-/* 减弱动态：脚本侧已全部改走完整图路径，此处关掉收束/推进动画 */
 @media (prefers-reduced-motion: reduce) {
-  .full-wrap.is-converge,
-  .full-img {
-    animation: none;
+  .layer-enter-active,
+  .layer-leave-active {
+    transition: none;
   }
 }
 </style>
