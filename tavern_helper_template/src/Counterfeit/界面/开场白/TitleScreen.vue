@@ -2,6 +2,20 @@
   <div class="title-screen" @pointermove="onPointerMove">
     <!-- 背景：白底 + 动漫插画樱花树 + 可读性白纱 -->
     <img class="bg-tree" :src="portraitUrl('bg_sakura.webp')" alt="" aria-hidden="true" draggable="false" />
+    <video
+      class="bg-tree bg-tree-video"
+      :class="{ 'is-ready': bgVideoReady }"
+      :src="titleLoopVideoUrl(titleVariant)"
+      :poster="titleLoopPosterUrl()"
+      muted
+      loop
+      autoplay
+      playsinline
+      preload="auto"
+      aria-hidden="true"
+      @canplay="bgVideoReady = true"
+      @error="bgVideoReady = false"
+    ></video>
     <div class="bg-veil" aria-hidden="true"></div>
 
     <!-- 漂浮光斑 -->
@@ -79,8 +93,13 @@ import { portraitUrl } from './data';
 import { getBgm } from './audio';
 import { useOpeningStore } from './store';
 import { showToast } from './toast';
+import { pickVariant, titleLoopPosterUrl, titleLoopVideoUrl } from './introVideos';
 
 const store = useOpeningStore();
+
+// 标题屏背景循环视频：画幅一次性选定；加载失败时静图兜底（bg-tree <img> 始终在底层）
+const titleVariant = pickVariant(window.innerWidth, window.innerHeight);
+const bgVideoReady = ref(false);
 
 // 漂浮光斑：柔和景深圆点，缓慢漂移
 const bokehs = Array.from({ length: 8 }, () => ({
@@ -155,6 +174,15 @@ async function toggleBgm() {
   }
   to {
     transform: scale(1.05) translate(-0.6%, 0.8%);
+  }
+}
+
+.bg-tree-video {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+
+  &.is-ready {
+    opacity: 1;
   }
 }
 
