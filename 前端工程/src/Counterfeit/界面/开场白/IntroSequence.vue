@@ -1,5 +1,5 @@
 <template>
-  <div class="intro-screen" @click="skip" ref="root">
+  <div class="intro-screen" ref="root" @click="skip">
     <TransitionGroup name="layer">
       <div v-for="layer in layers" :key="layer.id" class="frame-layer" :data-layer-id="layer.id">
         <!-- poster 降级：视频加载失败时该拍显示首帧静态图 -->
