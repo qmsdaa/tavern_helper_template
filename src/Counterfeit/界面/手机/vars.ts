@@ -101,6 +101,8 @@ export interface MvuSnapshot {
   pov: string | null;
   playerName: string;
   customName: string;
+  /** 剧情自建标记：custom_protagonist.participation.track 非空（场景门控/章节进度的放行依据） */
+  hasParticipation: boolean;
   scene: number | null;
   date: string;
   location: string;
@@ -114,12 +116,13 @@ export interface MvuSnapshot {
 
 const POV_NAMES: Record<string, string> = {
   hachiman: '比企谷八幡',
+  hachiman_f: '比企谷八幡（性转）',
   yukino: '雪之下雪乃',
   yui: '由比滨结衣',
   laff: '拉芙希妮·都柏林',
   mrs_yukinoshita: '雪之下夫人',
 };
-const CAMPAIGN_NAMES: Record<string, string> = { main:'Counterfeit 公共线', dlc_genderbend_hachiman:'错位的日常', dlc_body_swap_mrs_yukinoshita:'借来的名字' };
+const CAMPAIGN_NAMES: Record<string, string> = { main:'Counterfeit 公共线', dlc_genderbend_hachiman:'错位的日常', dlc_body_swap_mrs_yukinoshita:'君的名字？' };
 
 /** 十幕区间（与 WORKFLOW §大纲总览一致） */
 const ACT_TABLE: [number, string][] = [
@@ -146,6 +149,7 @@ export function emptySnapshot(): MvuSnapshot {
     pov: null,
     playerName: '',
     customName: '',
+    hasParticipation: false,
     scene: null,
     date: '',
     location: '',
@@ -282,6 +286,7 @@ export function readMvuSnapshot(): MvuSnapshot {
   snap.mode = (sd.mode as MvuSnapshot['mode']) ?? null;
   snap.pov = (sd.current_pov as string) ?? null;
   snap.customName = String(sd.custom_protagonist?.name ?? '');
+  snap.hasParticipation = Boolean(sd.custom_protagonist?.participation?.track);
   snap.playerName = snap.customName || povDisplayName(snap.pov) || '';
   snap.scene = typeof sd.current_scene === 'number' ? sd.current_scene : null;
   snap.date = asText(sd.world?.current_date);
@@ -329,10 +334,10 @@ export function actNameOf(scene: number | null): string {
   return '';
 }
 
-/** 阶段/时段描述：free 模式场景号冻结为 1，幕表失真，改用开放世界+时段 */
-export function stageText(snap: Pick<MvuSnapshot, 'campaignId' | 'campaignTitle' | 'mode' | 'scene' | 'timeSlot'>): string {
+/** 阶段/时段描述：free 与未接入主线的旧版自建场景号冻结为 1，幕表失真，改用开放世界+时段 */
+export function stageText(snap: Pick<MvuSnapshot, 'campaignId' | 'campaignTitle' | 'mode' | 'scene' | 'timeSlot' | 'hasParticipation'>): string {
   if (snap.campaignId !== 'main') return snap.timeSlot ? `${snap.campaignTitle} · ${snap.timeSlot}` : snap.campaignTitle;
-  if (snap.mode === 'free') {
+  if (snap.mode === 'free' || (snap.mode === 'custom' && !snap.hasParticipation)) {
     return snap.timeSlot ? `开放世界 · ${snap.timeSlot}` : '开放世界';
   }
   return actNameOf(snap.scene);
@@ -415,6 +420,8 @@ export interface SceneEntry {
   date: string;
   act: number;
   title: string;
+  /** 一句话概要：未到达场景的防剧透占位文案（已完成场景仍显示完整标题） */
+  teaser: string;
   transition: null | { visible_title: string; visible_lines: readonly string[] };
 }
 
@@ -427,6 +434,7 @@ export async function loadSceneEntries(): Promise<SceneEntry[]> {
     date: scene.date,
     act: scene.act,
     title: scene.title,
+    teaser: scene.teaser,
     transition: scene.transition,
   }));
 }

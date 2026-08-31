@@ -16,18 +16,7 @@
     rel="stylesheet"
     href="https://fonts.loli.net/css2?family=Klee+One:wght@400;600&family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Zen+Maru+Gothic:wght@400;700;900&display=swap"
   />
-  <!--
-    预览降级：酒馆助手环境会向 iframe 注入全局 Vue（webpack 将 vue 设为 external 'var Vue'）；
-    纯浏览器预览时没有该全局变量，这里同步从 CDN 补一份，保证入口模块求值前 window.Vue 已存在。
-    模块脚本在文档解析完成后才执行，因此此处的 document.write 一定先生效。
-  -->
-  <script>
-    if (typeof window.Vue === 'undefined') {
-      document.write(
-        '<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"><\/script>',
-      );
-    }
-  </script>
+  <!-- Vue、Pinia 与 Zod 由开场专用生产构建内联；禁止在卡内运行时加载执行模块。 -->
 </head>
 <body>
   <div id="app"></div>

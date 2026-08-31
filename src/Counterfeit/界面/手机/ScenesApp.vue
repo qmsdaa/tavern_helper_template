@@ -7,10 +7,10 @@
         <h3 class="card-title">当前</h3>
         <template v-if="isFree">
           <div class="row"><span>故事</span><b>{{ store.snapshot.campaignTitle }}</b></div>
-          <div class="row"><span>模式</span><b>开放世界</b></div>
+          <div class="row"><span>模式</span><b>{{ legacyCustom ? '自建（旧版）' : '开放世界' }}</b></div>
           <div class="row"><span>日期</span><b>{{ dateText }}</b></div>
           <div class="row"><span>时段</span><b>{{ timeSlotText }}</b></div>
-          <p class="free-hint">开放世界不按章节推进，下方日历仅作日期参考。</p>
+          <p class="free-hint">{{ legacyCustom ? '该存档为未选参与方式的旧版自建开局，不接入主线章节；下方日历仅作日期参考。' : '开放世界不按章节推进，下方日历仅作日期参考。' }}</p>
         </template>
         <template v-else>
           <div class="row"><span>幕</span><b>{{ actText }}</b></div>
@@ -32,7 +32,7 @@
         <p v-if="!entries.length" class="empty">没有读到场景条目（未绑定世界书或预览模式）</p>
         <div v-for="item in store.snapshot.campaignId === 'main' ? entries : []" :key="item.id" class="scene-row" :class="statusOf(item)">
           <span class="scene-dot"></span>
-          <span class="scene-name">场景 {{ item.number }} · {{ item.title }}</span>
+          <span class="scene-name">场景 {{ item.number }} · {{ displayText(item) }}</span>
           <span class="scene-date">{{ cnDate(item.date) }}</span>
         </div>
       </section>
@@ -49,7 +49,9 @@ const store = usePhoneStore();
 const entries = ref<SceneEntry[]>([]);
 const campaignTotal = ref(0);
 
-const isFree = computed(() => store.snapshot.mode === 'free');
+/** 旧版自建（mode='custom' 且无参与方式）不接入主线章节，按开放世界样式展示 */
+const legacyCustom = computed(() => store.snapshot.mode === 'custom' && !store.snapshot.hasParticipation);
+const isFree = computed(() => store.snapshot.mode === 'free' || legacyCustom.value);
 const actText = computed(() => actNameOf(store.snapshot.scene) || '—');
 const sceneText = computed(() => (store.snapshot.scene != null ? `场景 ${store.snapshot.scene}` : '—'));
 const dateText = computed(() => (store.snapshot.date ? cnDate(store.snapshot.date) : '—'));
@@ -71,6 +73,11 @@ function statusOf(item: SceneEntry): string {
   if (item.number < current) return 'done';
   if (item.number === current) return 'current';
   return 'future';
+}
+
+/** 已完成场景显示完整标题；当前/未来场景只显示一句话概要，避免列表剧透隐藏剧情 */
+function displayText(item: SceneEntry): string {
+  return statusOf(item) === 'done' ? item.title : item.teaser || item.title;
 }
 
 onMounted(async () => {

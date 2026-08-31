@@ -72,8 +72,29 @@
         ></textarea>
       </div>
 
+      <!-- 剧情模式参与方式（开放世界不按章节推进，不展示此区块） -->
+      <div v-if="store.gameMode === 'story'" class="field participation-block">
+        <span class="label">参与剧情的方式 <em class="required">*</em></span>
+        <p class="participation-hint">主线剧情围绕原作角色展开，你的角色以所选方式进入故事；之后仍可靠自己的行动改变位置。</p>
+        <div class="track-group">
+          <label v-for="track in TRACK_OPTIONS" :key="track.key" class="track-option">
+            <input v-model="store.participationTrack" type="radio" name="participation" :value="track.key" />
+            <span class="track-card">
+              <b>{{ track.label }}</b>
+              <small>{{ track.desc }}</small>
+            </span>
+          </label>
+        </div>
+        <textarea
+          v-model="store.participationNote"
+          placeholder="补充说明（可选）：想让角色怎样与主线产生交集"
+          rows="2"
+          maxlength="200"
+        ></textarea>
+      </div>
+
       <div class="actions">
-        <button class="btn-ghost" @click="store.backToMode()"><i class="fa-solid fa-arrow-left"></i> 返回</button>
+        <button class="btn-ghost" @click="store.backFromCustom()"><i class="fa-solid fa-arrow-left"></i> 返回</button>
         <button class="btn-primary" @click="store.confirmCustom()">确认创建</button>
       </div>
     </div>
@@ -81,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { useOpeningStore, type CustomForm } from './store';
+import { PARTICIPATION_LABELS, useOpeningStore, type CustomForm, type ParticipationTrack } from './store';
 import { showToast } from './toast';
 
 const store = useOpeningStore();
@@ -90,6 +111,25 @@ const GENDER_OPTIONS = ['男', '女', '其他'] as const;
 
 // 正式班级列表：与本作 AU 起点（2013 年·二年级）对齐
 const CLASS_OPTIONS = ['二年F班', '二年J班（国际课程）', '一年级', '三年级', '其他'];
+
+/** 剧情模式参与方式预设轨道（显示名取自 store.PARTICIPATION_LABELS，与摘要块口径一致） */
+const TRACK_OPTIONS: { key: ParticipationTrack; label: string; desc: string }[] = [
+  {
+    key: 'member',
+    label: PARTICIPATION_LABELS.member,
+    desc: '开局被平冢老师安排进奉仕部，身处事件核心，与四人一起承接委托。',
+  },
+  {
+    key: 'classmate',
+    label: PARTICIPATION_LABELS.classmate,
+    desc: '以同班同学的身份在场边目睹事件，能否走进核心圈取决于你的行动。',
+  },
+  {
+    key: 'outsider',
+    label: PARTICIPATION_LABELS.outsider,
+    desc: '不在事件现场，通过传闻、委托与事后交集靠近主线，入口由自己创造。',
+  },
+];
 
 interface AiField {
   key: keyof Pick<CustomForm, 'identity' | 'past' | 'personality' | 'appearance'>;
@@ -414,5 +454,64 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.participation-block {
+  border-top: 1px dashed var(--c-border);
+  padding-top: 14px;
+}
+
+.participation-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--c-text-muted);
+}
+
+.track-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.track-option {
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .track-card {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px 12px;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+
+    b {
+      font-size: 14px;
+      color: var(--c-text-muted);
+    }
+
+    small {
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--c-text-muted);
+    }
+  }
+
+  input:checked + .track-card {
+    border-color: var(--c-primary);
+    background: var(--c-primary-soft);
+
+    b {
+      color: var(--c-primary-strong);
+    }
+  }
 }
 </style>

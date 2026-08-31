@@ -3,27 +3,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Counterfeit · 状态栏</title>
-  <!--
-    预览降级：酒馆助手环境会向 iframe 注入全局 Vue / _ / z（webpack 将它们设为 external）；
-    纯浏览器 mock 预览（?mock=1）时没有这些全局变量，这里按开场白界面的同款方案补齐。
-    Vue 与 lodash 有 UMD 构建，用 document.write 同步载入（模块脚本在文档解析完成后才执行，一定先生效）；
-    zod v4 没有 UMD 构建，改用下方的 module 脚本异步补齐——module 脚本按文档顺序执行，
-    本脚本位于被打包进来的入口模块之前，顶层 await 会先完成。
-  -->
-  <script>
-    if (typeof window.Vue === 'undefined') {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"><\/script>');
-    }
-    if (typeof window._ === 'undefined') {
-      document.write('<script src="https://cdn.jsdelivr.net/npm/lodash"><\/script>');
-    }
-  </script>
-  <script type="module">
-    if (typeof window.z === 'undefined') {
-      const zod = await import('https://cdn.jsdelivr.net/npm/zod@4.4.3/+esm');
-      window.z = zod;
-    }
-  </script>
+  <!-- Vue、Pinia、lodash 与 Zod 均由状态栏专用生产构建内联（webpack.statusbar.config.ts
+       已置 externals=undefined），与开场白同款：禁止在卡内运行时加载执行模块。
+       历史上此处保留的 CDN 兜底（document.write / 动态 import）在打包内联后仍会触发——
+       bundle 里的 Vue 是模块作用域，window.Vue 恒为 undefined，兜底必然走 CDN，
+       CDN 被墙即"丢状态栏"（2026-08-16 确认根因，2026-08-17 移除）。 -->
 </head>
 <body>
   <div id="app"></div>

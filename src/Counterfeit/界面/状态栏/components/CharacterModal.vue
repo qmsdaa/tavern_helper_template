@@ -18,6 +18,7 @@
           <div class="cm-title">
             <b class="cm-name">{{ character.displayName }}</b>
             <span v-if="isLover" class="cm-badge lover">♥ 恋人</span>
+            <span v-else-if="character.fwb" class="cm-badge fwb">炮友</span>
             <span v-else-if="character.commitment === '仅朋友'" class="cm-badge friend">仅朋友</span>
           </div>
           <div class="cm-line">
@@ -113,7 +114,7 @@
           <details class="cm-details">
             <summary class="cm-summary">
               <span class="sec-title">私密档案</span>
-              <span class="cm-summary-tag">{{ character.intimateMemory || character.intimateSexualMemory ? '有记录' : '空' }}</span>
+              <span class="cm-summary-tag">{{ archiveTag }}</span>
             </summary>
             <div class="cm-details-body">
               <div class="cm-line">
@@ -155,6 +156,12 @@ const oneLineStatus = computed(() => {
 });
 
 const isLover = computed(() => props.character.commitment === '恋人');
+/** 私密档案折叠标签：性爱回忆优先标记（有性爱回忆/有记录/空） */
+const archiveTag = computed(() => {
+  if (props.character.intimateSexualMemory) return '有性爱回忆';
+  if (props.character.intimateMemory) return '有记录';
+  return '空';
+});
 const guideRouteLabel = computed(() => {
   if (isLover.value) return '关系已确认';
   if (props.character.commitment === '仅朋友') return '朋友路线';
@@ -313,6 +320,11 @@ const outfitItems = computed(() => OUTFIT_LABELS.map(([key, label]) => ({ label,
 .cm-badge.lover {
   background: var(--c-lover-badge-bg);
   color: var(--c-lover-text);
+}
+
+.cm-badge.fwb {
+  background: var(--c-fwb-badge-bg);
+  color: var(--c-fwb-text);
 }
 
 .cm-badge.friend {

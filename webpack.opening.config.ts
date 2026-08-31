@@ -15,6 +15,14 @@ if (openingFactories.length !== 1) {
 
 export default openingFactories.map(factory => (env: unknown, argv: { mode?: string }) => {
   const config = factory(env, argv);
+  // 卡内开场必须在“禁止外部模块访问”的酒馆环境中也能启动。
+  // 通用配置会把 Vue 设为宿主全局、把 Pinia/Zod 等改写成 jsDelivr ESM；
+  // 开场是内嵌 srcdoc，必须覆盖该策略并把执行依赖全部打入单文件。
+  config.externals = undefined;
+  // webpack 5.109 的 outputModule + 作用域提升会把 commonJsWrap 帮助器（__webpack_require__.cjs）
+  // 内联进拼接模块，却不输出定义 __webpack_require__ 的运行时本体——产物首行即 ReferenceError。
+  // 关闭模块拼接即可回退到标准运行时包装（2026-08-15 实测：拼接开启时生产构建必挂）。
+  config.optimization = { ...(config.optimization ?? {}), concatenateModules: false };
   config.plugins = (config.plugins ?? []).filter(plugin => {
     const applyName = (plugin as { apply?: { name?: string } } | null)?.apply?.name ?? '';
     return !SIDE_EFFECT_PLUGIN_NAMES.has(applyName);

@@ -992,9 +992,10 @@ export const usePhoneStore = defineStore('counterfeit-phone', () => {
 
   /* —— 奉仕部委托（开放世界事件方向） —— */
 
-  /** 委托生成面向开放世界：free/custom 模式完整启用；pov 剧本模式仅可查看既有委托 */
+  /** 委托生成面向开放世界：free 与未接入主线的旧版 custom 完整启用；pov 与剧情自建（主线注入提供方向）仅可查看既有委托 */
   function requestsEnabled(): boolean {
-    return snapshot.value.mode !== 'pov';
+    const snap = snapshot.value;
+    return snap.mode === 'free' || (snap.mode === 'custom' && !snap.hasParticipation);
   }
 
   /**

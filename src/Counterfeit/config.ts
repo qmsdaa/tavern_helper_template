@@ -5,10 +5,13 @@ export const ASSET_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_temp
 
 // 状态栏详情立绘 / 状态栏轻量头像 / 手机好友头像（均固定 GitHub commit，不使用漂移分支）。
 // 详情立绘为 4K/2K，只有角色弹窗打开后才加载；列表 chip 只加载 512×512 头像。
-export const PORTRAIT_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template@9e5de97a57a0b92e1679b0f4da907768f0d44df3/assets/Counterfeit/状态栏/portraits';
-export const STATUS_AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template@9e5de97a57a0b92e1679b0f4da907768f0d44df3/assets/Counterfeit/状态栏/avatars';
-export const AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template@8a916d6/assets/Counterfeit/手机/avatars';
+// 2026-08-17 起迁至专用素材仓库 tavern_helper_template_cdn（原仓库超 jsdelivr 后端抓取体积上限，
+// 新 commit 不再被解析；手机/开场白暂留原仓库旧 commit，靠 jsdelivr 缓存续命，后续同样迁移）。
+// 2026-08-23：手机好友头像 4 个 webp 整体迁入 cdn 仓库（commit 3fab127，含拉芙新立绘批次）。
+export const PORTRAIT_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@3fab127/assets/Counterfeit/状态栏/portraits';
+export const STATUS_AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@3fab127/assets/Counterfeit/状态栏/avatars';
+export const AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@3fab127/assets/Counterfeit/手机/avatars';
 
 // 素材版本号：同名文件内容更新后递增（?v= 查询串破浏览器/CDN 缓存）。
 // ⚠️ 每次替换 assets 下的图片/音频都要 bump 这个值，否则用户端会继续用缓存旧图。
-export const ASSET_VERSION = '20260814a';
+export const ASSET_VERSION = '20260823a';

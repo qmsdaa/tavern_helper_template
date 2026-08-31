@@ -20,6 +20,13 @@ if (statusbarFactories.length !== 1) {
 
 export default statusbarFactories.map(factory => (env: unknown, argv: { mode?: string }) => {
   const config = factory(env, argv);
+  // 状态栏与开场白同为内嵌 srcdoc 运行：通用配置会把 Vue/Pinia/Zod/lodash 等外置成 jsDelivr ESM，
+  // CDN 被墙或缓慢时状态栏直接不挂载（"丢状态栏"根因，2026-08-16 确认、2026-08-17 修复）。
+  // 与 webpack.opening.config.ts 同款：取消外置，执行依赖全部打入单文件。
+  config.externals = undefined;
+  // webpack 5.109 outputModule + 作用域提升会丢运行时本体（__webpack_require__.cjs ReferenceError），
+  // 关闭模块拼接回退标准运行时包装（同 webpack.opening.config.ts 的修复）。
+  config.optimization = { ...(config.optimization ?? {}), concatenateModules: false };
   config.plugins = (config.plugins ?? []).filter(plugin => {
     const applyName = (plugin as { apply?: { name?: string } } | null)?.apply?.name ?? '';
     return !SIDE_EFFECT_PLUGIN_NAMES.has(applyName);

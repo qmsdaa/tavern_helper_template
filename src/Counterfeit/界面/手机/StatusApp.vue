@@ -5,7 +5,7 @@
     <div class="status-scroll">
       <section class="card">
         <h3 class="card-title">当前世界</h3>
-        <div v-if="isFree" class="row"><span>模式</span><b>开放世界</b></div>
+        <div v-if="isFree" class="row"><span>模式</span><b>{{ legacyCustom ? '自建（旧版）' : '开放世界' }}</b></div>
         <template v-else>
           <div class="row"><span>幕</span><b>{{ actText }}</b></div>
           <div class="row"><span>场景</span><b>{{ sceneText }}</b></div>
@@ -98,7 +98,9 @@ import { usePhoneStore } from './store';
 
 const store = usePhoneStore();
 
-const isFree = computed(() => store.snapshot.mode === 'free');
+/** 旧版自建（无参与方式）不接入主线，按开放世界样式展示；剧情自建与 POV 一样显示幕/场景 */
+const legacyCustom = computed(() => store.snapshot.mode === 'custom' && !store.snapshot.hasParticipation);
+const isFree = computed(() => store.snapshot.mode === 'free' || legacyCustom.value);
 const actText = computed(() => actNameOf(store.snapshot.scene) || '—');
 const sceneText = computed(() => (store.snapshot.scene != null ? `场景 ${store.snapshot.scene}` : '—'));
 const dateText = computed(() => (store.snapshot.date ? cnDate(store.snapshot.date) : '—'));

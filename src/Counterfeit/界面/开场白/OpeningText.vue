@@ -25,7 +25,7 @@
           class="edit-textarea"
           :maxlength="4000"
           rows="12"
-          placeholder="在这里写你的序幕…留空保存则恢复官方默认"
+          placeholder="在这里写你的序幕…留空保存则恢复官方默认；自由世界模式下序幕会决定开局日期/地点/情境"
         ></textarea>
         <div class="edit-meta">
           <span class="char-count" :class="{ over: overLimit }">{{ draftInput.length }}/{{ maxLen }}</span>
@@ -34,7 +34,10 @@
           <i class="fa-solid fa-triangle-exclamation"></i>
           检测到结构性标记（&lt;opening_setup&gt; / &lt;UpdateVariable&gt; / &lt;% %&gt; 等），保存时会被安全转义为可见文字
         </p>
-        <p class="edit-hint">仅修改序幕叙事文字；开局角色 / 日期 / 场景 / 难度不变。草稿只对当前这次新开局生效，不会写入全局存储。</p>
+        <p class="edit-hint">
+          自由世界（开放世界 / DLC）模式下，自定义序幕将决定开局的日期、地点与情境，不再固定默认开场；
+          剧本模式仅修改序幕文字，开局角色 / 场景 / 难度不变。草稿只对当前这次新开局生效，不会写入全局存储。
+        </p>
         <div class="edit-actions">
           <button class="btn-ghost" :disabled="overLimit" @click="saveEdit">
             <i class="fa-solid fa-check"></i>
@@ -98,9 +101,11 @@ function restoreDefault() {
   showToast('已恢复官方默认序幕', 'success');
 }
 
-// 直接进入本屏（未做选择）时退回模式选择
+// 直接进入本屏（未做选择）时退回模式选择；
+// DLC 线路恒不设 mode（chooseCampaign 清空、commit 统一派生 free），必须放行，
+// 否则 DLC 预览开局会在本屏挂载瞬间被弹回 POV 选择界面
 onMounted(() => {
-  if (!store.mode) {
+  if (!store.mode && store.campaignId === 'main') {
     store.backToMode();
   }
 });

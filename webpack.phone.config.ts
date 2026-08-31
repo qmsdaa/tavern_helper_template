@@ -19,5 +19,11 @@ export default phoneFactories.map(factory => (env: unknown, argv: { mode?: strin
     const applyName = (plugin as { apply?: { name?: string } } | null)?.apply?.name ?? '';
     return !SIDE_EFFECT_PLUGIN_NAMES.has(applyName);
   });
+  // webpack 5.109 outputModule + 作用域提升会丢运行时本体（__webpack_require__.cjs ReferenceError），
+  // 关闭模块拼接回退标准运行时包装（同 webpack.opening.config.ts 的修复）。
+  config.optimization = { ...(config.optimization ?? {}), concatenateModules: false };
+  // 手机运行在加载器自创的 srcdoc iframe 中，不能依赖酒馆或沙箱预注入 Vue/Pinia/Zod。
+  // 清空共享 externals，所有可执行依赖一律进入单文件产物；桥接仅保留酒馆 API。
+  config.externals = undefined;
   return config;
 });

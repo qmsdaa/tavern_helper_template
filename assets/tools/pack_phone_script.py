@@ -25,6 +25,7 @@ BRIDGE_SHIM = """<script>
 (function(){
 // Counterfeit API 桥：手机 iframe 的 parent 是宿主页面（没有酒馆 API），
 // 真正的 API 在酒馆助手脚本沙箱里——加载器已把它命名为 __counterfeit_sandbox__。
+// Vue/Pinia/Zod 等执行依赖均已打入单文件；这里只桥接酒馆运行时 API。
 var N=['getVariables','updateVariablesWith','insertOrAssignVariables','deleteVariable','getChatMessages','setChatMessages','getLastMessageId','generateRaw','generate','eventOn','eventMakeFirst','eventEmit','tavern_events','getCharWorldbookNames','getWorldbook','updateWorldbookWith','createWorldbook','getOrCreateChatWorldbook','getModelList','getProxyPresetNames','getPresetNames','stopGenerationById','stopAllGeneration','_','$','jQuery'];
 function pick(host){
   for(var i=0;i<N.length;i++){var k=N[i];
@@ -64,11 +65,19 @@ def main():
     content = content.replace("</script", "<\\/script").replace("<!--", "<\\!--")
 
     sha1 = hashlib.sha1(content.encode("utf-8")).hexdigest()
+    # Updating the same script must not create another installed instance.
+    # Existing standalone + embedded deliveries share this identity.
+    script_id = None
+    if os.path.isfile(OUT_JSON):
+        with open(OUT_JSON, encoding="utf-8") as f:
+            previous = json.load(f)
+        if previous.get("name") == "手机助手-Counterfeit":
+            script_id = previous.get("id")
     payload = {
         "type": "script",
         "enabled": True,
         "name": "手机助手-Counterfeit",
-        "id": str(uuid.uuid4()),
+        "id": script_id or str(uuid.uuid4()),
         "content": content,
         "info": f"build={datetime.now(timezone.utc).isoformat()}; hash={sha1}",
         "button": {"enabled": True, "buttons": []},

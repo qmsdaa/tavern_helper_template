@@ -39,12 +39,14 @@ import { usePhoneStore } from './store';
 
 const store = usePhoneStore();
 
+/** 旧版自建（无参与方式）不接入主线：场景号冻结为 1，幕表失真，按开放世界样式展示 */
+const legacyCustom = computed(() => store.snapshot.mode === 'custom' && !store.snapshot.hasParticipation);
 const actText = computed(() =>
-  store.snapshot.mode === 'free' ? '开放世界' : actNameOf(store.snapshot.scene) || 'Counterfeit',
+  store.snapshot.mode === 'free' || legacyCustom.value ? '开放世界' : actNameOf(store.snapshot.scene) || 'Counterfeit',
 );
 const dateText = computed(() => (store.snapshot.date ? cnDate(store.snapshot.date) : '手机助手'));
 const sceneText = computed(() => {
-  if (store.snapshot.mode === 'free') {
+  if (store.snapshot.mode === 'free' || legacyCustom.value) {
     const parts = [store.snapshot.timeSlot, store.snapshot.location].filter(Boolean);
     return parts.length ? parts.join(' · ') : '自由行动';
   }
@@ -67,6 +69,9 @@ const bgStyle = computed(() => {
 .home-screen {
   position: relative;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   padding: 8px 22px 10px;
@@ -116,14 +121,15 @@ const bgStyle = computed(() => {
 }
 
 .app-grid {
-  flex: 1;
+  flex: 1 0 auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-content: start;
   row-gap: 20px;
 }
 
 .app-icon {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,6 +144,7 @@ const bgStyle = computed(() => {
 .icon-tile {
   position: relative;
   width: 58px;
+  max-width: 100%;
   height: 58px;
   border-radius: 22%;
   display: flex;

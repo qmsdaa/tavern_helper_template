@@ -6,7 +6,7 @@
       <!-- 第一行：章节 / 场景编号 / 日期 / 星期 -->
       <div class="panel-head">
         <span class="head-title">🌸 {{ barTitle }}</span>
-        <span v-if="data.campaign_id === 'main' && data.mode === 'pov'" class="head-scene">
+        <span v-if="storyProgress" class="head-scene">
           场景 <b>{{ data.current_scene }}</b><span class="scene-total"> / {{ mainTotal }}</span>
         </span>
         <span class="head-date">{{ formatDateLabel(data.world.current_date) }}</span>
@@ -17,7 +17,9 @@
           <span class="field-name">位置</span><span class="field-value">{{ data.world.current_location }}</span>
         </span>
         <span class="sub-field">
-          <span class="field-name">扮演</span><span class="field-value">{{ playerLabel(data) }}</span>
+          <span class="field-name">扮演</span>
+          <span class="field-value">{{ playerLabel(data) }}</span>
+          <span v-if="genderbend" class="gb-badge" title="DLC《错位的日常》专属角色 · 比企谷八幡（性转）">性转</span>
         </span>
         <span v-if="data.mode === 'free' && data.world.time_slot" class="sub-field">
           <span class="field-name">时段</span><span class="field-value">{{ data.world.time_slot }}</span>
@@ -107,6 +109,8 @@ import {
   campaignTitle,
   formatDateLabel,
   identityBadge,
+  isGenderbendHachiman,
+  isStoryProgress,
   playerLabel,
   presentCharacters,
 } from './utils';
@@ -117,11 +121,13 @@ const mainTotal = campaignRegistry.main.total_scenes;
 
 const characters = computed(() => presentCharacters(data.value));
 
+const storyProgress = computed(() => isStoryProgress(data.value));
 const barTitle = computed(() => {
-  if (data.value.campaign_id === 'main' && data.value.mode === 'pov') return actNameOf(data.value.current_scene);
+  if (storyProgress.value) return actNameOf(data.value.current_scene);
   return campaignTitle(data.value);
 });
 const identityText = computed(() => identityBadge(data.value));
+const genderbend = computed(() => isGenderbendHachiman(data.value));
 
 // 角色弹窗标记：挂载器开顶层弹窗 iframe 时置 __counterfeitModalChar 为角色规范名
 const hostChar = ((window as any).__counterfeitModalChar as string | null | undefined) ?? null;
@@ -288,6 +294,22 @@ window.addEventListener('keydown', onKeydown);
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+/* 性转八幡专属徽章：DLC《错位的日常》独立角色独特标识（区别于主线男性八幡） */
+.gb-badge {
+  flex: none;
+  align-self: center;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f0679f, #b974d8);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1.6;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgb(240 103 159 / .35);
 }
 
 /* 在场角色头像标签（立绘裁头像） */

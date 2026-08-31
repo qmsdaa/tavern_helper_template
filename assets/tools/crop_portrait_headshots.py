@@ -44,6 +44,12 @@ JOBS = (
     PortraitJob("川崎沙希立绘.png", "saki.webp"),
     PortraitJob("性转比企谷八幡.png", "genderbend_hachiman.webp", center_y=0.16),
     PortraitJob("雪之下夫人.png", "mrs_yukinoshita.webp", center_y=0.17),
+    # 2026-08-17 追加：配角立绘（源目录=工程根/配角立绘，统一 832×1216，用 --only 单跑）
+    PortraitJob("材木座义辉.png", "zaimokuza.webp"),
+    PortraitJob("海老名姬菜.png", "ebina.webp"),
+    PortraitJob("相模南.png", "sagami.webp"),
+    PortraitJob("折本香织.png", "orimoto.webp"),
+    PortraitJob("户部翔.png", "tobe.webp"),
 )
 
 
@@ -111,18 +117,28 @@ def parse_args() -> argparse.Namespace:
         help="WebP 头像输出目录",
     )
     parser.add_argument("--contact-sheet", action="store_true", help="额外生成 _contact-sheet.jpg 供人工审查")
+    parser.add_argument(
+        "--only",
+        type=str,
+        default="",
+        help="只处理逗号分隔的输出键（如 zaimokuza,ebina），用于配角补跑",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    only = {key.strip() for key in args.only.split(",") if key.strip()}
+    jobs = [job for job in JOBS if not only or job.output.rsplit(".", 1)[0] in only]
+    if only and len(jobs) != len(only):
+        raise RuntimeError(f"--only 存在未知键：{sorted(only - {job.output.rsplit('.', 1)[0] for job in JOBS})}")
     outputs: list[Path] = []
-    for job in JOBS:
+    for job in jobs:
         output_path, box = build_avatar(args.source_root, args.output_root, job)
         outputs.append(output_path)
         print(f"{job.source} -> {output_path.name} crop={box} bytes={output_path.stat().st_size}")
-    if len(outputs) != len(JOBS):
-        raise RuntimeError(f"应生成 {len(JOBS)} 个头像，实际 {len(outputs)} 个")
+    if len(outputs) != len(jobs):
+        raise RuntimeError(f"应生成 {len(jobs)} 个头像，实际 {len(outputs)} 个")
     if args.contact_sheet:
         print(f"contact_sheet={build_contact_sheet(args.output_root, outputs)}")
 

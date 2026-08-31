@@ -1,15 +1,25 @@
-import { OPENING_TEXTS, povByKey, renderCustomOpening, type PovKey } from './copy';
-import { OPENING_DRAFT_MAX, resolveOpeningText } from './openingDraft';
+import { OPENING_TEXTS, dlcPovByKey, povByKey, renderCustomOpening, renderDlcCustomOpening, type DlcPovCopy, type PovKey } from './copy';
+import { OPENING_DRAFT_MAX, parseOpeningDate, resolveOpeningText } from './openingDraft';
 import { showToast } from './toast';
 
 export type Step = 'gate' | 'intro' | 'title' | 'campaign' | 'mode' | 'pov' | 'custom' | 'dlc_setup' | 'save_import' | 'opening' | 'gallery' | 'done';
 export type Mode = 'pov' | 'custom';
 export type CampaignId = 'main' | 'dlc_genderbend_hachiman' | 'dlc_body_swap_mrs_yukinoshita';
 export type DlcMind = 'hachiman' | 'mrs_yukinoshita';
+/** 《错位的日常》可扮演集合：性转八幡（DLC 专属）+ 三主角 + 自建 */
+export type DlcPov = 'hachiman_f' | 'yukino' | 'yui' | 'laff' | 'custom';
 /** 玩法模式：story=剧本模式（150场）·open=开放世界攻略模式（写入 stat.mode='free'） */
 export type GameMode = 'story' | 'open';
 /** 恋爱难度：开局定档·commit 写入 stat_data.difficulty·全模式生效 */
 export type DifficultyKey = '简单' | '普通' | '困难';
+/** 剧情模式下自建角色的参与方式预设轨道（开放世界自建不选、不写入） */
+export type ParticipationTrack = 'member' | 'classmate' | 'outsider';
+/** 参与轨道显示名：开局摘要块与挂载脚本首条 user 消息共用口径，改动需两边同步 */
+export const PARTICIPATION_LABELS: Record<ParticipationTrack, string> = {
+  member: '奉仕部第五名部员',
+  classmate: '同班旁观者',
+  outsider: '场外自由人',
+};
 
 /** POV 角色开局所在班级教室（MVU-DESIGN §2.1：world.current_location 在 POV 模式填对应 F/J 班教室） */
 const POV_CLASSROOM: Record<PovKey, string> = {
@@ -17,6 +27,15 @@ const POV_CLASSROOM: Record<PovKey, string> = {
   yukino: '总武高中·2年J班教室',
   yui: '总武高中·2年F班教室',
   laff: '总武高中·2年J班教室',
+};
+
+/** 《错位的日常》DLC 各可扮演角色的默认开局位置（官方序幕不自定义时） */
+const DLC_LOCATIONS: Record<DlcPov, string> = {
+  hachiman_f: '比企谷家·八幡房间',
+  yukino: '雪之下雪乃的公寓',
+  yui: '由比滨家',
+  laff: '成田机场到达口（从英国返回）',
+  custom: '未确认',
 };
 
 /**
@@ -149,9 +168,8 @@ function escapeAttr(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// 注意：本模板环境中 pinia 经 jsdelivr +esm 引入、携带自己的 vue 副本，而组件渲染用的是酒馆注入的全局 Vue。
-// 因此 store 必须使用 setup 写法 + 自动导入的（全局 Vue 的）ref/reactive/computed，
-// 让响应式依赖挂到全局 Vue 的 effect 系统上；options 写法的 state() 会挂在 pinia 那份 vue 上，界面不更新。
+// 开场专用生产构建会把 Pinia 与 Vue 内联到同一 bundle；继续使用 setup store，
+// 让开场状态与组件响应式依赖保持直接、可测试，也避免依赖酒馆宿主提供前端运行库。
 /** 预览调试：?screen=title|gallery|intro… 直达指定屏（缺省 gate 启动门） */
 function initialStep(): Step {
   const target = new URLSearchParams(window.location.search).get('screen');
@@ -163,12 +181,17 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
   const step = ref<Step>(initialStep());
   const campaignId = ref<CampaignId>('main');
   const dlcMind = ref<DlcMind>('hachiman');
+  /** 《错位的日常》DLC 角色选择（性转八幡 / 雪乃 / 结衣 / 拉芙 / 自建） */
+  const dlcPov = ref<DlcPov>('hachiman_f');
   const mode = ref<Mode | null>(null);
   /** 玩法模式：story=剧本 / open=开放世界（stat.mode 写 'free'）；自建角色在两种玩法下均可用 */
   const gameMode = ref<GameMode>('story');
   const selectedPov = ref<PovKey | null>(null);
   const difficulty = ref<DifficultyKey>('普通');
   const form = reactive<CustomForm>(emptyForm());
+  /** 剧情模式自建的参与方式（gameMode='open' 时不展示、commit 恒写 null） */
+  const participationTrack = ref<ParticipationTrack | null>(null);
+  const participationNote = ref('');
   const submitting = ref(false);
   /** 已提交的设定摘要块（done 屏展示） */
   const committedSummary = ref('');
@@ -181,7 +204,16 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
 
   /** 当前选择对应的官方开场文本（默认序幕，不可被自定义覆盖本体） */
   const openingText = computed<string>(() => {
-    if (campaignId.value === 'dlc_genderbend_hachiman') return OPENING_TEXTS.dlc_genderbend_hachiman;
+    if (campaignId.value === 'dlc_genderbend_hachiman') {
+      if (dlcPov.value === 'custom') return renderDlcCustomOpening(form.name);
+      const map: Record<Exclude<DlcPov, 'custom'>, string> = {
+        hachiman_f: OPENING_TEXTS.dlc_genderbend_hachiman,
+        yukino: OPENING_TEXTS.dlc_genderbend_yukino,
+        yui: OPENING_TEXTS.dlc_genderbend_yui,
+        laff: OPENING_TEXTS.dlc_genderbend_laff,
+      };
+      return map[dlcPov.value as Exclude<DlcPov, 'custom'>] ?? OPENING_TEXTS.dlc_genderbend_hachiman;
+    }
     if (campaignId.value === 'dlc_body_swap_mrs_yukinoshita') {
       return dlcMind.value === 'mrs_yukinoshita'
         ? OPENING_TEXTS.dlc_body_swap_mrs_yukinoshita
@@ -213,7 +245,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
       return { ok: false, message: `序幕最长 ${OPENING_DRAFT_MAX} 字（当前 ${raw.length} 字），请精简后再保存` };
     }
     openingDraft.value = raw;
-    return { ok: true, message: '已应用自定义序幕（仅修改叙事文字，开局角色/日期/场景/难度不变）' };
+    return { ok: true, message: '已应用自定义序幕（自由世界模式下，开局日期/地点/情境以你的序幕为准）' };
   }
 
   /** 恢复官方默认序幕 */
@@ -222,17 +254,33 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
   }
 
   // 切换模式/主角/玩法/难度时丢弃草稿——草稿绑定的是"当前选择对应的官方序幕"，不能跨选择串用
-  watch([campaignId, dlcMind, mode, selectedPov, gameMode, difficulty], () => {
+  watch([campaignId, dlcMind, dlcPov, mode, selectedPov, gameMode, difficulty], () => {
     openingDraft.value = null;
   });
 
   /** 结构化设定摘要块 */
   const summaryBlock = computed<string>(() => {
     if (campaignId.value === 'dlc_genderbend_hachiman') {
+      if (dlcPov.value === 'custom') {
+        return [
+          `<opening_setup campaign="${campaignId.value}" revision="1" mode="free" diff="${difficulty.value}" name="${escapeAttr(form.name.trim())}">`,
+          '故事: 《错位的日常》',
+          `玩家视点: 自建角色「${form.name.trim() || '未命名角色'}」`,
+          `性别: ${form.gender || '未填写'}`,
+          `所在班级: ${form.className || '未填写'}`,
+          `身份: ${form.identity.trim() || '未填写'}`,
+          `过往经历: ${form.past.trim() || '未填写'}`,
+          `性格: ${form.personality.trim() || '未填写'}`,
+          `相貌: ${form.appearance.trim() || '未填写'}`,
+          '连续性: main:118 · 2014-07-12',
+          '</opening_setup>',
+        ].join('\n');
+      }
+      const povLabel = dlcPovByKey(dlcPov.value as DlcPovCopy['key']).name;
       return [
-        `<opening_setup campaign="${campaignId.value}" revision="1" mode="free" pov="hachiman" diff="${difficulty.value}">`,
+        `<opening_setup campaign="${campaignId.value}" revision="1" mode="free" pov="${dlcPov.value}" diff="${difficulty.value}">`,
         '故事: 《错位的日常》',
-        '玩家视点: 比企谷八幡（稳定本人）',
+        `玩家视点: ${povLabel}`,
         '连续性: main:118 · 2014-07-12',
         '</opening_setup>',
       ].join('\n');
@@ -240,7 +288,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     if (campaignId.value === 'dlc_body_swap_mrs_yukinoshita') {
       return [
         `<opening_setup campaign="${campaignId.value}" revision="1" mode="free" pov="${dlcMind.value}" diff="${difficulty.value}">`,
-        '故事: 《借来的名字》',
+        '故事: 《君的名字？》',
         `玩家意识: ${dlcMind.value === 'hachiman' ? '比企谷八幡' : '雪之下夫人'}（整局稳定）`,
         `初始身体: ${dlcMind.value === 'hachiman' ? '雪之下夫人的身体' : '比企谷八幡的身体'}`,
         '连续性: main:118 · 2014-07-12',
@@ -262,7 +310,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
       return lines.join('\n');
     }
     if (mode.value === 'custom') {
-      return [
+      const lines = [
         `<opening_setup mode="${statMode}" diff="${difficulty.value}" name="${escapeAttr(form.name.trim())}">`,
         `性别: ${form.gender || '未填写'}`,
         `所在班级: ${form.className || '未填写'}`,
@@ -270,8 +318,17 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
         `过往经历: ${form.past.trim() || '未填写'}`,
         `性格: ${form.personality.trim() || '未填写'}`,
         `相貌: ${form.appearance.trim() || '未填写'}`,
-        '</opening_setup>',
-      ].join('\n');
+      ];
+      // 剧情模式自建：参与方式是场景门控放行依据，必须进摘要块让模型逐楼可见
+      if (gameMode.value === 'story' && participationTrack.value) {
+        lines.push(`参与方式: ${PARTICIPATION_LABELS[participationTrack.value]}`);
+        const note = participationNote.value.trim();
+        if (note) {
+          lines.push(`参与补充: ${note}`);
+        }
+      }
+      lines.push('</opening_setup>');
+      return lines.join('\n');
     }
     return '';
   });
@@ -303,12 +360,32 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     }
     gameMode.value = 'open';
     dlcMind.value = 'hachiman';
+    dlcPov.value = 'hachiman_f';
     step.value = 'dlc_setup';
+  }
+
+  /** 《错位的日常》DLC 角色选择：选性转八幡/雪乃/结衣/拉芙 或进入自建表单 */
+  function selectDlcPov(pov: DlcPov) {
+    dlcPov.value = pov;
+    if (pov === 'custom') {
+      mode.value = 'custom';
+      selectedPov.value = null;
+      step.value = 'custom';
+    }
   }
 
   function confirmDlc() {
     if (campaignId.value === 'main') return;
-    if (campaignId.value === 'dlc_genderbend_hachiman') dlcMind.value = 'hachiman';
+    if (campaignId.value === 'dlc_genderbend_hachiman') {
+      if (dlcPov.value === 'custom') {
+        selectDlcPov('custom');
+        return;
+      }
+      dlcMind.value = 'hachiman';
+      step.value = 'opening';
+      return;
+    }
+    if (campaignId.value === 'dlc_body_swap_mrs_yukinoshita') dlcMind.value = 'hachiman';
     step.value = 'opening';
   }
 
@@ -326,6 +403,12 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
 
   function backToMode() {
     step.value = 'mode';
+  }
+
+  /** 自建表单返回：DLC 自建回角色网格，主线自建回玩法模式选择。 */
+  function backFromCustom() {
+    if (campaignId.value === 'dlc_genderbend_hachiman' && dlcPov.value === 'custom') step.value = 'dlc_setup';
+    else step.value = 'mode';
   }
 
   /** 点击 POV 卡：未选中则选中高亮；再次点击已选中的卡则直接进入确认屏 */
@@ -354,10 +437,14 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     step.value = 'custom';
   }
 
-  /** 自建角色确认创建（姓名必填，其余可空） */
+  /** 自建角色确认创建（姓名必填；剧情模式另需选定参与方式，其余可空） */
   function confirmCustom() {
     if (!form.name.trim()) {
       showToast('请至少填写主角姓名', 'error');
+      return;
+    }
+    if (gameMode.value === 'story' && !participationTrack.value) {
+      showToast('剧情模式需要选择一种参与剧情的方式', 'error');
       return;
     }
     mode.value = 'custom';
@@ -395,6 +482,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
             // open（开放世界攻略）→ stat.mode='free'：current_scene 冻结占位不参与150场路由·time_slot 锚定放课后
             stat.mode = isDlc || isOpen ? 'free' : isPov ? 'pov' : 'custom';
             stat.difficulty = difficulty.value;
+            stat.opening_custom = openingDraft.value != null && openingDraft.value.trim().length > 0;
             stat.current_scene = 1;
             stat.campaign_completed = false;
             stat.mainline_completed = false;
@@ -404,10 +492,13 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
             } else if (campaignId.value === 'dlc_body_swap_mrs_yukinoshita') {
               stat.collection.cg_unlocks[`dlc_body_swap_mrs_yukinoshita:opening_seen:${dlcMind.value}`] = true;
             }
+            // 自定义序幕生效：free 模式优先使用从序幕文本解析出的日期（自由世界/ DLC 均可）
+            const baseDate = isDlc ? '2014-07-12' : '2013-05-20';
+            const parsedDate = openingDraft.value != null ? parseOpeningDate(openingDraft.value, isDlc ? 2014 : 2013) : null;
             stat.world = {
-              current_date: isDlc ? '2014-07-12' : '2013-05-20',
+              current_date: parsedDate ?? baseDate,
               current_location: campaignId.value === 'dlc_genderbend_hachiman'
-                ? '比企谷家·八幡房间'
+                ? (DLC_LOCATIONS[dlcPov.value] ?? '未确认')
                 : campaignId.value === 'dlc_body_swap_mrs_yukinoshita'
                   ? dlcMind.value === 'hachiman' ? '雪之下家本邸·夫人卧室' : '比企谷家·八幡房间'
                   : isPov && selectedPov.value ? POV_CLASSROOM[selectedPov.value] : '未确认',
@@ -439,12 +530,22 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
             stat.dalloway_pen_used = false;
             stat.branch_choice = null;
             if (campaignId.value === 'dlc_genderbend_hachiman') {
-              stat.current_pov = 'hachiman';
-              stat.custom_protagonist = null;
-              stat.identity_state = {
-                kind: 'transformation', current_body: 'hachiman', presentation: 'female',
-                legal_identity: '比企谷八幡', self_naming: '八幡', cause_status: 'unknown', disclosure: {},
-              };
+              if (dlcPov.value === 'hachiman_f') {
+                stat.current_pov = 'hachiman_f';
+                stat.custom_protagonist = null;
+                stat.identity_state = {
+                  kind: 'transformation', current_body: 'hachiman_f', presentation: 'female',
+                  legal_identity: '比企谷八幡（性转）', self_naming: '八幡', cause_status: 'unknown', disclosure: {},
+                };
+              } else if (dlcPov.value === 'custom') {
+                stat.current_pov = null;
+                stat.custom_protagonist = { ...form, participation: null };
+                stat.identity_state = null;
+              } else {
+                stat.current_pov = dlcPov.value; // yukino | yui | laff
+                stat.custom_protagonist = null;
+                stat.identity_state = null;
+              }
             } else if (campaignId.value === 'dlc_body_swap_mrs_yukinoshita') {
               stat.current_pov = dlcMind.value;
               stat.custom_protagonist = null;
@@ -460,7 +561,14 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
               stat.identity_state = null;
             } else {
               stat.current_pov = null;
-              stat.custom_protagonist = { ...form };
+              stat.custom_protagonist = {
+                ...form,
+                // 仅剧情模式自建写入参与方式（场景门控放行依据）；开放世界自建恒 null
+                participation:
+                  !isOpen && participationTrack.value
+                    ? { track: participationTrack.value, note: participationNote.value.trim() }
+                    : null,
+              };
               stat.identity_state = null;
             }
             _.set(vars, 'stat_data', stat);
@@ -567,11 +675,14 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     step,
     campaignId,
     dlcMind,
+    dlcPov,
     mode,
     gameMode,
     selectedPov,
     difficulty,
     form,
+    participationTrack,
+    participationNote,
     submitting,
     committedSummary,
     committedText,
@@ -586,6 +697,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     toMode,
     toCampaign,
     chooseCampaign,
+    selectDlcPov,
     confirmDlc,
     toSaveImport,
     toIntro,
@@ -593,6 +705,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     toGallery,
     backToTitle,
     backToMode,
+    backFromCustom,
     selectPov,
     confirmPov,
     toCustom,

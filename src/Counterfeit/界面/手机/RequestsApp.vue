@@ -4,7 +4,7 @@
     <div class="request-scroll">
       <div v-if="!enabled" class="mode-banner">
         <i class="fa-solid fa-circle-info"></i>
-        奉仕部委托面向开放世界（free）模式；POV 剧本模式下只保留既有委托记录，不生成新委托。
+        奉仕部委托面向开放世界模式；POV 剧本模式与剧情自建下只保留既有委托记录，不生成新委托（事件方向由主线注入提供）。
       </div>
 
       <div class="request-actions">

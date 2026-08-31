@@ -1,4 +1,5 @@
 import { Schema } from '../schema';
+import { countAcuSheets } from './acuTables';
 import {
   CURRENT_CARD_VERSION,
   CURRENT_SAVE_SCHEMA_VERSION,
@@ -65,6 +66,19 @@ function addCurrentFields(stat: Record<string, any>, steps: string[]): void {
   }
 }
 
+function migrateLegacyGenderbendIdentity(stat: Record<string, any>, steps: string[]): void {
+  if (stat.campaign_id !== 'dlc_genderbend_hachiman'
+      || stat.current_pov !== 'hachiman'
+      || stat.identity_state?.kind !== 'transformation'
+      || stat.identity_state.current_body !== 'hachiman'
+      || stat.identity_state.legal_identity !== '比企谷八幡') return;
+
+  stat.current_pov = 'hachiman_f';
+  stat.identity_state.current_body = 'hachiman_f';
+  stat.identity_state.legal_identity = '比企谷八幡（性转）';
+  steps.push('旧《错位的日常》性转八幡身份三元组迁移为 hachiman_f/hachiman_f/比企谷八幡（性转）');
+}
+
 export function migrateParsedSave(source: ParsedSaveSource): MigrationResult {
   const stat = JSON.parse(JSON.stringify(source.statData));
   const steps: string[] = [];
@@ -83,6 +97,7 @@ export function migrateParsedSave(source: ParsedSaveSource): MigrationResult {
   const beforeCurrentFields = new Set(Object.keys(stat));
   const ledgerFacts = path ? applyLedger(stat, path, steps, addedFields, discardedFields, conflicts) : [];
   addCurrentFields(stat, steps);
+  migrateLegacyGenderbendIdentity(stat, steps);
   for (const field of CURRENT_FIELDS) {
     if (!beforeCurrentFields.has(field) && !addedFields.includes(field)) addedFields.push(field);
   }
@@ -101,16 +116,21 @@ export function migrateParsedSave(source: ParsedSaveSource): MigrationResult {
     conflicts.push(`主线场景 ${stat.current_scene} 无有效迁移别名`);
   }
   if (stat.campaign_id === 'main' && !MAIN_POVS.includes(stat.current_pov ?? null)) conflicts.push('主线玩家视点非法');
-  if (stat.campaign_id === 'dlc_genderbend_hachiman'
-      && (stat.mode !== 'free' || stat.current_pov !== 'hachiman' || stat.identity_state?.kind !== 'transformation')) {
-    conflicts.push('《错位的日常》身份组合不合法');
+  if (stat.campaign_id === 'dlc_genderbend_hachiman') {
+    const dlcPovOk =
+      (stat.current_pov === 'hachiman_f' && stat.identity_state?.kind === 'transformation') ||
+      (['yukino', 'yui', 'laff'].includes(stat.current_pov ?? '') && stat.identity_state === null) ||
+      (stat.current_pov === null && stat.identity_state === null && stat.custom_protagonist !== null);
+    if (stat.mode !== 'free' || !dlcPovOk) {
+      conflicts.push('《错位的日常》身份组合不合法');
+    }
   }
   if (stat.campaign_id === 'dlc_body_swap_mrs_yukinoshita') {
     const occupants = stat.identity_state?.occupants;
     if (stat.mode !== 'free' || !['hachiman', 'mrs_yukinoshita'].includes(stat.current_pov)
         || stat.identity_state?.kind !== 'body_swap' || !occupants
         || occupants.body_hachiman === occupants.body_mrs_yukinoshita) {
-      conflicts.push('《借来的名字》身份矩阵不合法');
+      conflicts.push('《君的名字？》身份矩阵不合法');
     }
   }
   if (stat.campaign_id !== 'main') stat.mainline_completed = false;
@@ -118,6 +138,9 @@ export function migrateParsedSave(source: ParsedSaveSource): MigrationResult {
   const parsed = Schema.safeParse(stat);
   if (!parsed.success) conflicts.push('当前变量结构校验失败');
   const campaignId = CAMPAIGNS.includes(stat.campaign_id) ? stat.campaign_id : 'unknown';
+  const tableSheets = source.tableSheets ?? null;
+  const tableSheetCount = countAcuSheets(tableSheets);
+  if (tableSheetCount > 0) steps.push(`检测到数据库表格 ${tableSheetCount} 张，将随变量一并迁移`);
   const report: CompatibilityReport = {
     status: conflicts.length ? 'incompatible' : steps.length ? 'migratable' : 'exact',
     sourceVersion,
@@ -130,6 +153,7 @@ export function migrateParsedSave(source: ParsedSaveSource): MigrationResult {
     location: stat.world?.current_location ?? null,
     recoveredFloor: source.recoveredFloor,
     messageCount: source.messageCount,
+    tableSheetCount,
     migrationSteps: steps,
     addedFields,
     discardedFields,
@@ -141,6 +165,7 @@ export function migrateParsedSave(source: ParsedSaveSource): MigrationResult {
     statData: conflicts.length || !parsed.success ? null : parsed.data as Record<string, any>,
     resumeTail: source.resumeTail,
     legacyEstablishedFacts: [...new Set([...(source.legacyEstablishedFacts ?? []), ...ledgerFacts])],
+    tableSheets,
     provenance: source,
   };
 }
