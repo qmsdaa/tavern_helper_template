@@ -1,0 +1,30 @@
+@@generate_before
+@@private
+<%_
+const phoneContextSnapshot = getvar('stat_data.phone.context.active_snapshot', { defaults: null });
+const phoneContextText = phoneContextSnapshot && typeof phoneContextSnapshot.text === 'string'
+  ? phoneContextSnapshot.text.trim()
+  : '';
+const forumSnapshot = getvar('stat_data.phone.context.forum_snapshot', { defaults: '' });
+const forumSnapshotText = typeof forumSnapshot === 'string' ? forumSnapshot.trim() : '';
+_%>
+<%_ if (phoneContextText) { _%>
+<phone_context_snapshot
+  id="<%- String(phoneContextSnapshot.id || '') %>"
+  mainline_user_message_id="<%- String(phoneContextSnapshot.mainline_user_message_id ?? '') %>">
+ 以下内容是手机助手已经记录、且允许当前叙事视角知道的世界内事实。手机聊天属于真实互动；论坛只作为公共信息或世界氛围，不能单独推进主线。
+
+<%- phoneContextText %>
+
+使用边界：
+- 只让拥有相应可见性的人物知晓信息，不得把私聊、封闭群聊或幕后事实变成全员常识。
+- 可自然承接已发生的消息、约定和未完成话题，但不要机械复述摘要。
+- 不得因为加好友、发消息、退群、删好友或论坛热度而直接修改bond、romance或commitment；只有快照中真实发生且被角色感知的互动内容可按主线更新规则提供关系证据。
+- 手机上下文不是场景推进指令；current_scene 是否变化仍由正文中已经发生的明确场景事实判断。
+</phone_context_snapshot>
+<%_ } _%>
+<%_ if (forumSnapshotText) { _%>
+<forum_snapshot>
+<%- forumSnapshotText %>
+</forum_snapshot>
+<%_ } _%>

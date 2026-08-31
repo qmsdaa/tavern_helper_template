@@ -94,7 +94,7 @@
       </div>
 
       <div class="actions">
-        <button class="btn-ghost" @click="store.backToMode()"><i class="fa-solid fa-arrow-left"></i> 返回</button>
+        <button class="btn-ghost" @click="store.backFromCustom()"><i class="fa-solid fa-arrow-left"></i> 返回</button>
         <button class="btn-primary" @click="store.confirmCustom()">确认创建</button>
       </div>
     </div>

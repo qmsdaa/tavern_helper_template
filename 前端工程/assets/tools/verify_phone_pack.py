@@ -10,6 +10,7 @@
     3. 载荷哈希与 info 字段声明一致
     4. loader 模板结构（__PHONE_HTML__ 替换点、幂等清理、消息桥）未被破坏
     5. 无裸运行时调用（defineStore/createPinia/ref/... 必须在 bundle 内解析）
+    6. HTML 不含远程执行资源、ESM import 或宿主 z 注入，证明核心 JS 全自包含
 """
 import hashlib
 import json
@@ -134,6 +135,26 @@ def main() -> int:
         fail(f"存在未解析的运行时调用：{', '.join(problems)}")
     else:
         ok("defineStore/createPinia/ref/reactive/computed/onMounted/watch/nextTick 全部在 bundle 内解析")
+
+    print("6) 核心 JS 全自包含")
+    executable_remote_patterns = (
+        r"<script\b[^>]*\bsrc\s*=\s*['\"]https?://",
+        r"<link\b[^>]*\brel\s*=\s*['\"]modulepreload['\"][^>]*\bhref\s*=\s*['\"]https?://",
+        r"\bimport\s*(?:\(|[^;\n]*?\bfrom\s*)['\"]https?://",
+    )
+    remote_hits = [pattern for pattern in executable_remote_patterns if re.search(pattern, dist, re.I)]
+    if remote_hits:
+        fail("dist 含远程执行脚本、modulepreload 或远程 ESM import")
+    else:
+        ok("dist 不含远程执行脚本、modulepreload 或远程 ESM import")
+    if re.search(r"(?:['\"]z['\"]|\bwindow\.z\b|\bglobalThis\.z\b)", pack_phone_script.BRIDGE_SHIM + loader):
+        fail("桥接层仍要求宿主注入 z")
+    else:
+        ok("桥接层不再注入 z；Vue/Pinia/Zod 由 bundle 自给")
+    if re.search(r"external [\"'](?:vue|pinia|zod|@vueuse|jquery|lodash)", dist, re.I):
+        fail("dist 仍含前端运行库 external stub")
+    else:
+        ok("dist 不含已知前端运行库 external stub")
 
     print()
     if FAILED:

@@ -8,14 +8,8 @@
     rel="stylesheet"
     href="https://fonts.loli.net/css2?family=Klee+One:wght@400;600&family=ZCOOL+KuaiLe&family=Zen+Maru+Gothic:wght@400;700;900&display=swap"
   />
-  <!-- 预览降级：酒馆注入全局 Vue；纯浏览器预览时从 CDN 补一份 -->
-  <script>
-    if (typeof window.Vue === 'undefined') {
-      document.write(
-        '<script src="https://testingcf.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"><\/script>',
-      );
-    }
-  </script>
+  <!-- Vue、Pinia、Zod 等执行依赖由 webpack.phone.config.ts 全部内联；
+       字体与图标 CSS 仅作非阻塞视觉增强，不得回退加载远程脚本。 -->
 </head>
 <body>
   <div id="app"></div>

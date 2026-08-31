@@ -1,152 +1,86 @@
 <template>
   <div class="intro-screen" ref="root" @click="skip">
-    <TransitionGroup name="layer">
-      <div v-for="layer in layers" :key="layer.id" class="frame-layer" :data-layer-id="layer.id">
-        <!-- poster 降级：视频加载失败时该拍显示首帧静态图 -->
-        <img
-          v-if="layer.failed"
-          class="clip-media"
-          :src="clipPosterUrl(layer.clip)"
-          alt="序奏 CG"
-          draggable="false"
-        />
-        <video
-          v-else
-          class="clip-media"
-          :src="clipVideoUrl(layer.clip)"
-          :poster="clipPosterUrl(layer.clip)"
-          muted
-          playsinline
-          preload="auto"
-          @ended="advance"
-          @error="onClipError(layer.id)"
-        ></video>
-      </div>
-    </TransitionGroup>
-
-    <Transition name="caption">
-      <p v-if="currentLabel" :key="captionKey" class="date-caption">{{ currentLabel }}</p>
-    </Transition>
+    <!-- OP 成片：只含 84s 画面段，自带音轨；画面播完由标题屏从交接位置续播 BGM -->
+    <video
+      ref="op"
+      class="op-media"
+      :src="opUrl"
+      :poster="opPoster"
+      playsinline
+      preload="auto"
+      @timeupdate="onTime"
+      @ended="finish"
+      @error="onError"
+    ></video>
 
     <span class="skip-hint"><i class="fa-solid fa-forward"></i> 点击屏幕跳过</span>
-    <div class="outro-veil" :class="{ 'is-on': finishing }" aria-hidden="true"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  INTRO_CLIPS,
-  clipPosterUrl,
-  clipVideoUrl,
-  prefetchClip,
-  type IntroClip,
-} from './introVideos';
+import { OP_PICTURE_END, opPosterUrl, opVideoUrl } from './introVideos';
 import { useOpeningStore } from './store';
 
 const store = useOpeningStore();
 
-interface Layer {
-  id: number;
-  clip: IntroClip;
-  /** 视频加载失败 → 改用 poster 静态图 + 定时切拍 */
-  failed?: boolean;
-}
+const opUrl = opVideoUrl();
+const opPoster = opPosterUrl();
 
-const layers = ref<Layer[]>([]);
+const op = ref<HTMLVideoElement | null>(null);
 const finishing = ref(false);
-const currentLabel = ref('');
-/** 字幕过渡 key：用层 id 保证相邻拍 dateLabel 相同时也会重新触发 */
-const captionKey = ref(0);
-let uid = 0;
-let current = 0;
-let failCount = 0;
-let timer: number | undefined;
 let finishTimer: number | undefined;
-/** 组件根节点：DOM 查询限定在组件内，避免误触其他实例 */
-const root = ref<HTMLElement | null>(null);
 
-async function play(index: number) {
-  if (finishing.value) return;
-  if (index >= INTRO_CLIPS.length) {
-    finish();
-    return;
-  }
-  current = index;
-  const clip = INTRO_CLIPS[index];
-  const layer: Layer = { id: uid++, clip };
-  layers.value.push(layer);
-  currentLabel.value = clip.dateLabel;
-  captionKey.value = layer.id;
-  // 只保留最近两层（叠化期间新旧共存）
-  if (layers.value.length > 2) {
-    layers.value = layers.value.slice(-2);
-  }
-  prefetchClip(index + 1);
-  // Vue 异步渲染：等 DOM 更新后才能拿到新挂载的 <video>
-  await nextTick();
-  const el = layerVideo(layer.id);
-  if (el) {
-    el.play().catch(() => onClipError(layer.id));
-  }
-}
-
-/** 按层 id 精确取该层的 video 元素（failed 层为 img，返回 null） */
-function layerVideo(layerId: number): HTMLVideoElement | null {
-  return root.value?.querySelector<HTMLVideoElement>(`.frame-layer[data-layer-id="${layerId}"] video`) ?? null;
-}
-
-function advance() {
-  if (finishing.value) return;
-  window.clearTimeout(timer);
-  void play(current + 1);
-}
-
-function onClipError(layerId: number) {
-  if (finishing.value) return;
-  const layer = layers.value.find(l => l.id === layerId);
-  if (!layer || layer.failed) return;
-  layer.failed = true;
-  failCount += 1;
-  if (failCount >= INTRO_CLIPS.length) {
-    // 全灭：序奏播不了，直接进标题屏
+onMounted(async () => {
+  const el = op.value;
+  if (!el) {
     store.toTitle();
     return;
   }
-  // 静态图没有 ended 事件，按拍时长定时切
-  window.clearTimeout(timer);
-  timer = window.setTimeout(advance, layer.clip.durationMs);
+  // 启动门点击已构成用户手势，有声播放一般放行；个别环境仍拦截时静音降级，画面不停
+  try {
+    await el.play();
+  } catch {
+    el.muted = true;
+    try {
+      await el.play();
+    } catch {
+      store.toTitle();
+    }
+  }
+});
+
+/** 画面段到点（84s）即收束；ended 兜底（视频全长恰好 84s） */
+function onTime() {
+  const el = op.value;
+  if (el && el.currentTime >= OP_PICTURE_END - 0.15) finish();
+}
+
+/** 播完 / 到点 / 跳过：记录 BGM 交接位置并暂停视频（音频由标题屏续上）→ App 级白幕 → 标题屏 */
+function finish() {
+  if (finishing.value) return;
+  finishing.value = true;
+  const el = op.value;
+  store.opHandoffTime = el ? el.currentTime : 0;
+  el?.pause();
+  store.veilOn = true;
+  finishTimer = window.setTimeout(() => store.toTitle(), 500);
 }
 
 function skip() {
   finish();
 }
 
-/** 收束：白幕淡入 → 交还标题屏（BGM 不停，继续播） */
-function finish() {
+/** OP 加载失败：直接进标题屏（不开白幕），BGM 从头试播 */
+function onError() {
   if (finishing.value) return;
   finishing.value = true;
-  window.clearTimeout(timer);
-  pauseAll();
-  finishTimer = window.setTimeout(() => store.toTitle(), 620);
+  store.opHandoffTime = 0;
+  store.toTitle();
 }
-
-function pauseAll() {
-  for (const el of root.value?.querySelectorAll<HTMLVideoElement>('.frame-layer video') ?? []) {
-    el.pause();
-  }
-}
-
-onMounted(() => {
-  // 调试：?screen=intro&from=N 从第 N 拍开始
-  const from = Number(new URLSearchParams(window.location.search).get('from') ?? 0);
-  const start = Number.isInteger(from) && from >= 0 && from < INTRO_CLIPS.length ? from : 0;
-  play(start);
-});
 
 onUnmounted(() => {
-  window.clearTimeout(timer);
   window.clearTimeout(finishTimer);
-  pauseAll();
+  op.value?.pause();
 });
 </script>
 
@@ -161,53 +95,10 @@ onUnmounted(() => {
   user-select: none;
 }
 
-.frame-layer {
-  position: absolute;
-  inset: 0;
-}
-
-.clip-media {
+.op-media {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* 拍间交叉叠化 400ms */
-.layer-enter-active,
-.layer-leave-active {
-  transition: opacity 0.4s ease;
-}
-
-.layer-enter-from,
-.layer-leave-to {
-  opacity: 0;
-}
-
-/* 左下角字幕·手写体日期行 */
-.date-caption {
-  position: absolute;
-  left: 22px;
-  bottom: 34px;
-  z-index: 4;
-  font-family: var(--font-title);
-  font-size: clamp(15px, 2.4vw, 22px);
-  letter-spacing: 6px;
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
-  pointer-events: none;
-}
-
-.caption-enter-active {
-  transition: opacity 0.5s ease 0.2s;
-}
-
-.caption-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.caption-enter-from,
-.caption-leave-to {
-  opacity: 0;
 }
 
 .skip-hint {
@@ -225,29 +116,11 @@ onUnmounted(() => {
 }
 
 @keyframes hint-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* 收束白幕：序奏结束 → 白场 → 标题屏 */
-.outro-veil {
-  position: absolute;
-  inset: 0;
-  z-index: 6;
-  background: #fdfdfe;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-
-  &.is-on {
-    opacity: 1;
+  from {
+    opacity: 0;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .layer-enter-active,
-  .layer-leave-active {
-    transition: none;
+  to {
+    opacity: 1;
   }
 }
 </style>

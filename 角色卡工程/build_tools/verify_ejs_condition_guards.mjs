@@ -30,10 +30,11 @@ function collectConditions(value, path = '$', result = []) {
 const conditions = collectConditions(Array.isArray(state) ? state : state.entryManifest);
 
 // 门控总数 tripwire：改动门控数量时必须同步这里，防止误增/误删条目门控。
-// 当前构成 199（2026-08-15）：150 个 campaign=main 场景门控 + 原共享门控 +
-// 5 个DLC写作条目 + 3 个隔离的main:118快照门控 + 雪之下夫人 3 条 + 性转八幡基础信息 1 条 + 尾声分支 7 条。
+// 当前构成 201（2026-08-31）：199（2026-08-15 构成：150 个 campaign=main 场景门控 + 原共享门控 +
+// 5 个DLC写作条目 + 3 个隔离的main:118快照门控 + 雪之下夫人 3 条 + 性转八幡基础信息 1 条 + 尾声分支 7 条）
+// + NSFW_女性互动机制/NSFW_对话指导 2 条 nsfw_active 门控（自手机修复卡回灌）。
 // 新增/删除门控必须显式更新此门槛。
-assert.equal(conditions.length, 199, 'unexpected state-level @@if condition count');
+assert.equal(conditions.length, 201, 'unexpected state-level @@if condition count');
 const sceneConditions = conditions.filter(item => item.path.includes('.事件.场景'));
 assert.equal(sceneConditions.length, 150, 'expected exactly 150 scripted scene conditions');
 for (const condition of sceneConditions) {
@@ -55,7 +56,14 @@ const RUNTIME_CONTEXTS = [
   { label: 'main/pov/yui', stat: { campaign_id: 'main', mode: 'pov', current_pov: 'yui', characters: ctxChars([]) } },
   { label: 'main/free', stat: { campaign_id: 'main', mode: 'free', current_pov: null, characters: ctxChars(ALL_CHARS) } },
   { label: 'main/custom', stat: { campaign_id: 'main', mode: 'custom', current_pov: null, characters: ctxChars(ALL_CHARS) } },
-  { label: 'dlc/genderbend', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'hachiman', characters: ctxChars(ALL_CHARS) } },
+  // NSFW 场景开关（2026-08-31 自手机修复卡回灌）：nsfw_active=true 时两条 NSFW 条目激活
+  { label: 'main/pov/nsfw', stat: { campaign_id: 'main', mode: 'pov', current_pov: 'hachiman', nsfw_active: true, characters: ctxChars(ALL_CHARS) } },
+  // 《错位的日常》多可扮演视角（2026-08-18）：性转八幡 DLC 专属 + 三主角 + 自建
+  { label: 'dlc/genderbend/hachiman_f', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'hachiman_f', identity_state: { kind: 'transformation', current_body: 'hachiman_f' }, characters: ctxChars(ALL_CHARS) } },
+  { label: 'dlc/genderbend/yukino', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'yukino', identity_state: null, characters: ctxChars(ALL_CHARS) } },
+  { label: 'dlc/genderbend/yui', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'yui', identity_state: null, characters: ctxChars(ALL_CHARS) } },
+  { label: 'dlc/genderbend/laff', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: 'laff', identity_state: null, characters: ctxChars(ALL_CHARS) } },
+  { label: 'dlc/genderbend/custom', stat: { campaign_id: 'dlc_genderbend_hachiman', mode: 'free', current_pov: null, custom_protagonist: { name: '自建' }, identity_state: null, characters: ctxChars(ALL_CHARS) } },
   { label: 'dlc/swap/hachiman', stat: { campaign_id: 'dlc_body_swap_mrs_yukinoshita', mode: 'free', current_pov: 'hachiman', characters: ctxChars(ALL_CHARS) } },
   { label: 'dlc/swap/mrs', stat: { campaign_id: 'dlc_body_swap_mrs_yukinoshita', mode: 'free', current_pov: 'mrs_yukinoshita', characters: ctxChars(ALL_CHARS) } },
   // 尾声分支门控（2026-08-15）：mainline_completed=true + branch_choice 各值

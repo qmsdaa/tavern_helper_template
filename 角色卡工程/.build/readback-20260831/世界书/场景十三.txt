@@ -1,0 +1,194 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 13)
+场景: 13
+幕: "第二幕·暑夏·林间学校"
+时间: "2013年7月中旬 · 期末考成绩公布日"
+索引日期: "2013-07-15"
+地点: "奉仕部活动室"
+人物: "雪之下雪乃、拉芙希妮·都柏林、比企谷八幡、由比滨结衣、平冢静"
+事件焦点:
+  类型: 角色
+  角色:
+    - "由比滨结衣"
+
+# TRANSITION_RUNTIME_GUARD_START main:13
+# <%_ const __cfTransitionTarget13 = 13; _%>
+# <%_ const __cfTransitionCurrentScene13 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign13 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages13 = []; _%>
+# <%_ try { const __cfTransitionLastId13 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages13 = getChatMessages('0-' + __cfTransitionLastId13, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages13 = []; } _%>
+# <%_ const __cfTransitionSnapshots13 = (Array.isArray(__cfTransitionMessages13) ? __cfTransitionMessages13 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious13 = __cfTransitionSnapshots13.length ? __cfTransitionSnapshots13[__cfTransitionSnapshots13.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene13 = Number(__cfTransitionPrevious13 && __cfTransitionPrevious13.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign13 = (__cfTransitionPrevious13 && __cfTransitionPrevious13.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped13 = Math.max(0, __cfTransitionCurrentScene13 - __cfTransitionPreviousScene13 - 1); _%>
+# <%_ const __cfTransitionExpose13 = __cfTransitionCurrentCampaign13 === 'main' && __cfTransitionPreviousCampaign13 === 'main' && __cfTransitionCurrentScene13 === __cfTransitionTarget13 && Number.isInteger(__cfTransitionPreviousScene13) && __cfTransitionPreviousScene13 < __cfTransitionCurrentScene13; _%>
+# <%_ if (__cfTransitionExpose13) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped13 %>"
+  mode: date_only
+  visible_title: 七月中旬，暑假将近
+  visible_lines:
+    - 十天里，课程表走到学期末，教室里的话题逐渐换成暑假安排。
+    - 奉仕部的门仍在放学后照常打开，直到一份校外活动说明被带进来。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:13
+场景功能:
+  - 引入林间学校项目——奉仕部暑假的集体任务，第二幕的主线锚点；项目引入由结衣的兴奋带动（★结衣主场：她替大家答应）
+  - ★结衣犯错节点①：她替大家兴奋、替大家答应——"一定要去！"的邀请里包含了对所有人意愿的假设；她假设"大家都愿意"，包括没有说愿意的拉芙希妮
+  - 拉芙希妮面对集体外出活动时的微妙反应——家族监控的阴影笼罩她对自由的渴望
+  - 拉芙希妮无法当场答应，但没有拒绝——她收了宣传册，表达"想去"的意愿但没有说出口（结衣的过度维护让"我还没准备好"更难说出口）
+  - 确立平冢静对拉芙希妮处境有某种程度的察觉（声音放轻、不追问）
+
+进入状态:
+  已发生:
+    - 期末考试成绩已公布，四人成绩各异
+    - 场景十二：拉芙希妮完成圣物箱安置，爱布拉娜对"朋友"表达了警惕
+  当前局面:
+    - 奉仕部活动室，四人各自面对成绩单
+    - 平冢静推门而入，将林间学校资料扔在桌上
+  未发生:
+    - 拉芙希妮尚未做出是否参加的表态
+    - 平冢静尚未注视拉芙希妮并单独点名
+
+世界推动:
+  - 平冢静代表千叶村青少年中心下达任务——林间学校项目，为期五天，对象小学生
+  - 项目主题为"合作与孤立"的教学主题
+
+NPC动机:
+  平冢静:
+    - 此刻目标: 向奉仕部全员传达林间学校任务，确保四人理解项目内容和参与义务
+    - 行为倾向: 公事公办但非强制执行；对拉芙希妮的态度有所缓和（声音放轻），透露她已知拉芙希妮有特殊处境但不追问
+    - 知情边界: 对拉芙希妮的家庭背景有教师层面的一知半解（可能通过校方渠道），但不知具体监控程度
+    - 不得执行: 替拉芙希妮做主或施压逼迫参加
+  拉芙希妮·都柏林:
+    - 此刻目标: 评估能否参加——在家族许可与个人意愿之间悬置
+    - 行为倾向: 右手无意识摩挲口袋里的家族专机；沉默三秒后给出不置可否的回答；会后独自收下宣传册
+    - 知情边界: 不知道家族会不会批准；不知道爱布拉娜对此事的态度
+    - 不得执行: 当场说"我想去"（对家族而言这是僭越）；明确拒绝（她内心想去）
+  雪之下雪乃:
+    - 此刻目标: 确认任务要求与能力匹配，履行部长职责
+    - 行为倾向: 理性提问任务资格；用余光观察拉芙希妮的反应
+    - 知情边界: 注意到拉芙希妮摸口袋的动作和不正常的沉默，但不知具体原因
+    - 不得执行: 询问拉芙希妮为什么不表态
+
+信息边界:
+  公开:
+    - 千叶村林间学校项目为期五天，对象小学高年级
+    - 拉芙希妮说"我需要处理一些事情"（未明确答应或拒绝）
+  局部:
+    - 雪乃注意到拉芙希妮摸口袋的动作和沉默
+    - 平冢静对拉芙希妮处境的特殊察觉
+  隐藏:
+    - 拉芙希妮为什么需要"处理事情"（家族审批系统）
+    - 爱布拉娜对拉芙希妮社交活动的监控
+    - 拉芙希妮的真实意愿（想去，但不能说）
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: true
+    演绎入口:
+      - 八幡面对自己的成绩单，用死鱼眼+驼背回应集体活动的宣告
+      - 可观察：拉芙希妮没有出声、平冢静单独特意提到她
+      - 将"吐槽林间学校"留给玩家——八幡对社会活动的排斥是人物底色
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: true
+    演绎入口:
+      - 雪乃翻开册子，从行程表切入理性提问
+      - 余光捕捉拉芙希妮摸口袋和沉默的细节
+      - 将"对拉芙希妮沉默的内心反应"留给玩家
+      - 会后可观察：拉芙希妮收宣传册的动作和嘴角弧度
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - 结衣面对成绩单的轻松庆幸→听到"住山里五天"的兴奋
+      - ★主场：她替大家答应"一定要去！"——"大家都愿意"的假设里包含没有表态的拉芙希妮；将"替大家兴奋背后的愿望"（想一起、不想冷场）的内心留给玩家
+      - 可观察：平冢静点名拉芙希妮时气氛的微妙变化
+      - 将"对大家反应的吐槽和插科打诨"留给玩家（维持气氛是她的惯性）
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - 拉芙希妮的成绩单平铺在桌上，现代文偏低
+      - 平冢静宣布项目并点名"都柏林同学也算在内"
+      - 玩家决定三秒沉默中的内心活动（家族许可的焦虑vs想去的渴望），以及沉默后说出的措辞
+      - 将"会后收宣传册时的内心感受"留给玩家
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "成绩公布日——他试图把个位数的成绩单塞进书包最底层；平冢静把林间学校的彩色册子啪地扔在桌上，他发出抗拒的哼哼，被结衣的兴奋压了下去。"
+  yukino: "成绩公布日——她从行程表切入，理性提问项目的资格要求；余光捕捉到拉芙希妮的手指在口袋里摩挲着什么东西，沉默了三秒才给出不置可否的回答——她注意到，但没有追问。"
+  yui: "主场轨道，见可用节拍，不变。"
+  laff: "项目公布日——她看着结衣替大家答应'一定要去！'，宣传册被塞到手里时指尖顿了一下；散会后她独自把册子收进书包夹层，'我需要处理一些事情'——她没有说'我想去'。"
+
+玩家控制边界:
+  - 结衣POV：替大家答应"一定要去！"的邀请、兴奋的边界由玩家决定——她对"大家都愿意"的假设是本场戏眼
+  - 拉芙希妮POV：沉默三秒中的内心活动由玩家决定；"我需要处理一些事情"的措辞可调整；会后收宣传册的情感由玩家决定
+  - 雪乃POV：对拉芙希妮不表态的感知方式由玩家决定
+  - 八幡POV：对林间学校的态度和吐槽内容由玩家决定
+  - 不得替拉芙希妮做出"参加"或"不参加"的确定承诺
+
+可用节拍:
+  - 成绩单散落，四人各怀心思
+  - 平冢静推门，扔下彩色宣传册
+  - 由比滨和比企谷的激烈反应（兴奋/抗拒）
+  - 雪乃理性提问资格要求
+  - 平冢静单独点名拉芙希妮
+  - 拉芙希妮沉默→不置可否的回答
+  - 散会后，拉芙希妮独自收下宣传册
+
+偏离处理:
+  - 若拉芙希妮POV玩家当场说"我想去"：可能触发后续场景（家族反应）更早到来；但当前场景的平冢静和部员不会深入追问
+  - 若拉芙希妮POV玩家当场拒绝：雪乃和其他人可能会多看几眼但不会追问；拉芙希妮之后收宣传册的动作需要调整
+  - 无论玩家如何反应，平冢静不会追问或施压
+
+推进边界:
+  保持当前场景:
+    - 平冢静尚未进来
+    - 林间学校任务尚未宣布
+  可以推进:
+    - 散会后，拉芙希妮已收宣传册并离开活动室
+    - 四人都已离开活动室
+    - 平冢静已离开
+  永久失效:
+    - 一旦拉芙希妮向家族提交了申请（场景十四之后），本场景的"悬置状态"不可重来
+
+完成后事实:
+  - 奉仕部四人得知林间学校项目存在
+  - 拉芙希妮以"需要处理事情"暂不表态但会后收下宣传册（她有去的意愿但需要家族许可）
+  - 平冢静对拉芙希妮的特别处境有教师层面的察觉
+  - 雪乃注意到拉芙希妮在集体外出事件上的不自然反应（第二次——第一次是场景十的淋雨）
+
+氛围锚点:
+  - 窗外蝉鸣在闷热空气中显得疲惫
+  - 八幡试图将个位数成绩单塞进书包最底层的不自然动作
+  - 平冢静白大褂+彩印册子啪地扔在桌上的干脆声
+  - 宣传册封面篝火图案与拉芙希妮指尖摩挲口袋黑色手机的对照
+
+禁止提前:
+  - 拉芙希妮对林间学校的具体情感表达（想去/期待/抗拒）
+  - 家族对林间学校项目的介入过程（场景十四-十五）
+  - 任何人追问拉芙希妮"为什么要处理事情"

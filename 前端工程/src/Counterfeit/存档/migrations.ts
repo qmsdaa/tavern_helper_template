@@ -66,6 +66,19 @@ function addCurrentFields(stat: Record<string, any>, steps: string[]): void {
   }
 }
 
+function migrateLegacyGenderbendIdentity(stat: Record<string, any>, steps: string[]): void {
+  if (stat.campaign_id !== 'dlc_genderbend_hachiman'
+      || stat.current_pov !== 'hachiman'
+      || stat.identity_state?.kind !== 'transformation'
+      || stat.identity_state.current_body !== 'hachiman'
+      || stat.identity_state.legal_identity !== '比企谷八幡') return;
+
+  stat.current_pov = 'hachiman_f';
+  stat.identity_state.current_body = 'hachiman_f';
+  stat.identity_state.legal_identity = '比企谷八幡（性转）';
+  steps.push('旧《错位的日常》性转八幡身份三元组迁移为 hachiman_f/hachiman_f/比企谷八幡（性转）');
+}
+
 export function migrateParsedSave(source: ParsedSaveSource): MigrationResult {
   const stat = JSON.parse(JSON.stringify(source.statData));
   const steps: string[] = [];
@@ -84,6 +97,7 @@ export function migrateParsedSave(source: ParsedSaveSource): MigrationResult {
   const beforeCurrentFields = new Set(Object.keys(stat));
   const ledgerFacts = path ? applyLedger(stat, path, steps, addedFields, discardedFields, conflicts) : [];
   addCurrentFields(stat, steps);
+  migrateLegacyGenderbendIdentity(stat, steps);
   for (const field of CURRENT_FIELDS) {
     if (!beforeCurrentFields.has(field) && !addedFields.includes(field)) addedFields.push(field);
   }
@@ -102,9 +116,14 @@ export function migrateParsedSave(source: ParsedSaveSource): MigrationResult {
     conflicts.push(`主线场景 ${stat.current_scene} 无有效迁移别名`);
   }
   if (stat.campaign_id === 'main' && !MAIN_POVS.includes(stat.current_pov ?? null)) conflicts.push('主线玩家视点非法');
-  if (stat.campaign_id === 'dlc_genderbend_hachiman'
-      && (stat.mode !== 'free' || stat.current_pov !== 'hachiman' || stat.identity_state?.kind !== 'transformation')) {
-    conflicts.push('《错位的日常》身份组合不合法');
+  if (stat.campaign_id === 'dlc_genderbend_hachiman') {
+    const dlcPovOk =
+      (stat.current_pov === 'hachiman_f' && stat.identity_state?.kind === 'transformation') ||
+      (['yukino', 'yui', 'laff'].includes(stat.current_pov ?? '') && stat.identity_state === null) ||
+      (stat.current_pov === null && stat.identity_state === null && stat.custom_protagonist !== null);
+    if (stat.mode !== 'free' || !dlcPovOk) {
+      conflicts.push('《错位的日常》身份组合不合法');
+    }
   }
   if (stat.campaign_id === 'dlc_body_swap_mrs_yukinoshita') {
     const occupants = stat.identity_state?.occupants;

@@ -8,7 +8,7 @@
         <span class="text-[#c05a72] font-medium">{{ config.bubbleFontSize }}px</span>
       </div>
       <input
-        type="range" min="12" max="18" step="0.5"
+        type="range" min="12" max="22" step="0.5"
         :value="config.bubbleFontSize"
         class="w-full accent-[#e87a90]"
         @input="updateConfig({ bubbleFontSize: Number(($event.target as HTMLInputElement).value) })"
@@ -21,7 +21,7 @@
         <span class="text-[#c05a72] font-medium">{{ config.narrativeFontSize }}px</span>
       </div>
       <input
-        type="range" min="12" max="18" step="0.5"
+        type="range" min="12" max="22" step="0.5"
         :value="config.narrativeFontSize"
         class="w-full accent-[#e87a90]"
         @input="updateConfig({ narrativeFontSize: Number(($event.target as HTMLInputElement).value) })"
@@ -38,6 +38,19 @@
         :value="config.lineHeight"
         class="w-full accent-[#e87a90]"
         @input="updateConfig({ lineHeight: Number(($event.target as HTMLInputElement).value) })"
+      />
+    </div>
+
+    <div>
+      <div class="flex justify-between text-xs mb-1">
+        <span>头像大小</span>
+        <span class="text-[#c05a72] font-medium">{{ config.avatarSize }}px</span>
+      </div>
+      <input
+        type="range" min="36" max="72" step="2"
+        :value="config.avatarSize"
+        class="w-full accent-[#e87a90]"
+        @input="updateConfig({ avatarSize: Number(($event.target as HTMLInputElement).value) })"
       />
     </div>
   </section>

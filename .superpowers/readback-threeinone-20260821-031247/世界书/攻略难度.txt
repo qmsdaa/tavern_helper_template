@@ -1,0 +1,12 @@
+<%_
+const guideMode = getvar('stat_data.mode', { defaults: null });
+const guideDiff = getvar('stat_data.difficulty', { defaults: null });
+const diff = guideDiff || '普通';
+_%>
+<%_ if (guideMode === 'free' || guideMode === 'pov' || guideMode === 'custom') { _%>
+恋爱难度（开场白选定·stat_data.difficulty·仅开局定档·缺失按普通）:
+  数值表: 单次互动增量、里程碑、负向扣减与"不累计"项一律按 MVU 更新规则通用铁律的难度表执行·本条目不重复定义
+  呈现: AI把数值阶段转译为可观察的语言、距离、主动性与破例行为·正文不报数值
+  判定: 各角色的心动瞬间/退避雷区/关系确认信号见其性格调色盘"攻略提示"段·这些文字是角色化写法，实际数值仍按更新规则判定·难度只改数值速度与判定宽严，不改阶段阈值、romance门槛与commitment规则
+  边界: 多线并行时各角色只根据自己实际感知的事实反应·本条目与MVU更新规则冲突时以更新规则为准
+<%_ } _%>

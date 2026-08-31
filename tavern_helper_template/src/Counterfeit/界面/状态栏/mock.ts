@@ -7,6 +7,12 @@ export function isMockMode(): boolean {
   return new URLSearchParams(window.location.search).has('mock');
 }
 
+/** 是否酒馆助手运行环境：纯浏览器 mock 预览没有酒馆助手全局函数（getVariables/waitGlobalInitialized），
+ *  直接判定跳过 MVU 等待并降级 mock 数据，避免双击 dist 预览页时黑屏 */
+export function isTavernEnvironment(): boolean {
+  return typeof getVariables === 'function' && typeof waitGlobalInitialized === 'function';
+}
+
 function mockScenario(): string {
   return new URLSearchParams(window.location.search).get('mock') || 'pov';
 }
@@ -259,6 +265,25 @@ function emptyData(): Schema {
   return data;
 }
 
+/** 炮友状态：commitment=未确认 且性爱回忆非空 → chip「炮友」标签 + 弹窗炮友徽章（NSFW 新状态标记预览） */
+function fwbData(): Schema {
+  const data = baseData();
+  data.mode = 'free';
+  data.current_pov = 'hachiman';
+  data.world = { current_date: '2014-06-14', current_location: '海滨酒店 · 房间', time_slot: '晚间' };
+  data.player = { cash: 5000, carried_items: [] };
+  data.characters = {
+    雪之下雪乃: makeCharacter({
+      display_name: '雪乃',
+      bond: 71,
+      romance: 45,
+      intimate_sexual_memory: '雨夜酒店房间，两人第一次没有约定下次见面，却都知道还会有下次。',
+    }),
+    由比滨结衣: makeCharacter({ display_name: '结衣', bond: 52, commitment: '恋人' }),
+  };
+  return data;
+}
+
 const SCENARIOS: Record<string, () => Schema> = {
   '1': povData,
   pov: povData,
@@ -268,6 +293,7 @@ const SCENARIOS: Record<string, () => Schema> = {
   long: longData,
   empty: emptyData,
   none: noneData,
+  fwb: fwbData,
 };
 
 export function getMockData(): Schema {

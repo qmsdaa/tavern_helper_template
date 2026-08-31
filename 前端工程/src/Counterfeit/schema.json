@@ -20,80 +20,83 @@
     "difficulty": {
       "$ref": "#/$defs/__schema5"
     },
-    "current_scene": {
+    "opening_custom": {
       "$ref": "#/$defs/__schema6"
     },
-    "campaign_completed": {
+    "current_scene": {
       "$ref": "#/$defs/__schema7"
     },
-    "mainline_completed": {
+    "campaign_completed": {
       "$ref": "#/$defs/__schema8"
     },
-    "identity_state": {
+    "mainline_completed": {
       "$ref": "#/$defs/__schema9"
     },
-    "collection": {
+    "identity_state": {
       "$ref": "#/$defs/__schema10"
     },
-    "world": {
+    "collection": {
       "$ref": "#/$defs/__schema11"
     },
-    "player": {
+    "world": {
       "$ref": "#/$defs/__schema12"
     },
-    "characters": {
+    "player": {
       "$ref": "#/$defs/__schema13"
     },
-    "Ω_resonance": {
+    "characters": {
       "$ref": "#/$defs/__schema14"
     },
-    "hammer_thunder_1": {
+    "Ω_resonance": {
       "$ref": "#/$defs/__schema15"
     },
-    "hammer_tea_1": {
+    "hammer_thunder_1": {
       "$ref": "#/$defs/__schema16"
     },
-    "hammer_tea_2": {
+    "hammer_tea_1": {
       "$ref": "#/$defs/__schema17"
     },
-    "hammer_teddy_1": {
+    "hammer_tea_2": {
       "$ref": "#/$defs/__schema18"
     },
-    "hammer_thunder_2": {
+    "hammer_teddy_1": {
       "$ref": "#/$defs/__schema19"
     },
-    "hammer_outcast_1": {
+    "hammer_thunder_2": {
       "$ref": "#/$defs/__schema20"
     },
-    "hammer_teddy_2": {
+    "hammer_outcast_1": {
       "$ref": "#/$defs/__schema21"
     },
-    "hammer_outcast_2": {
+    "hammer_teddy_2": {
       "$ref": "#/$defs/__schema22"
     },
-    "hammer_tea_3": {
+    "hammer_outcast_2": {
       "$ref": "#/$defs/__schema23"
     },
-    "laff_knows_fire_truth": {
+    "hammer_tea_3": {
       "$ref": "#/$defs/__schema24"
     },
-    "laff_reed_authorized_yukino": {
+    "laff_knows_fire_truth": {
       "$ref": "#/$defs/__schema25"
     },
-    "dalloway_pen_used": {
+    "laff_reed_authorized_yukino": {
       "$ref": "#/$defs/__schema26"
     },
-    "arc_milestones": {
+    "dalloway_pen_used": {
       "$ref": "#/$defs/__schema27"
     },
-    "iroha_milestones": {
+    "arc_milestones": {
       "$ref": "#/$defs/__schema28"
     },
-    "branch_choice": {
+    "iroha_milestones": {
       "$ref": "#/$defs/__schema29"
     },
-    "phone": {
+    "branch_choice": {
       "$ref": "#/$defs/__schema30"
+    },
+    "phone": {
+      "$ref": "#/$defs/__schema31"
     }
   },
   "$defs": {
@@ -135,6 +138,7 @@
           "type": "string",
           "enum": [
             "hachiman",
+            "hachiman_f",
             "yukino",
             "yui",
             "laff",
@@ -232,20 +236,24 @@
       ]
     },
     "__schema6": {
+      "default": false,
+      "type": "boolean"
+    },
+    "__schema7": {
       "default": 1,
       "type": "integer",
       "minimum": -9007199254740991,
       "maximum": 9007199254740991
-    },
-    "__schema7": {
-      "default": false,
-      "type": "boolean"
     },
     "__schema8": {
       "default": false,
       "type": "boolean"
     },
     "__schema9": {
+      "default": false,
+      "type": "boolean"
+    },
+    "__schema10": {
       "default": null,
       "anyOf": [
         {
@@ -258,9 +266,9 @@
                   "const": "transformation"
                 },
                 "current_body": {
-                  "default": "hachiman",
+                  "default": "hachiman_f",
                   "type": "string",
-                  "const": "hachiman"
+                  "const": "hachiman_f"
                 },
                 "presentation": {
                   "default": "female",
@@ -268,9 +276,9 @@
                   "const": "female"
                 },
                 "legal_identity": {
-                  "default": "比企谷八幡",
+                  "default": "比企谷八幡（性转）",
                   "type": "string",
-                  "const": "比企谷八幡"
+                  "const": "比企谷八幡（性转）"
                 },
                 "self_naming": {
                   "default": "八幡",
@@ -394,7 +402,7 @@
         }
       ]
     },
-    "__schema10": {
+    "__schema11": {
       "default": {
         "version": 1,
         "cg_unlocks": {},
@@ -429,7 +437,7 @@
         }
       }
     },
-    "__schema11": {
+    "__schema12": {
       "default": {
         "current_date": "2013-05-20",
         "current_location": "未确认",
@@ -466,7 +474,7 @@
         }
       }
     },
-    "__schema12": {
+    "__schema13": {
       "default": {
         "cash": null,
         "carried_items": []
@@ -493,7 +501,7 @@
         }
       }
     },
-    "__schema13": {
+    "__schema14": {
       "default": {},
       "type": "object",
       "propertyNames": {
@@ -608,18 +616,9 @@
         }
       }
     },
-    "__schema14": {
+    "__schema15": {
       "default": 0,
       "type": "number"
-    },
-    "__schema15": {
-      "default": "pending",
-      "type": "string",
-      "enum": [
-        "pending",
-        "triggered",
-        "missed"
-      ]
     },
     "__schema16": {
       "default": "pending",
@@ -694,8 +693,13 @@
       ]
     },
     "__schema24": {
-      "default": false,
-      "type": "boolean"
+      "default": "pending",
+      "type": "string",
+      "enum": [
+        "pending",
+        "triggered",
+        "missed"
+      ]
     },
     "__schema25": {
       "default": false,
@@ -706,6 +710,10 @@
       "type": "boolean"
     },
     "__schema27": {
+      "default": false,
+      "type": "boolean"
+    },
+    "__schema28": {
       "default": {
         "hachiman": {
           "asked_before_self_sacrifice": false,
@@ -826,7 +834,7 @@
         }
       }
     },
-    "__schema28": {
+    "__schema29": {
       "default": {
         "rejected_profitable_solution": false,
         "made_uncalculated_request": false,
@@ -848,7 +856,7 @@
         }
       }
     },
-    "__schema29": {
+    "__schema30": {
       "default": null,
       "anyOf": [
         {
@@ -869,7 +877,7 @@
         }
       ]
     },
-    "__schema30": {
+    "__schema31": {
       "default": {
         "version": 2,
         "contacts": {},

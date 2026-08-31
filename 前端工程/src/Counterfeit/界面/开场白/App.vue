@@ -28,6 +28,9 @@
       </div>
     </Transition>
 
+    <!-- OP 收束白幕：App 级，跨屏存续（intro→title 换屏在白幕下进行，消除空帧），由 TitleScreen 挂载后放下 -->
+    <div class="app-veil" :class="{ 'is-on': store.veilOn }" aria-hidden="true"></div>
+
     <!-- 全局 toast -->
     <div class="toast-container">
       <TransitionGroup name="toast">
@@ -70,6 +73,23 @@ const toasts = useToasts();
 .opening-root {
   min-height: 100vh;
   min-height: 100dvh;
+  /* 与收束白幕同色，换屏间隙不漏深色底 */
+  background: #fdfdfe;
+}
+
+/* OP 收束白幕：淡入后盖顶，标题屏挂载绘制完成后淡出 */
+.app-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: #fdfdfe;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.55s ease;
+
+  &.is-on {
+    opacity: 1;
+  }
 }
 
 .done-screen {

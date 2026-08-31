@@ -1,7 +1,7 @@
 import { waitUntil } from 'async-wait-until';
 import App from './App.vue';
 import './global.css';
-import { isMockMode } from './mock';
+import { isMockMode, isTavernEnvironment } from './mock';
 import { initTheme } from './theme';
 
 // 主题上色：在模块求值阶段就执行（早于 DOMContentLoaded 与 MVU 等待），
@@ -28,7 +28,7 @@ function hasMessageStatData(): boolean {
 }
 
 ready(async () => {
-  if (!isMockMode()) {
+  if (!isMockMode() && isTavernEnvironment()) {
     // 等待 MVU 初始化后再挂载；本楼层快照可能晚于全局初始化就绪，给一段有界等待，
     // 超时则照常挂载——Schema 全字段带 prefault，空快照会安全回退为"尚未开局"占位，
     // 之后由 store 的轮询自动跟上真实数据。

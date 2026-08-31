@@ -14,7 +14,7 @@ const state = JSON.parse(card('tavern-cards-state.json'));
 const entries = Object.entries(state.entryManifest).flatMap(([part, group]) =>
   Object.entries(group).map(([key, value]) => ({ part, key, ...value })),
 );
-assert.equal(entries.length, 246, 'v0.6 source manifest entry count drifted');
+assert.equal(entries.length, 248, 'v0.6 source manifest entry count drifted');
 assert.equal(new Set(entries.map(entry => entry.uid)).size, entries.length, 'manifest UIDs must be unique');
 
 const scenes = entries.filter(entry => /^场景/.test(entry.key));
@@ -92,4 +92,4 @@ for (const scene of [1, 33, 36, 80, 83]) {
 assert.match(frontend(path.join('src', 'Counterfeit', '界面', '开场白', 'store.ts')), /opening_seen/, 'DLC opening unlock producer missing');
 
 assert.match(card(path.join('docs', 'superpowers', 'plans', '2026-08-13-counterfeit-v060-roadmap.md')), /37\/37 mainline gaps validated/);
-console.log('v0.6.0 source contracts: PASS (246 entries, 150 campaign gates, 37 transitions, 42 CG items)');
+console.log('v0.6.0 source contracts: PASS (248 entries, 150 campaign gates, 37 transitions, 42 CG items)');

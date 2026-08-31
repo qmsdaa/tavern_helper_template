@@ -40,6 +40,19 @@ console.info('[Counterfeit·手机助手] eval');
     if (hostWindow.__cpl_resize__) {
       hostWindow.removeEventListener('resize', hostWindow.__cpl_resize__);
     }
+    if (hostWindow.__cpl_viewport_sync__) {
+      hostWindow.removeEventListener('resize', hostWindow.__cpl_viewport_sync__);
+      hostWindow.removeEventListener('orientationchange', hostWindow.__cpl_viewport_sync__);
+      hostWindow.removeEventListener('scroll', hostWindow.__cpl_viewport_sync__);
+      try {
+        if (hostWindow.visualViewport) {
+          hostWindow.visualViewport.removeEventListener('resize', hostWindow.__cpl_viewport_sync__);
+          hostWindow.visualViewport.removeEventListener('scroll', hostWindow.__cpl_viewport_sync__);
+        }
+      } catch {
+        /* 忽略 */
+      }
+    }
     if (!hostDocument.body) {
       return;
     }
@@ -68,6 +81,8 @@ console.info('[Counterfeit·手机助手] eval');
 #${IFRAME_ID} {
   position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
   border: none; z-index: 1000000; pointer-events: none; background: transparent;
+  /* 合成层提示：规避部分移动内核对 visibility 切换的 iframe 不重绘的 bug */
+  transform: translateZ(0);
   /* 防御：手机 App 只有在回报 open:true 后才可见。
      启动失败（如 API 缺失抛错）时 iframe 文档保持深色背景，
      若没有这一层，全屏 iframe 会把酒馆整个盖成黑屏。 */
@@ -76,13 +91,114 @@ console.info('[Counterfeit·手机助手] eval');
 `;
     hostDocument.head.appendChild(style);
 
+    // 【移动端尺寸：不用 vh，用 JS 实测像素】2026-08-23
+    // 与 2026-08-05 状态栏修复同源：部分移动内核（国产套壳/旧 WebView/移动 Safari）
+    // 对宿主页面里 iframe 的 100vw/100vh 解析不可靠——可能解析成超大值，
+    // 此时 App 内部 flex 居中会把手机本体定位到视口外几千像素处，
+    // 用户看到的就是"点球 → 球消失（open:true 已回传）→ 屏幕上什么都没有"。
+    // iframe 元素本身一旦被 JS 写成实测像素尺寸，iframe 内部的 vh 也就随之正确
+    //（iframe 是自己的视口），App 内的 100vh 布局无需改动。
+    function measuredViewport() {
+      const fallback = { width: hostWindow.innerWidth || 0, height: hostWindow.innerHeight || 0 };
+      try {
+        const vv = hostWindow.visualViewport;
+        if (vv && vv.width > 0 && vv.height > 0) {
+          return { width: Math.round(vv.width), height: Math.round(vv.height) };
+        }
+      } catch {
+        /* 忽略 */
+      }
+      try {
+        const de = hostDocument.documentElement;
+        if (de && de.clientWidth > 0 && de.clientHeight > 0) {
+          return { width: de.clientWidth, height: de.clientHeight };
+        }
+      } catch {
+        /* 忽略 */
+      }
+      return fallback;
+    }
+
+    // 自校正放置：left/top 先按"可视视口坐标"写入，再以 getBoundingClientRect 纠偏。
+    // 酒馆 html 带 perspective（fixed 包含块=文档而非视口）、文档滚动、移动端 pinch 平移
+    // 对 fixed 元素都是纯平移，一次纠偏即收敛；1px 容差防止重复同步时抖动。
+    function placeInViewport(el, vx, vy) {
+      if (el.style.display === 'none') {
+        return; // 无布局盒（球在手机打开时隐藏），跳过；再次显示时由 keepBallInView 重放
+      }
+      el.style.left = `${Math.round(vx)}px`;
+      el.style.top = `${Math.round(vy)}px`;
+      const r = el.getBoundingClientRect();
+      const dx = vx - r.left;
+      const dy = vy - r.top;
+      if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+        el.style.left = `${Math.round((parseFloat(el.style.left) || 0) + dx)}px`;
+        el.style.top = `${Math.round((parseFloat(el.style.top) || 0) + dy)}px`;
+      }
+    }
+
+    function syncIframeSize() {
+      const el = hostDocument.getElementById(IFRAME_ID);
+      if (!el) {
+        return;
+      }
+      const { width, height } = measuredViewport();
+      if (width > 0 && height > 0) {
+        el.style.width = `${width}px`;
+        el.style.height = `${height}px`;
+      }
+      placeInViewport(el, 0, 0);
+    }
+
+    const viewportSync = () => {
+      syncIframeSize();
+      keepBallInView();
+    };
+    hostWindow.__cpl_viewport_sync__ = viewportSync;
+    hostWindow.addEventListener('resize', viewportSync);
+    hostWindow.addEventListener('orientationchange', viewportSync);
+    // 文档滚动也要同步：fixed 包含块是 html（perspective）时，滚动会让元素相对视口漂移
+    hostWindow.addEventListener('scroll', viewportSync, { passive: true });
+    try {
+      if (hostWindow.visualViewport) {
+        hostWindow.visualViewport.addEventListener('resize', viewportSync);
+        hostWindow.visualViewport.addEventListener('scroll', viewportSync);
+      }
+    } catch {
+      /* 忽略 */
+    }
+
+    // 显示/隐藏统一走这里：显示时先按实测视口重设尺寸（强制一次 layout+repaint），
+    // 再用双 rAF 二次确认——部分移动内核在 visibility 切换当帧不合成 iframe 内容
+    function setIframeVisible(visible) {
+      const el = hostDocument.getElementById(IFRAME_ID);
+      if (!el) {
+        return;
+      }
+      el.style.pointerEvents = visible ? 'auto' : 'none';
+      if (visible) {
+        syncIframeSize();
+        el.style.visibility = 'visible';
+        hostWindow.requestAnimationFrame(() => {
+          hostWindow.requestAnimationFrame(() => {
+            syncIframeSize();
+          });
+        });
+      } else {
+        el.style.visibility = 'hidden';
+      }
+    }
+
     const iframe = hostDocument.createElement('iframe');
     iframe.id = IFRAME_ID;
+    // TauriTavern: ordinary fullscreen-window forces width/height:auto !important,
+    // which shrinks a replaced iframe to 300x150. Declare before host admission.
+    iframe.setAttribute('data-tt-mobile-surface', 'viewport-host');
     iframe.setAttribute('allowtransparency', 'true');
     iframe.srcdoc = PHONE_HTML;
 
-    // 直接把沙箱里的酒馆 API 注入手机 iframe（HTML 内桥接的兜底）
-    // 注意 'z'（zod 命名空间）：webpack 把 zod 外置为全局 z，缺它手机 App 会直接 ReferenceError
+    // 直接把沙箱里的酒馆 API 注入手机 iframe（HTML 内桥接的兜底）。
+    // Vue/Pinia/Zod 等执行依赖均已内联，不从宿主注入。
     const API_NAMES = [
       'getVariables', 'updateVariablesWith', 'insertOrAssignVariables', 'deleteVariable',
       'getChatMessages', 'setChatMessages', 'getLastMessageId',
@@ -91,7 +207,7 @@ console.info('[Counterfeit·手机助手] eval');
       'getOrCreateChatWorldbook',
       'getModelList', 'getProxyPresetNames', 'getPresetNames',
       'stopGenerationById', 'stopAllGeneration',
-      '_', '$', 'jQuery', 'z',
+      '_', '$', 'jQuery',
     ];
     const injectApis = () => {
       const win = iframe.contentWindow;
@@ -116,14 +232,15 @@ console.info('[Counterfeit·手机助手] eval');
       pendingOpen = true;
       // App 未就绪前不放开事件与可见性，否则死掉的 App 会留下透明但吃点击的全屏层
       if (appReady) {
-        iframe.style.pointerEvents = 'auto';
-        iframe.style.visibility = 'visible';
+        setIframeVisible(true);
         sendOpen();
       }
     };
 
     const btn = hostDocument.createElement('button');
     btn.id = BTN_ID;
+    btn.setAttribute('data-tt-mobile-surface', 'free-window');
+    btn.setAttribute('aria-label', '打开手机助手');
     btn.title = '手机助手（可拖动）';
     btn.innerHTML =
       '<span class="cpl-pulse"></span>' +
@@ -132,37 +249,66 @@ console.info('[Counterfeit·手机助手] eval');
       '<line x1="10.5" y1="18.5" x2="13.5" y2="18.5"></line></svg>';
 
     // —— 可拖动悬浮球：位置记忆 + 边缘吸附 + 拖拽/点击区分 ——
-    // 注意：酒馆的 html 带 perspective（fixed 包含块不是视口），位置一律用像素 left/top
+    // 位置一律用"可视视口坐标"（pos）管理，写样式经 placeInViewport 自校正。
+    // 修复"悬浮球跑到视窗外"：酒馆 html 带 perspective（fixed 包含块=文档），
+    // 窗口缩小/地址栏伸缩/横竖屏切换/文档滚动后，旧 left/top 会落到视口外——
+    // keepBallInView 在挂载与每次视口变化时把球拉回可视区域。
     const applyPos = (x, y) => {
       btn.style.left = `${Math.round(x)}px`;
       btn.style.top = `${Math.round(y)}px`;
     };
-    const defaultPos = () => ({ x: hostWindow.innerWidth - 80, y: hostWindow.innerHeight - 80 });
+    const defaultPos = () => {
+      const { width, height } = measuredViewport();
+      return { x: Math.max(0, width - 80), y: Math.max(0, height - 80) };
+    };
+    let pos = defaultPos();
     let hasSavedPos = false;
     try {
       const saved = JSON.parse(hostWindow.localStorage.getItem(POS_KEY) || 'null');
       if (saved && isFinite(saved.x) && isFinite(saved.y)) {
-        applyPos(saved.x, saved.y);
+        pos = { x: saved.x, y: saved.y };
         hasSavedPos = true;
       }
     } catch {
       /* 忽略 */
     }
-    if (!hasSavedPos) {
-      const p = defaultPos();
-      applyPos(p.x, p.y);
-    }
-    hostWindow.__cpl_resize__ = () => {
-      if (!hasSavedPos) {
-        const p = defaultPos();
-        applyPos(p.x, p.y);
+    // 元素尚未挂载，只能直写；appendChild 后由 keepBallInView 做钳位+纠偏
+    applyPos(pos.x, pos.y);
+
+    function keepBallInView() {
+      const el = hostDocument.getElementById(BTN_ID);
+      if (!el || el.style.display === 'none') {
+        return;
       }
-    };
-    hostWindow.addEventListener('resize', hostWindow.__cpl_resize__);
+      const { width, height } = measuredViewport();
+      if (width <= 0 || height <= 0) {
+        return;
+      }
+      if (!hasSavedPos) {
+        pos = defaultPos();
+      } else {
+        pos = {
+          x: Math.min(Math.max(0, pos.x), Math.max(0, width - el.offsetWidth)),
+          y: Math.min(Math.max(0, pos.y), Math.max(0, height - el.offsetHeight)),
+        };
+      }
+      placeInViewport(el, pos.x, pos.y);
+    }
 
     let drag = null;
     btn.addEventListener('pointerdown', e => {
-      drag = { startX: e.clientX, startY: e.clientY, baseX: btn.offsetLeft, baseY: btn.offsetTop, moved: false };
+      // offX/offY = 样式坐标与可视视口坐标的当前差值（perspective 包含块/文档滚动导致），
+      // 拖拽期间视为常量，避免每帧 getBoundingClientRect；pointerup 时再终校正
+      const r = btn.getBoundingClientRect();
+      drag = {
+        startX: e.clientX,
+        startY: e.clientY,
+        baseX: pos.x,
+        baseY: pos.y,
+        offX: (parseFloat(btn.style.left) || 0) - r.left,
+        offY: (parseFloat(btn.style.top) || 0) - r.top,
+        moved: false,
+      };
       btn.setPointerCapture(e.pointerId);
       e.preventDefault();
     });
@@ -177,10 +323,12 @@ console.info('[Counterfeit·手机助手] eval');
         btn.classList.add('dragging');
       }
       if (drag.moved) {
-        applyPos(
-          Math.min(Math.max(0, drag.baseX + dx), hostWindow.innerWidth - btn.offsetWidth),
-          Math.min(Math.max(0, drag.baseY + dy), hostWindow.innerHeight - btn.offsetHeight),
-        );
+        const { width, height } = measuredViewport();
+        pos = {
+          x: Math.min(Math.max(0, drag.baseX + dx), Math.max(0, width - btn.offsetWidth)),
+          y: Math.min(Math.max(0, drag.baseY + dy), Math.max(0, height - btn.offsetHeight)),
+        };
+        applyPos(pos.x + drag.offX, pos.y + drag.offY);
       }
     });
     btn.addEventListener('pointerup', () => {
@@ -191,13 +339,14 @@ console.info('[Counterfeit·手机助手] eval');
       drag = null;
       btn.classList.remove('dragging');
       if (wasDrag) {
-        // 吸附最近的左/右边
-        const rect = btn.getBoundingClientRect();
-        const snapX = rect.left + rect.width / 2 < hostWindow.innerWidth / 2 ? 12 : hostWindow.innerWidth - rect.width - 12;
-        applyPos(snapX, rect.top);
+        // 吸附最近的左/右边（视口坐标），随后 placeInViewport 终校正
+        const { width } = measuredViewport();
+        const w = btn.offsetWidth;
+        pos = { x: pos.x + w / 2 < width / 2 ? 12 : Math.max(12, width - w - 12), y: pos.y };
+        placeInViewport(btn, pos.x, pos.y);
         hasSavedPos = true;
         try {
-          hostWindow.localStorage.setItem(POS_KEY, JSON.stringify({ x: snapX, y: rect.top }));
+          hostWindow.localStorage.setItem(POS_KEY, JSON.stringify(pos));
         } catch {
           /* 忽略 */
         }
@@ -209,31 +358,41 @@ console.info('[Counterfeit·手机助手] eval');
       drag = null;
       btn.classList.remove('dragging');
     });
+    // Keyboard/assistive activation has no pointerdown/up. Pointer taps are already
+    // handled above; do not reopen on the synthetic click after a drag.
+    btn.addEventListener('click', event => {
+      if (event.detail === 0) openPhone();
+    });
+    btn.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openPhone();
+      }
+    });
 
     hostWindow[LISTENER_KEY] = event => {
       const data = event.data;
-      if (!data || data.source !== 'counterfeit-phone') {
+      if (event.source !== iframe.contentWindow || !data || data.source !== 'counterfeit-phone') {
         return;
       }
       if (data.ready) {
         appReady = true;
         btn.style.display = 'flex';
         if (pendingOpen) {
-          iframe.style.pointerEvents = 'auto';
-          iframe.style.visibility = 'visible';
+          setIframeVisible(true);
           sendOpen();
         } else {
-          iframe.style.pointerEvents = 'none';
-          iframe.style.visibility = 'hidden';
+          setIframeVisible(false);
         }
         return;
       }
       if (typeof data.open === 'boolean') {
-        iframe.style.pointerEvents = data.open ? 'auto' : 'none';
-        iframe.style.visibility = data.open ? 'visible' : 'hidden';
+        setIframeVisible(data.open);
         btn.style.display = data.open ? 'none' : 'flex';
         if (!data.open) {
           pendingOpen = false;
+          // 重新显示时重放位置（隐藏期间视口可能变过）
+          keepBallInView();
         }
       }
     };
@@ -241,9 +400,14 @@ console.info('[Counterfeit·手机助手] eval');
 
     hostDocument.body.appendChild(iframe);
     hostDocument.body.appendChild(btn);
+    syncIframeSize();
+    keepBallInView();
     injectApis();
-    iframe.addEventListener('load', injectApis);
-    console.info('[Counterfeit·手机助手] 已挂载（加载器 v3 · 宿主文档）');
+    iframe.addEventListener('load', () => {
+      injectApis();
+      syncIframeSize();
+    });
+    console.info('[Counterfeit·手机助手] 已挂载（加载器 v6 · viewport-host · 视口锁定+独立开关）');
   }
 
   if (hostDocument.body) {

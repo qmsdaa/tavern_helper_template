@@ -69,6 +69,9 @@ const bgStyle = computed(() => {
 .home-screen {
   position: relative;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
   padding: 8px 22px 10px;
@@ -118,14 +121,15 @@ const bgStyle = computed(() => {
 }
 
 .app-grid {
-  flex: 1;
+  flex: 1 0 auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-content: start;
   row-gap: 20px;
 }
 
 .app-icon {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -140,6 +144,7 @@ const bgStyle = computed(() => {
 .icon-tile {
   position: relative;
   width: 58px;
+  max-width: 100%;
   height: 58px;
   border-radius: 22%;
   display: flex;

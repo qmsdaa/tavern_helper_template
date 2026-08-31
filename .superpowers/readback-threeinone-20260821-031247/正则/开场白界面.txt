@@ -1,0 +1,1 @@
+<div id="counterfeit-opening-anchor" style="width:100%;min-height:8px;"></div>

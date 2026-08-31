@@ -6,6 +6,8 @@
   </button>
 
   <!-- 手机本体 -->
+  <!-- 关闭入口不参与手机进出场位移动画，快速点按也不会追着按钮跑。 -->
+  <button v-if="store.isOpen" class="phone-close" type="button" aria-label="关闭手机助手" title="关闭手机助手" @click="store.close()">×</button>
   <Transition name="phone">
     <div v-if="store.isOpen" class="phone-overlay" @click.self="store.close()">
       <PhoneFrame>
@@ -118,7 +120,7 @@ if (embedded) {
   document.body.style.background = 'transparent';
   window.addEventListener('message', event => {
     const data = event.data;
-    if (data && data.source === 'counterfeit-phone-loader' && data.action === 'open') {
+    if (event.source === window.parent && data && data.source === 'counterfeit-phone-loader' && data.action === 'open') {
       store.open();
     }
   });
@@ -180,8 +182,29 @@ if (embedded) {
   display: flex;
   align-items: center;
   justify-content: center;
+  // The iframe stays full-bleed; consume the host safe-area contract inside it.
+  padding: max(20px, var(--tt-inset-top, env(safe-area-inset-top, 0px)))
+    max(12px, var(--tt-inset-right, env(safe-area-inset-right, 0px)))
+    max(20px, var(--tt-viewport-bottom-inset, var(--tt-inset-bottom, env(safe-area-inset-bottom, 0px))))
+    max(12px, var(--tt-inset-left, env(safe-area-inset-left, 0px)));
   background: rgba(10, 10, 12, 0.45);
   backdrop-filter: blur(3px);
+}
+
+.phone-close {
+  position: fixed;
+  top: max(4px, var(--tt-inset-top, env(safe-area-inset-top, 0px)));
+  right: max(4px, var(--tt-inset-right, env(safe-area-inset-right, 0px)));
+  z-index: 9992;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(30, 32, 36, 0.92);
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 /* 自动保存状态提示 */

@@ -1,4 +1,4 @@
-export const AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@895ab1f4d382284f2c8150e7910c766ba0eabc56/assets/Counterfeit/状态栏/avatars';
+export const AVATAR_BASE = 'https://cdn.jsdelivr.net/gh/qmsdaa/tavern_helper_template_cdn@35b5f36650e9de0a22de5737fede7700fa8d5c35/assets/Counterfeit/状态栏/avatars';
 
 export const AVATAR_KEYS: Record<string, string> = {
   '比企谷八幡': 'hachiman', '八幡': 'hachiman', '比企谷八幡（性转）': 'genderbend_hachiman',

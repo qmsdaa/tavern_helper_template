@@ -2,34 +2,34 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  INTRO_CLIPS,
-  TITLE_LOOP,
-  clipVideoUrl,
-  clipPosterUrl,
-  titleLoopVideoUrl,
+  OP_DESKTOP_BASE,
+  OP_MOBILE_BASE,
+  OP_PICTURE_END,
+  isPortraitViewport,
+  opPosterUrl,
+  opVideoBase,
+  opVideoUrl,
   titleLoopPosterUrl,
+  titleLoopVideoUrl,
 } from './.build-opening/introVideos.ts';
 
-test('序奏六拍：key 顺序与分镜脚本一致', () => {
-  assert.deepEqual(
-    INTRO_CLIPS.map(c => c.key),
-    ['may', 'spring', 'summer', 'winter', 'heal', 'grad'],
-  );
+test('OP 双画幅源：桌面 16:9 / 移动竖屏', () => {
+  assert.equal(OP_DESKTOP_BASE, 'op_desktop');
+  assert.equal(OP_MOBILE_BASE, 'op_mobile');
 });
 
-test('每拍时长与视频实测一致（5~6s），且有中文字幕日期标注', () => {
-  const expected = { may: 5100, spring: 5000, summer: 6000, winter: 5100, heal: 5000, grad: 6000 };
-  for (const clip of INTRO_CLIPS) {
-    assert.equal(clip.durationMs, expected[clip.key], clip.key);
-    assert.ok(clip.dateLabel.length > 0, clip.key);
-  }
+test('OP 画面段时长 84s（到点交棒标题屏 BGM）', () => {
+  assert.equal(OP_PICTURE_END, 84);
 });
 
-test('视频/首帧 URL：文件名无画幅后缀，附版本号', () => {
-  const url = clipVideoUrl(INTRO_CLIPS[0]);
-  assert.match(url, /intro_01_may\.mp4\?v=/);
-  const poster = clipPosterUrl(INTRO_CLIPS[2]);
-  assert.match(poster, /intro_03_summer\.webp\?v=/);
+test('node 环境（无 window）默认桌面版', () => {
+  assert.equal(isPortraitViewport(), false);
+  assert.equal(opVideoBase(), 'op_desktop');
+});
+
+test('OP 视频/poster URL：附版本号', () => {
+  assert.match(opVideoUrl(), /op_desktop\.mp4\?v=/);
+  assert.match(opPosterUrl(), /op_desktop\.webp\?v=/);
 });
 
 test('标题屏循环 URL', () => {

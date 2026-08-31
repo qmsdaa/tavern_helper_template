@@ -7,7 +7,7 @@
 // 说明：不使用 defineMvuDataStore——其变量源在 store 创建时永久固定且带 watch 写回，
 //   对只读的状态栏既会锁死数据源又会污染基线变量。
 import { Schema } from '../../schema';
-import { getMockData, isMockMode } from './mock';
+import { getMockData, isMockMode, isTavernEnvironment } from './mock';
 
 export interface StatusDataStore {
   data: Schema;
@@ -55,7 +55,8 @@ function useLiveStore(): StatusDataStore {
 }
 
 export function useDataStore(): StatusDataStore {
-  if (isMockMode()) {
+  // 纯浏览器预览（无酒馆 API）：显式 ?mock= 或自动降级 mock，绝不触碰 MVU
+  if (isMockMode() || !isTavernEnvironment()) {
     if (!mock_store) {
       mock_store = { data: reactive(getMockData()) };
     }

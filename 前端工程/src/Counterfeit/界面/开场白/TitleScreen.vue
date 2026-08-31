@@ -89,8 +89,8 @@
 
 <script setup lang="ts">
 import { TITLE_COPY } from './copy';
+import { getBgm, playBgmFrom } from './audio';
 import { portraitUrl } from './data';
-import { getBgm } from './audio';
 import { useOpeningStore } from './store';
 import { showToast } from './toast';
 import { titleLoopPosterUrl, titleLoopVideoUrl } from './introVideos';
@@ -100,28 +100,25 @@ const store = useOpeningStore();
 // 标题屏背景循环视频（单 16:9 源，object-fit 居中裁切）；加载失败时静图兜底（bg-tree <img> 始终在底层）
 const bgVideoReady = ref(false);
 
-// 漂浮光斑：柔和景深圆点，缓慢漂移
-const bokehs = Array.from({ length: 8 }, () => ({
-  left: Math.random() * 100,
-  top: Math.random() * 100,
-  size: 40 + Math.random() * 90,
-  duration: 10 + Math.random() * 8,
-  delay: Math.random() * 6,
-}));
-
-// 封面指针视差（移动端无 pointermove 时保持 0）
-const parallax = reactive({ x: 0, y: 0 });
-function onPointerMove(event: PointerEvent) {
-  const { innerWidth, innerHeight } = window;
-  parallax.x = ((event.clientX - innerWidth / 2) / innerWidth) * 8;
-  parallax.y = ((event.clientY - innerHeight / 2) / innerHeight) * 6;
-}
-
-// BGM：autoplay 限制下由首次点击启动
+// BGM：标题屏接管控制（最早版本行为）。OP 到达时从交接位置续播；其余路径不碰播放状态
 const bgmOn = ref(false);
 
-onMounted(() => {
+onMounted(async () => {
+  if (store.opHandoffTime !== null) {
+    const t = store.opHandoffTime;
+    store.opHandoffTime = null;
+    await playBgmFrom(t);
+  }
   bgmOn.value = !getBgm().paused;
+  // 收束白幕等标题屏挂载绘制后再淡出，消除换屏空帧
+  if (store.veilOn) {
+    await nextTick();
+    requestAnimationFrame(() => {
+      window.setTimeout(() => {
+        store.veilOn = false;
+      }, 250);
+    });
+  }
 });
 
 async function toggleBgm() {
@@ -138,6 +135,23 @@ async function toggleBgm() {
     bgm.pause();
     bgmOn.value = false;
   }
+}
+
+// 漂浮光斑：柔和景深圆点，缓慢漂移
+const bokehs = Array.from({ length: 8 }, () => ({
+  left: Math.random() * 100,
+  top: Math.random() * 100,
+  size: 40 + Math.random() * 90,
+  duration: 10 + Math.random() * 8,
+  delay: Math.random() * 6,
+}));
+
+// 封面指针视差（移动端无 pointermove 时保持 0）
+const parallax = reactive({ x: 0, y: 0 });
+function onPointerMove(event: PointerEvent) {
+  const { innerWidth, innerHeight } = window;
+  parallax.x = ((event.clientX - innerWidth / 2) / innerWidth) * 8;
+  parallax.y = ((event.clientY - innerHeight / 2) / innerHeight) * 6;
 }
 </script>
 
@@ -219,48 +233,6 @@ async function toggleBgm() {
   to {
     transform: translate3d(14px, 16px, 0) scale(1.08);
     opacity: 0.9;
-  }
-}
-
-.bgm-toggle {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 10;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--c-surface);
-  box-shadow: var(--shadow-card);
-  color: var(--c-primary-strong);
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.15s ease;
-
-  &:hover {
-    transform: scale(1.08);
-  }
-
-  &.is-off {
-    color: var(--c-text-muted);
-    opacity: 0.6;
-
-    i {
-      position: relative;
-
-      &::after {
-        content: '';
-        position: absolute;
-        left: -3px;
-        right: -3px;
-        top: 50%;
-        height: 2px;
-        background: currentColor;
-        transform: rotate(-45deg);
-      }
-    }
   }
 }
 
@@ -506,5 +478,48 @@ async function toggleBgm() {
   font-size: 15px;
   cursor: pointer;
   opacity: 0.75;
+}
+
+/* BGM 开关：右上角圆形按钮，关态加斜杠 */
+.bgm-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--c-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--c-primary-strong);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  &.is-off {
+    color: var(--c-text-muted);
+    opacity: 0.6;
+
+    i {
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: -3px;
+        right: -3px;
+        top: 50%;
+        height: 2px;
+        background: currentColor;
+        transform: rotate(-45deg);
+      }
+    }
+  }
 }
 </style>

@@ -38,6 +38,7 @@ export function formatDateLabel(dateStr: string): string {
 
 const POV_NAMES: Record<string, string> = {
   hachiman: '比企谷八幡',
+  hachiman_f: '比企谷八幡（性转）',
   yukino: '雪之下雪乃',
   yui: '由比滨结衣',
   laff: '拉芙希妮·都柏林',
@@ -64,11 +65,16 @@ export function isStoryProgress(data: Schema): boolean {
 export function identityBadge(data: Schema): string | null {
   const state = data.identity_state;
   if (!state) return null;
-  if (state.kind === 'transformation') return '本人：比企谷八幡 · 外观：女性化 · 公开身份：比企谷八幡';
+  if (state.kind === 'transformation') return '本人：比企谷八幡（性转） · 外观：女性化';
   const bodyKey = Object.entries(state.occupants).find(([, mind]) => mind === data.current_pov)?.[0];
   const body = bodyKey === 'body_hachiman' ? '比企谷八幡的身体' : bodyKey === 'body_mrs_yukinoshita' ? '雪之下夫人的身体' : '未确认身体';
   const apparent = bodyKey === 'body_hachiman' ? '比企谷八幡' : bodyKey === 'body_mrs_yukinoshita' ? '雪之下夫人' : '未确认';
   return `本人：${playerLabel(data)} · 身体：${body} · 旁人眼中：${apparent}`;
+}
+
+/** 是否性转八幡（比企谷八幡（性转））——状态栏用「性转」徽章独特标识 */
+export function isGenderbendHachiman(data: Schema): boolean {
+  return data.current_pov === 'hachiman_f' || (data.identity_state?.kind === 'transformation' && data.identity_state.current_body === 'hachiman_f');
 }
 
 export function playerLabel(data: Schema): string {
@@ -94,13 +100,15 @@ export function bondTier(bond: number): string {
 type CharacterRecord = Schema['characters'][string];
 
 /**
- * 关系阶段标签：只看 commitment 与 bond，绝不根据 romance 派生"暧昧/喜欢"等标签
+ * 关系阶段标签：只看 commitment 与已记录事实（性爱回忆），绝不根据 romance 派生"暧昧/喜欢"等标签
  * （与 EJS 状态栏及 MVU 更新规则一致）
+ * 炮友口径与 NSFW 机制条目一致：commitment=未确认 且已跨过最后身体边界（性爱回忆非空）
  */
 export function relationshipLabel(record: CharacterRecord): string {
   const relation = record.relationship;
   if (relation.commitment === '恋人') return '恋人';
   if (relation.commitment === '仅朋友') return '朋友';
+  if (relation.intimate_sexual_memory) return '炮友';
   return bondTier(relation.bond);
 }
 
@@ -110,6 +118,8 @@ export const THOUGHT_EMPTY_PLACEHOLDER = '……';
 /** 规范全名（characters 记录键）→ 立绘文件名（assets/Counterfeit/状态栏/portraits/<name>.webp） */
 const PORTRAIT_KEYS: Record<string, string> = {
   '比企谷八幡': 'hachiman',
+  // DLC《错位的日常》独立角色：性转八幡用专属新立绘（assets 键 genderbend_hachiman）
+  '比企谷八幡（性转）': 'genderbend_hachiman',
   '雪之下雪乃': 'yukino',
   '由比滨结衣': 'yui',
   '拉芙希妮·都柏林': 'laff',
@@ -152,6 +162,8 @@ export interface PresentCharacterView {
   bond: number;
   romance: number;
   commitment: '未确认' | '仅朋友' | '恋人';
+  /** 炮友态（commitment=未确认 且 性爱回忆非空）：徽章显示依据，口径与 NSFW 机制条目一致 */
+  fwb: boolean;
   memory: string;
   innerThought: string;
   /** 私密档案·亲密记忆；空字符串表示尚未留下 */
@@ -183,6 +195,7 @@ export function presentCharacters(data: Schema): PresentCharacterView[] {
       bond: record.relationship.bond,
       romance: record.relationship.romance,
       commitment: record.relationship.commitment,
+      fwb: record.relationship?.commitment === '未确认' && Boolean(record.relationship?.intimate_sexual_memory),
       memory: record.latest_user_memory?.memory || '',
       innerThought: record.latest_user_memory?.inner_thought || '',
       intimateMemory: record.relationship?.intimate_memory || '',

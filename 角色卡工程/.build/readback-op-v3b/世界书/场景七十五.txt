@@ -1,0 +1,171 @@
+@@if (getvar('stat_data.campaign_id', {defaults: 'main'}) === 'main' && (getvar('stat_data.mode', {defaults: null}) === 'pov' || (getvar('stat_data.mode', {defaults: null}) === 'custom' && getvar('stat_data.custom_protagonist.participation.track', {defaults: null}) !== null)) && getvar('stat_data.current_scene', {defaults: null}) === 75)
+场景: 75
+幕: "第四幕·冬假→三学期"
+时间: "2014年2月1日 · 周六 · 三学期"
+索引日期: "2014-02-01"
+地点: "千叶Sogo地下一层 → 总武高中 · 家政教室"
+人物: "拉芙希妮·都柏林、由比滨结衣"
+事件焦点:
+  类型: 角色
+  角色:
+    - "由比滨结衣"
+    - "拉芙希妮·都柏林"
+
+# TRANSITION_RUNTIME_GUARD_START main:75
+# <%_ const __cfTransitionTarget75 = 75; _%>
+# <%_ const __cfTransitionCurrentScene75 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign75 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages75 = []; _%>
+# <%_ try { const __cfTransitionLastId75 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages75 = getChatMessages('0-' + __cfTransitionLastId75, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages75 = []; } _%>
+# <%_ const __cfTransitionSnapshots75 = (Array.isArray(__cfTransitionMessages75) ? __cfTransitionMessages75 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious75 = __cfTransitionSnapshots75.length ? __cfTransitionSnapshots75[__cfTransitionSnapshots75.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene75 = Number(__cfTransitionPrevious75 && __cfTransitionPrevious75.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign75 = (__cfTransitionPrevious75 && __cfTransitionPrevious75.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped75 = Math.max(0, __cfTransitionCurrentScene75 - __cfTransitionPreviousScene75 - 1); _%>
+# <%_ const __cfTransitionExpose75 = __cfTransitionCurrentCampaign75 === 'main' && __cfTransitionPreviousCampaign75 === 'main' && __cfTransitionCurrentScene75 === __cfTransitionTarget75 && Number.isInteger(__cfTransitionPreviousScene75) && __cfTransitionPreviousScene75 < __cfTransitionCurrentScene75; _%>
+# <%_ if (__cfTransitionExpose75) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped75 %>"
+  mode: date_only
+  visible_title: 二月，礼物之前
+  visible_lines:
+    - 两周里，商场的季节货架换成巧克力与包装纸，部室里的话题仍绕着真正想送给谁打转。
+    - 关系没有因日期自动得到答案，礼物却已经需要被选出来。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:75
+场景功能:
+  - ★双向暴露场：结衣×拉芙围绕"礼物与愿望"的互相拆解——结衣准备给所有人近似的礼物，以免任何关系显得不平衡；拉芙把礼物理解为需要计算和偿还的关系债务
+  - 结衣指出：接受善意不等于欠下债务——"你不用还我什么。点心是我要给的"
+  - 拉芙反问：如果结衣真正希望某个人特别看待自己，为什么又坚持把全部礼物做得一样——"你把它们做成一样，是在保护谁的感受？"
+  - 结衣承认自己存在偏向，但尚未准备好完全公开；她最终保留一个细小而真实的区别，不再用完全平均抹掉愿望
+  - 拉芙不是导师：她在反问里暴露自己的交换逻辑和不安——收到无条件的善意对她来说是一笔没有公式的账
+  - 抹茶粉线保留为背景：拉芙为雪乃挑的抹茶粉仍以"口味了解"的方式出现，但本场不把它升级为恋爱证据
+
+进入状态:
+  已发生:
+    - 情人节临近（场景74后）
+    - 结衣决定亲手做巧克力
+  当前局面:
+    - 千叶Sogo地下一层——结衣的购物篮处于灾难状态
+    - 拉芙陪她采购，同时为雪乃挑抹茶粉
+  未发生:
+    - 尚未去家政教室
+    - 礼物分组焦虑尚未摊开
+
+世界推动:
+  - 情人节前的商业氛围——包装、试吃台、成排的心形盒子
+  - 结衣的手机备忘录里列着要送的人名单
+
+NPC动机:
+  拉芙希妮·都柏林:
+    - 此刻目标: 陪结衣完成采购与制作；把给雪乃的抹茶粉顺路挑好
+    - 行为倾向: 评估配料→纠偏→指导调温；结衣说"不用还"时她的手指在包装纸上停住——把"不欠"当成需要重新学习的新规则；反问结衣"为什么把礼物做得一样"时用的是自己的交换逻辑，不是教导
+    - 知情边界: 知道抹茶粉是给雪乃的（被结衣点破）；不知道结衣具体偏向谁
+    - 不得执行: 以导师姿态总结结衣的课题；把"接受善意不等于欠债"说得像人生教训——她自己也还不会这一课
+  由比滨结衣:
+    - 此刻目标: 给所有人准备近似的礼物，避免任何关系显得不平衡
+    - 行为倾向: 购物篮灾难→被拉芙纠偏→包装分组焦虑（"义理"和"本命"分不开）→被拉芙反问"为什么要做得一样"→承认有偏向但未准备好公开→保留一个细小而真实的区别
+    - 知情边界: 不知道拉芙把善意当债务；知道抹茶粉是给雪乃的
+    - 不得执行: 当场公开全部偏向；用完全平均抹掉愿望
+
+信息边界:
+  公开: 采购和制作过程；"接受善意不等于欠下债务"的对话
+  局部: "你其实很想被某个人特别看待吧"——拉芙的反问（两人之间）
+  隐藏: 结衣保留的那个细小区别给了谁——只有她自己知道（不在此场景揭开）
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - "主场轨道，见可用节拍，不变。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: true
+    演绎入口:
+      - "主场轨道，见可用节拍，不变。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: false
+    演绎入口:
+      - "周六——她在公寓整理进路表相关的资料，把法律系宣传册翻了一遍又合上；她不知道今天有人为她挑了一罐宇治特级抹茶粉，也不知道有人在学着说'不用还'。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: false
+    演绎入口:
+      - "周六——他在家打了一下午游戏，傍晚被小町差去买酱油；他不知道今天下午有两个人正在家政教室里调温巧克力，也不知道其中一份心意差一点就变得和所有心意一模一样。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: <%= ["member","classmate"].includes(getvar('stat_data.custom_protagonist.participation.track', { defaults: null })) ? 'true' : 'false' %>
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - member：开局已被安排进奉仕部，与四人同处事件核心，可接委托、可发言、可被卷入冲突
+      - classmate：在公共场合在场边目击事件，不自动进入核心互动；是否被卷入由玩家已声明的行动决定；场景位于私人空间时不代入在场
+      - outsider：不在现场，本场只能事后通过传闻、委托或转述得知
+      - 事件焦点与NPC动机不因玩家改变；玩家未声明行动时不得替其补写言行
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "周六——他在家打了一下午游戏，傍晚被小町差去买酱油；他不知道今天下午有两个人正在家政教室里调温巧克力，也不知道其中一份心意差一点就变得和所有心意一模一样。"
+  yukino: "周六——她在公寓整理进路表相关的资料，把法律系宣传册翻了一遍又合上；她不知道今天有人为她挑了一罐宇治特级抹茶粉，也不知道有人在学着说'不用还'。"
+  yui: "主场轨道，见可用节拍，不变。"
+  laff: "主场轨道，见可用节拍，不变。"
+
+玩家控制边界:
+  - 结衣承认偏向的程度、保留的那个细小区别给谁——由玩家决定，但"不再完全平均"必须成立
+  - 拉芙反问的措辞与不安暴露量——由玩家决定
+  - 本场不得写入 romance 数值变化证据，也不得置 yui/laff 后期成长旗标
+
+可用节拍:
+  - Sogo采购——结衣的购物篮灾难（棉花糖、彩虹糖霜、还有半盒不知为何出现的软糖）
+  - 拉芙用可可脂晶体结构知识纠偏——剔除棉花糖和彩虹糖霜
+  - 拉芙挑了一罐昂贵的宇治特级抹茶粉——结衣看在眼里，没有拆穿到底
+  - 家政教室——调温成功
+  - 包装分组焦虑：结衣把名单和礼物摊开——"给谁多给谁少……我想给所有人差不多"
+  - ★结衣："你不用还我什么。点心是我要给的。"——拉芙的手指在包装纸上停住："……不用还？"
+  - ★拉芙的反问（不是教导）："如果你真的希望某个人特别看待你——为什么又坚持把全部礼物做得一样？"（措辞由玩家决定）
+  - ★结衣承认有偏向但未准备好公开——沉默后她把给某个人的那份的包装纸折角多折了一道（细小而真实的区别）
+  - 两人继续包完剩下的——谁都没有再提起那个区别
+
+偏离处理:
+  - 若结衣POV玩家选择当场公开全部偏向：可以，但本场预期是"承认但未准备好公开"——公开与否由实际正文收束，不强行拉回
+  - 若拉芙POV玩家把反问说成人生教导：弱化为暴露——拉芙是在用自己不懂的东西提问，不是在教结衣
+  - 核心不可偏离：结衣保留一个细小而真实的区别；拉芙暴露交换逻辑；本场不增加romance证据、不置后期成长旗标
+
+推进边界:
+  保持当前场景:
+    - 尚未开始采购或采购尚未完成
+    - 礼物分组讨论尚未发生
+  可以推进:
+    - 巧克力完成、区别已保留、两人道别
+  永久失效:
+    - 结衣用完全平均抹掉所有愿望（区别已经保留）
+
+完成后事实:
+  - 结衣保留了细小而真实的区别——不再用完全平均抹掉愿望（不公开偏向给谁）
+  - 拉芙听到"不用还"后的停顿——交换逻辑第一次被当面指认，她没有反驳的余地，也没有学会
+  - 情人节巧克力完成——抹茶味（给雪乃）+其余均分包装（其中一份有折角区别）
+  - 本场不产生 romance 数值变化证据，不置 yui/laff 成长旗标
+
+氛围锚点:
+  - 结衣购物篮里的"灾难性多样性"——棉花糖和彩虹糖霜的相遇
+  - "……不用还？"——拉芙的手指在包装纸上停住的半秒
+  - 拉芙看着那些材料，脑海中自动演算出它们如果在结衣的厨房里相遇会引发何等惨烈的化学反应
+  - 折角多一道的包装纸——细小到不会被发现，真实到只有她知道
+
+禁止提前:
+  - 情人节当天（场景77）
+  - 结衣公开偏向对象是谁（本场保留私密）
+  - 本场置入 yui/laff 后期成长旗标或 romance 数值证据
+  - 拉芙在本场完成"接受无条件善意"的成长（她只是第一次听见这个说法）

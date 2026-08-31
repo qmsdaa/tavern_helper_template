@@ -18,30 +18,21 @@
 </template>
 
 <script setup lang="ts">
-import { getBgm } from './audio';
 import { TITLE_COPY } from './copy';
+import { primeBgm } from './audio';
 import { preloadOpeningAssets } from './introVideos';
 import { useOpeningStore } from './store';
-import { showToast } from './toast';
 
 const store = useOpeningStore();
 
-// 等待点击期间预载第 1 拍视频 + 标题屏循环，避免序奏中途卡
+// 等待点击期间预载 OP 视频 + 标题屏循环，避免开播卡顿
 onMounted(() => {
   preloadOpeningAssets();
 });
 
-/** 首次用户交互：解锁 BGM（浏览器 autoplay 限制）→ 进入万花筒序奏 */
-async function start() {
-  const bgm = getBgm();
-  if (bgm.paused) {
-    try {
-      await bgm.play();
-    } catch (error) {
-      console.warn('[开场白] BGM 播放失败', error);
-      showToast('浏览器阻止了自动播放，可到标题屏手动开启', 'info');
-    }
-  }
+/** 首次用户交互：此点击同时解锁 OP 有声播放 + 点透 BGM 元素（autoplay 限制）→ 进入 OP */
+function start() {
+  primeBgm();
   store.toIntro();
 }
 </script>

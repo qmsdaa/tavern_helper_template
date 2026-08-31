@@ -22,20 +22,6 @@ export function extractAcuTables(meta: Record<string, any> | null | undefined): 
 }
 
 /**
- * 提取 ACU 表格元数据：chat_metadata 优先，缺失的键回退读 chat[0] 顶层字段
- * （旧酒馆版本把 Guide 存在首条消息而非 chat_metadata，与插件 getChatSheetGuideContainer_ACU 兼容口径一致）。
- */
-export function extractAcuTablesFromHeader(records: unknown[]): Record<string, unknown> | null {
-  if (!Array.isArray(records)) return null;
-  const meta = (records[0] as Record<string, any> | null | undefined)?.chat_metadata;
-  const primary = extractAcuTables(meta);
-  const legacy = extractAcuTables(records[0] as Record<string, any> | null | undefined);
-  if (!legacy) return primary;
-  if (!primary) return legacy;
-  return { ...legacy, ...primary };
-}
-
-/**
  * 从聊天楼层消息提取最新的 storageFrame.checkpoint.data（插件格式，含 mate + sheet_* 数据行）。
  * 倒序扫描取最后一个带表格数据的快照；chat[0] 是头不计入。
  */
@@ -252,13 +238,14 @@ function acuBuildSheetRuntimes(data: Record<string, any>, warnings: string[]): M
     const content = Array.isArray(sheet.content) ? sheet.content : null;
     if (!content || !content.length || !Array.isArray(content[0])) continue;
     const ddl = typeof sheet.sourceData?.ddl === 'string' ? sheet.sourceData.ddl : '';
-    const parsed = ddl ? acuParseDdl(ddl) : { table: null, engToZh: {} };
-    // 无 DDL 的 sheet 也建运行时（patch/sheet 级操作不依赖列映射），表名兜底用 sheetKey；
-    // SQL 增量日志在这些表上会因列无法映射而逐条告警跳过。
-    const table = parsed.table ?? key;
+    const { table, engToZh } = ddl ? acuParseDdl(ddl) : { table: null, engToZh: {} };
+    if (!table) {
+      warnings.push(`表格 ${key} 缺少可解析的 DDL，其增量日志被跳过`);
+      continue;
+    }
     const header: unknown[] = content[0];
     const colIndex: Record<string, number> = {};
-    for (const [eng, zh] of Object.entries(parsed.engToZh)) {
+    for (const [eng, zh] of Object.entries(engToZh)) {
       let idx = header.indexOf(zh);
       if (idx < 0) idx = header.indexOf(eng);
       if (idx < 0) {
@@ -266,9 +253,6 @@ function acuBuildSheetRuntimes(data: Record<string, any>, warnings: string[]): M
         continue;
       }
       colIndex[eng] = idx;
-    }
-    if (!ddl) {
-      for (const [i, name] of header.entries()) colIndex[String(name)] = i;
     }
     if (colIndex.row_id === undefined) {
       const idx = header.indexOf('row_id');
@@ -310,7 +294,7 @@ function acuNextRowId(rt: AcuSheetRuntime): number {
 
 /** 应用一条 UPDATE / INSERT / INSERT OR REPLACE；全部失败路径只记 warning 不抛错 */
 function acuApplyStatement(stmt: string, byTable: Map<string, AcuSheetRuntime>, warnings: string[], floor: number): void {
-  const fail = (reason: string): void => { warnings.push(`楼层 ${floor} 的 SQL 未应用（${reason}）：${stmt.slice(0, 120)}`); };
+  const fail = (reason: string) => warnings.push(`楼层 ${floor} 的 SQL 未应用（${reason}）：${stmt.slice(0, 120)}`);
   const updateMatch = stmt.match(/^\s*UPDATE\s+["'`]?(\w+)["'`]?\s+SET\s/i);
   if (updateMatch) {
     const rt = byTable.get(updateMatch[1]);
@@ -433,78 +417,6 @@ export interface AcuReconstructResult {
   replayedStatements: number;
 }
 
-/** data_replace 的新状态：必须是含 sheet_* 键的对象，否则返回 null */
-function acuSanitizeReplacementData(value: unknown): Record<string, any> | null {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-  if (!Object.keys(value).some(key => key.startsWith('sheet_'))) return null;
-  return JSON.parse(JSON.stringify(value)) as Record<string, any>;
-}
-
-function replaceState(state: Record<string, any>, next: Record<string, any>): void {
-  Object.keys(state).forEach(key => delete state[key]);
-  Object.assign(state, next);
-}
-
-/**
- * 应用一条 sheet 级操作（patch 日志与新版非 SQL 操作共用）：
- * sheet_replace / row_upsert / row_delete / meta_update。
- * row_id 匹配与插件 applyTablePatchV2_ACU 同口径：content[0] 是表头，
- * row[0] === patch.rowId 定位数据行；不命中 upsert 则追加。
- */
-function acuApplyPatchToRuntime(
-  patch: { kind?: string; sheetKey?: unknown; sheet?: unknown; rowId?: unknown; cells?: unknown; meta?: unknown } | null | undefined,
-  byTable: Map<string, AcuSheetRuntime>,
-  warnings: string[],
-  floor: number,
-  data: Record<string, any>,
-): void {
-  if (!patch || typeof patch !== 'object') return;
-  const sheetKey = String(patch.sheetKey ?? '');
-  let rt = byTable.get(sheetKey);
-  if (!rt) {
-    for (const candidate of byTable.values()) {
-      if (candidate.sheetKey === sheetKey) { rt = candidate; break; }
-    }
-  }
-  if (patch.kind === 'sheet_replace') {
-    const sheet = patch.sheet as Record<string, any> | null | undefined;
-    if (!sheet || !Array.isArray(sheet.content) || !Array.isArray(sheet.content[0])) {
-      warnings.push(`楼层 ${floor}：sheet_replace 缺少表 ${sheetKey} 的合法 content，已跳过`);
-      return;
-    }
-    const content = JSON.parse(JSON.stringify(sheet.content));
-    const header = content[0] as unknown[];
-    const rows = content.slice(1) as unknown[][];
-    const colIndex: Record<string, number> = {};
-    for (const [i, name] of header.entries()) colIndex[String(name)] = i;
-    if (String(header[0]) === 'row_id') colIndex.row_id = 0;
-    data[sheetKey] = JSON.parse(JSON.stringify(sheet));
-    if (rt) byTable.delete(rt.table);
-    byTable.set(sheetKey, { sheetKey, table: sheetKey, header, rows, colIndex, sheet: data[sheetKey] });
-    return;
-  }
-  if (!rt) {
-    warnings.push(`楼层 ${floor}：${patch.kind ?? 'patch'} 引用了未知表 ${sheetKey}，已跳过`);
-    return;
-  }
-  if (patch.kind === 'meta_update') {
-    if (patch.meta && typeof patch.meta === 'object') Object.assign(rt.sheet, JSON.parse(JSON.stringify(patch.meta)));
-    return;
-  }
-  if (patch.kind === 'row_upsert') {
-    if (!Array.isArray(patch.cells)) return;
-    const cells = JSON.parse(JSON.stringify(patch.cells)) as unknown[];
-    const at = rt.rows.findIndex(row => Array.isArray(row) && row[0] === patch.rowId);
-    if (at >= 0) rt.rows[at] = cells;
-    else rt.rows.push(cells);
-    return;
-  }
-  if (patch.kind === 'row_delete') {
-    rt.rows = rt.rows.filter(row => !(Array.isArray(row) && row[0] === patch.rowId));
-    return;
-  }
-}
-
 /**
  * 消息持久化模式的当前表格数据 = 最近 full checkpoint + 其后（含该楼层）logEntries 重放。
  * 与插件 loadTableStateFromFramesV2_ACU 同口径：跳过用户楼层、checkpoint 需 kind='full'、
@@ -555,185 +467,26 @@ export function reconstructAcuSheetData(records: unknown[]): AcuReconstructResul
     for (const entry of entries) {
       const ops = Array.isArray(entry?.operations) ? entry.operations : [];
       if (!ops.length && Array.isArray(entry?.patches) && entry.patches.length) {
-        for (const patch of entry.patches) acuApplyPatchToRuntime(patch, byTable, warnings, floor, data);
-        replayedLogs += 1;
+        warnings.push(`楼层 ${floor} 存在旧版 patch 日志，本迁移不支持，已跳过`);
         continue;
       }
       let touched = false;
       for (const op of ops) {
-        if (op?.kind === 'data_replace') {
-          const next = acuSanitizeReplacementData(op.data);
-          if (!next) {
-            warnings.push(`楼层 ${floor} 的 data_replace 缺少 sheet_* 数据，已跳过`);
-            continue;
-          }
-          replaceState(data, next);
-          const rebuilt = acuBuildSheetRuntimes(data, warnings);
-          byTable.clear();
-          for (const [table, rt] of rebuilt) byTable.set(table, rt);
+        if (op?.kind !== 'sql_batch' || !Array.isArray(op.statements)) {
+          warnings.push(`楼层 ${floor} 存在未支持的操作类型 ${op?.kind ?? '?'}，已跳过`);
+          continue;
+        }
+        for (const stmt of op.statements) {
           replayedStatements += 1;
+          acuApplyStatement(String(stmt), byTable, warnings, floor);
           touched = true;
-          continue;
         }
-        if (op?.kind === 'sql_batch' && Array.isArray(op.statements)) {
-          for (const stmt of op.statements) {
-            replayedStatements += 1;
-            acuApplyStatement(String(stmt), byTable, warnings, floor);
-            touched = true;
-          }
-          continue;
-        }
-        if (op?.kind === 'sheet_replace' || op?.kind === 'row_upsert' || op?.kind === 'row_delete' || op?.kind === 'meta_update') {
-          acuApplyPatchToRuntime(op, byTable, warnings, floor, data);
-          touched = true;
-          continue;
-        }
-        warnings.push(`楼层 ${floor} 存在未支持的操作类型 ${op?.kind ?? '?'}，已跳过`);
       }
       if (touched) replayedLogs += 1;
     }
   }
   for (const rt of byTable.values()) rt.sheet.content = [rt.header, ...rt.rows];
   return { data, warnings, checkpointFloor, replayedLogs, replayedStatements };
-}
-
-/* ===== legacy-v1 存储形态重建 =====
- * 与插件 mergeAllIndependentTablesLegacyV1_ACU 同口径（无隔离标记的简化版）：
- *  - 顶层旧字段：AI 楼层的 TavernDB_ACU_IndependentData / _Data / _SummaryData
- *  - 隔离槽旧形态：TavernDB_ACU_IsolatedData['']（无 storageFrame.version=2 时）里的
- *    independentData（checkpoint/legacy，首写胜出）/ incrementalData（delta，收集后按时序补合并）
- *  - delta 应用与 applyTableDelta_ACU 同语义：metaChanged + rowDeltas（upsert 按 row_id 定位、不命中追加）
- * 与插件差异（均有 warning）：不做当前模板 sheet 过滤（导入时由插件 data_replace 统一接管）、
- * 不做 guide 结构物化与 updateConfig uiSentinel 归一。
- */
-interface AcuLegacyRowDelta { op?: string; row_id?: unknown; cells?: unknown }
-
-function acuLegacySheetWithContent(key: string, value: unknown): { name: unknown; content: unknown[][] } | null {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-  const s = value as { name?: unknown; content?: unknown };
-  const content = Array.isArray(s.content) ? (s.content as unknown[]) : [];
-  if (!content.length || !Array.isArray(content[0])) return null;
-  return { name: s.name ?? key, content: content as unknown[][] };
-}
-
-function acuLegacyCollectInto(
-  merged: Record<string, any>, found: Record<string, boolean>, source: unknown,
-): void {
-  if (!source || typeof source !== 'object' || Array.isArray(source)) return;
-  for (const [key, value] of Object.entries(source)) {
-    if (!key.startsWith('sheet_') || found[key]) continue;
-    const sheet = acuLegacySheetWithContent(key, value);
-    if (!sheet) continue;
-    merged[key] = JSON.parse(JSON.stringify(value));
-    found[key] = true;
-  }
-}
-
-function acuApplyLegacyDelta(base: Record<string, any>, delta: unknown): Record<string, any> | null {
-  if (!delta || typeof delta !== 'object' || Array.isArray(delta)) return null;
-  const result = JSON.parse(JSON.stringify(base));
-  const d = delta as { metaChanged?: Record<string, unknown>; rowDeltas?: AcuLegacyRowDelta[] };
-  if (d.metaChanged && typeof d.metaChanged === 'object') {
-    for (const field of ['name', 'orderNo', 'updateConfig', 'exportConfig', 'sourceData']) {
-      if (d.metaChanged[field] !== undefined) result[field] = JSON.parse(JSON.stringify(d.metaChanged[field]));
-    }
-  }
-  if (!Array.isArray(d.rowDeltas) || !Array.isArray(result.content)) return result;
-  const indexByRowId = new Map<unknown, number>();
-  for (let i = 0; i < result.content.length; i += 1) {
-    const row = result.content[i];
-    if (Array.isArray(row) && row[0] != null && !indexByRowId.has(row[0])) indexByRowId.set(row[0], i);
-  }
-  const toDelete = new Set<number>();
-  for (const rd of d.rowDeltas) {
-    if (!rd || typeof rd !== 'object') continue;
-    if (rd.op === 'delete') {
-      const idx = indexByRowId.get(rd.row_id);
-      if (idx !== undefined) toDelete.add(idx);
-      continue;
-    }
-    if (rd.op === 'upsert' && Array.isArray(rd.cells)) {
-      const idx = indexByRowId.get(rd.row_id);
-      if (idx !== undefined) result.content[idx] = JSON.parse(JSON.stringify(rd.cells));
-      else {
-        result.content.push(JSON.parse(JSON.stringify(rd.cells)));
-        indexByRowId.set(rd.row_id, result.content.length - 1);
-      }
-    }
-  }
-  if (toDelete.size > 0) {
-    for (const idx of [...toDelete].sort((a, b) => b - a)) result.content.splice(idx, 1);
-  }
-  return result;
-}
-
-export interface AcuLegacyReconstructResult {
-  data: Record<string, unknown> | null;
-  warnings: string[];
-  mergedSheets: number;
-  appliedDeltas: number;
-}
-
-/**
- * 尝试从 legacy-v1 形态重建当前表格数据；任何表格数据都找不到返回 data=null。
- * 兼容插件隔离键语义：顶层旧字段要求消息不带 TavernDB_ACU_Identity（无标记）；
- * 隔离槽旧形态只读 '' 槽（isolationKey 取空）。
- */
-export function reconstructLegacyV1SheetData(records: unknown[]): AcuLegacyReconstructResult {
-  const warnings: string[] = [];
-  const merged: Record<string, any> = {};
-  const found: Record<string, boolean> = {};
-  const pendingDeltas: { delta: unknown }[] = [];
-  if (Array.isArray(records)) {
-    for (let i = records.length - 1; i >= 1; i -= 1) {
-      const record = records[i] as Record<string, any> | null | undefined;
-      if (!record || typeof record !== 'object' || record.is_user === true) continue;
-      const isolated = record.TavernDB_ACU_IsolatedData;
-      if (isolated && typeof isolated === 'object' && !Array.isArray(isolated)) {
-        const tag = typeof isolated[''] === 'object' && isolated[''] !== null
-          ? isolated['']
-          : (Object.values(isolated)[0] as Record<string, any> | undefined);
-        if (tag && typeof tag === 'object') {
-          const frame = tag.storageFrame;
-          if (!(frame && typeof frame === 'object' && frame.version === 2)) {
-            if (tag._acu_storage_mode === 'delta') {
-              if (tag.incrementalData && typeof tag.incrementalData === 'object') {
-                pendingDeltas.push({ delta: tag.incrementalData });
-              }
-            } else {
-              acuLegacyCollectInto(merged, found, tag.independentData);
-            }
-          }
-        }
-      }
-      if (record.TavernDB_ACU_Identity) continue;
-      for (const field of ['TavernDB_ACU_IndependentData', 'TavernDB_ACU_Data', 'TavernDB_ACU_SummaryData']) {
-        acuLegacyCollectInto(merged, found, record[field]);
-      }
-    }
-  }
-  let appliedDeltas = 0;
-  if (Object.keys(merged).length > 0) {
-    // 收集顺序是从新到旧，与插件同口径反转为时序后补合并（delta 作用于其前的 base）
-    for (const { delta } of [...pendingDeltas].reverse()) {
-      if (!delta || typeof delta !== 'object') continue;
-      for (const [sheetKey, value] of Object.entries(delta as Record<string, unknown>)) {
-        if (!merged[sheetKey]) continue;
-        const next = acuApplyLegacyDelta(merged[sheetKey], value);
-        if (next) {
-          merged[sheetKey] = next;
-          appliedDeltas += 1;
-        } else {
-          warnings.push(`表格 ${sheetKey} 的旧版 delta 无法应用，已跳过`);
-        }
-      }
-    }
-  }
-  if (Object.keys(merged).length === 0) return { data: null, warnings, mergedSheets: 0, appliedDeltas: 0 };
-  const out: Record<string, unknown> = { mate: { type: 'chatSheets', version: 1 } };
-  for (const [key, value] of Object.entries(merged)) out[key] = value;
-  warnings.push('数据库表格：从旧版 legacy-v1 存储形态合并重建（不按当前模板过滤，导入后以新表结构为准）');
-  return { data: out, warnings, mergedSheets: Object.keys(merged).length, appliedDeltas };
 }
 
 /**

@@ -22,20 +22,8 @@ export default phoneFactories.map(factory => (env: unknown, argv: { mode?: strin
   // webpack 5.109 outputModule + 作用域提升会丢运行时本体（__webpack_require__.cjs ReferenceError），
   // 关闭模块拼接回退标准运行时包装（同 webpack.opening.config.ts 的修复）。
   config.optimization = { ...(config.optimization ?? {}), concatenateModules: false };
-  // 手机助手运行在加载器自创的 srcdoc iframe 里，酒馆助手不会给它注入全局 z（zod）。
-  // 共享配置的 externals 会把 zod 外置成全局 z，模块求值时直接 ReferenceError、Vue 不挂载、
-  // 全屏 iframe 黑屏盖住院馆。这里对 zod 取消外置、直接打进单文件产物，彻底去掉这个依赖。
-  const baseExternals = config.externals;
-  config.externals = [
-    ((externalsArg: { context?: string; request?: string }, callback: (err?: unknown, result?: string) => void) => {
-      if (externalsArg?.request === 'zod') {
-        return callback();
-      }
-      if (typeof baseExternals === 'function') {
-        return (baseExternals as (arg: unknown, cb: typeof callback) => unknown)(externalsArg, callback);
-      }
-      return callback();
-    }) as never,
-  ];
+  // 手机运行在加载器自创的 srcdoc iframe 中，不能依赖酒馆或沙箱预注入 Vue/Pinia/Zod。
+  // 清空共享 externals，所有可执行依赖一律进入单文件产物；桥接仅保留酒馆 API。
+  config.externals = undefined;
   return config;
 });

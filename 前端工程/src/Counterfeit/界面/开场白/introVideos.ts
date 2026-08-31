@@ -1,27 +1,15 @@
 // 前端工程/src/Counterfeit/界面/开场白/introVideos.ts
 import { ASSET_BASE, ASSET_VERSION } from '../../config';
 
-/** 视频化序奏播放清单（2026-08-27 单版：Seedance 图生视频 16:9 720p 直出 + CRF 23 重压，替代静态 CG 运镜 introAssets.ts） */
+/** 开场白 OP（2026-08-31 标题屏接管 BGM 版：视频只含 84s 画面段；画面播完即白幕收束，
+ *  BGM 由标题屏从交接位置续播 bgm.mp3——与 OP 音轨同一条曲子，体验等同完整 240s OP）。
+ *  双画幅源：桌面 16:9（op_desktop，1080p 1250k）/ 移动竖屏模糊填充（op_mobile，900k），按视口画幅选择。 */
 
-export interface IntroClip {
-  /** 程序标识（勿改，测试依赖顺序） */
-  key: 'may' | 'spring' | 'summer' | 'winter' | 'heal' | 'grad';
-  /** 文件基名（assets 下 <base>.mp4 / .webp） */
-  base: string;
-  /** 左下角字幕·手写体日期行（DOM 叠加，不烧进视频） */
-  dateLabel: string;
-  /** 停留时长 ms（与视频实际时长一致，poster 降级时用它定时切拍） */
-  durationMs: number;
-}
+/** OP 画面段时长（秒）：到点即收束进标题屏（视频本身恰为 84s，ended 事件兜底） */
+export const OP_PICTURE_END = 84;
 
-export const INTRO_CLIPS: IntroClip[] = [
-  { key: 'may',    base: 'intro_01_may',    dateLabel: '五月二十日',   durationMs: 5100 },
-  { key: 'spring', base: 'intro_02_spring', dateLabel: '春 · 相遇',    durationMs: 5000 },
-  { key: 'summer', base: 'intro_03_summer', dateLabel: '夏 · 海边',    durationMs: 6000 },
-  { key: 'winter', base: 'intro_04_winter', dateLabel: '十二月二十四日', durationMs: 5100 },
-  { key: 'heal',   base: 'intro_05_heal',   dateLabel: '冬末',         durationMs: 5000 },
-  { key: 'grad',   base: 'intro_06_grad',   dateLabel: '春 · 卒業',    durationMs: 6000 },
-];
+export const OP_DESKTOP_BASE = 'op_desktop';
+export const OP_MOBILE_BASE = 'op_mobile';
 
 export const TITLE_LOOP_BASE = 'title_sakura_loop';
 export const TITLE_LOOP = TITLE_LOOP_BASE;
@@ -30,13 +18,22 @@ function assetUrl(file: string): string {
   return `${ASSET_BASE}/${file}?v=${ASSET_VERSION}`;
 }
 
-export function clipVideoUrl(clip: IntroClip): string {
-  return assetUrl(`${clip.base}.mp4`);
+/** 竖屏视口用移动版（1080×1920），其余用桌面 16:9 版；node 测试环境无 window，默认桌面版 */
+export function isPortraitViewport(): boolean {
+  return typeof window !== 'undefined' && window.innerHeight > window.innerWidth;
 }
 
-/** 首帧静态图：兼作 video poster 与降级图 */
-export function clipPosterUrl(clip: IntroClip): string {
-  return assetUrl(`${clip.base}.webp`);
+export function opVideoBase(): string {
+  return isPortraitViewport() ? OP_MOBILE_BASE : OP_DESKTOP_BASE;
+}
+
+export function opVideoUrl(): string {
+  return assetUrl(`${opVideoBase()}.mp4`);
+}
+
+/** OP 首帧静态图：作 video poster，加载期占位避免黑屏 */
+export function opPosterUrl(): string {
+  return assetUrl(`${opVideoBase()}.webp`);
 }
 
 export function titleLoopVideoUrl(): string {
@@ -48,24 +45,13 @@ export function titleLoopPosterUrl(): string {
   return assetUrl('bg_sakura.webp');
 }
 
-/** 启动门等待期间预载：第 1 拍视频 + 标题屏循环（其余各拍播放中后台预取） */
+/** 启动门等待期间预载：OP 视频 + 标题屏循环 */
 export function preloadOpeningAssets(): void {
-  for (const src of [clipVideoUrl(INTRO_CLIPS[0]), titleLoopVideoUrl()]) {
+  for (const src of [opVideoUrl(), titleLoopVideoUrl()]) {
     const video = document.createElement('video');
     video.preload = 'auto';
     video.muted = true;
     video.src = src;
     video.load();
   }
-}
-
-/** 播放中预取下一拍（浏览器按缓存策略处理，重复调用无害） */
-export function prefetchClip(index: number): void {
-  const clip = INTRO_CLIPS[index];
-  if (!clip) return;
-  const video = document.createElement('video');
-  video.preload = 'auto';
-  video.muted = true;
-  video.src = clipVideoUrl(clip);
-  video.load();
 }

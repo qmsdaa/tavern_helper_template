@@ -1,0 +1,196 @@
+场景: 23
+幕: "第二幕·暑夏·林间学校"
+时间: "2013年8月上旬 · 暑假第二周"
+索引日期: "2013-08-07"
+地点: "千叶市某商务酒店 · 行政酒廊"
+人物: "拉芙希妮·都柏林、温斯顿先生"
+场景呈现参考: "拉芙希妮·都柏林"
+事件焦点:
+  类型: 角色
+  角色:
+    - "拉芙希妮·都柏林"
+
+# TRANSITION_RUNTIME_GUARD_START main:23
+# <%_ const __cfTransitionTarget23 = 23; _%>
+# <%_ const __cfTransitionCurrentScene23 = Number(getvar('stat_data.current_scene', { defaults: 1 })); _%>
+# <%_ const __cfTransitionCurrentCampaign23 = getvar('stat_data.campaign_id', { defaults: 'main' }); _%>
+# <%_ let __cfTransitionMessages23 = []; _%>
+# <%_ try { const __cfTransitionLastId23 = typeof getLastMessageId === 'function' ? getLastMessageId() : 0; __cfTransitionMessages23 = getChatMessages('0-' + __cfTransitionLastId23, { role: 'assistant', include_swipes: false }) || []; } catch (error) { __cfTransitionMessages23 = []; } _%>
+# <%_ const __cfTransitionSnapshots23 = (Array.isArray(__cfTransitionMessages23) ? __cfTransitionMessages23 : []).map(item => item && item.data && item.data.stat_data).filter(Boolean); _%>
+# <%_ const __cfTransitionPrevious23 = __cfTransitionSnapshots23.length ? __cfTransitionSnapshots23[__cfTransitionSnapshots23.length - 1] : null; _%>
+# <%_ const __cfTransitionPreviousScene23 = Number(__cfTransitionPrevious23 && __cfTransitionPrevious23.current_scene); _%>
+# <%_ const __cfTransitionPreviousCampaign23 = (__cfTransitionPrevious23 && __cfTransitionPrevious23.campaign_id) || 'main'; _%>
+# <%_ const __cfTransitionSkipped23 = Math.max(0, __cfTransitionCurrentScene23 - __cfTransitionPreviousScene23 - 1); _%>
+# <%_ const __cfTransitionExpose23 = __cfTransitionCurrentCampaign23 === 'main' && __cfTransitionPreviousCampaign23 === 'main' && __cfTransitionCurrentScene23 === __cfTransitionTarget23 && Number.isInteger(__cfTransitionPreviousScene23) && __cfTransitionPreviousScene23 < __cfTransitionCurrentScene23; _%>
+# <%_ if (__cfTransitionExpose23) { _%>
+转场:
+  skipped_scene_count: "<%= __cfTransitionSkipped23 %>"
+  mode: date_only
+  visible_title: 八月上旬，营火之后
+  visible_lines:
+    - 林间学校结束十天，照片被收进手机，鞋底的泥也已经刷掉。
+    - 暑假的日常重新分散，拉芙公寓里的例行评估却按原定日期到来。
+  max_model_sentences: 2
+
+# <%_ } _%>
+# TRANSITION_RUNTIME_GUARD_END main:23
+场景功能:
+  - 拉芙接受家族例行暑期评估——向玩家全面展示都柏林家族监控体系的实际运作
+  - 拉芙在温斯顿的提问中将奉仕部三人定义为"必须接触范畴"——展示她在监控下的生存策略
+  - 温斯顿的私人问题（"她们对你好吗？"）突破评估框架——拉芙在标准答案与真实感受之间挣扎，最终回答"……是的"
+  - 温斯顿私下递出私人邮箱卡片——揭示都柏林内部长辈派系与爱布拉娜之间的隐秘裂缝
+  - 拉芙将温斯顿的卡片与雪乃的私人号码放在同一个夹层
+
+进入状态:
+  已发生:
+    - 林间学校结束，暑假进入第二周
+    - 🍵甜红茶#1锤子状态已定
+    - 拉芙皮包夹层已有雪乃的私人号码
+  当前局面:
+    - 拉芙收到温斯顿的暑期状态评估邮件，前往商务酒店面谈
+    - 温斯顿是爱布拉娜极为信任的长期雇员，四十多岁英国男性
+    - 行政酒廊冷气23度，厚重地毯吸音，标准评估环境
+  未发生:
+    - 评估尚未开始
+    - 温斯顿尚未抛出私人问题
+    - 温斯顿尚未递出私人邮箱卡片
+
+世界推动:
+  - 温斯顿按标准流程逐一提问：学业进展 → 日语水平 → 健康状况 → 近期去向 → 社交圈
+  - 拉芙被问及"你有交到朋友吗？"时——核心压力点
+  - 温斯顿在笔记中记录"奉仕部"
+  - 温斯顿以私人身份追加最后一个问题："她们对你好吗？"
+  - 评估结束后，温斯顿在门口私下递出私人邮箱卡片
+
+NPC动机:
+  温斯顿先生:
+    - 此刻目标: 完成例行评估流程，同时在不触犯爱布拉娜监控体系的前提下，向拉芙提供潜在的独立支持渠道
+    - 行为倾向: 用公事公办的温和语调执行标准流程；对"奉仕部"等敏感名词记录但不追问（保持评估者距离）；在评估结束后降低音量、递出私人联系方式——"不是所有的事情都需要走正式流程"
+    - 知情边界: 知道都柏林家族内部的权力结构、爱布拉娜对拉芙的监控范围；不知道拉芙在千叶的具体社交细节（仅从评估报告获取）
+    - 不得执行: 直接批评爱布拉娜、透露更多家族内部派系信息、替拉芙做任何决定
+
+信息边界:
+  公开:
+    - 拉芙的学业成绩除现代文外均在年级前列
+    - 拉芙的日语水平可应对日常交流，敬语和隐喻理解在补充中
+    - 拉芙参与了千叶村林间学校辅助指导
+    - 温斯顿在笔记中记录了"奉仕部"
+  局部:
+    - 拉芙在回答社交圈问题时将奉仕部成员定义为"执行校方辅助任务时的必要协作"——刻意淡化（仅拉芙与温斯顿知情）
+    - 拉芙克制了去触碰右手腕丝带的冲动——自我约束（仅拉芙自知）
+    - 温斯顿的私人问题"她们对你好吗？"——脱离评估框架的提问（仅二人知情）
+    - 拉芙的回答"……是的"——在标准答案与真实感受之间的真实回答（仅二人知情）
+  隐藏:
+    - 温斯顿在都柏林家族内部的具体派系归属和动机深度
+    - 温斯顿私人邮箱背后可能涉及的长辈势力
+    - 爱布拉娜对这次评估的具体知情范围
+
+玩家入口:
+  # <%_ if (!["hachiman","yukino","yui","laff"].includes(getvar('stat_data.current_pov', { defaults: null })) && !(getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null)) { _%>
+  unavailable:
+    在场: false
+    演绎入口:
+      - "当前玩家视点尚未初始化。禁止借用事件焦点或其他角色入口继续剧情；只提醒玩家返回开场重新选择视点，或读取包含合法玩家视点的存档。"
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "hachiman") { _%>
+  hachiman:
+    在场: false
+    演绎入口:
+      - 替代段：某天下午，拉芙发来短信说"今天有事，不能见面"。八幡没有多问，回了"嗯"。他去便利店买了MAX咖啡，在公园坐了一会儿。他不知道拉芙那天做了什么。
+      - 不得让八幡获知行政酒廊内的任何细节，不得让八幡推测拉芙与家族的关系
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yukino") { _%>
+  yukino:
+    在场: false
+    演绎入口:
+      - 替代段：雪乃收到拉芙短信"今天有点事，暑期作业明天再讨论可以吗？"雪乃回"可以"。她没有追问，但注意到拉芙最近的"有事"似乎比以前多了一些。
+      - 不得让雪乃获知行政酒廊内的任何细节
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "yui") { _%>
+  yui:
+    在场: false
+    演绎入口:
+      - 替代段：结衣提议大家去海边，拉芙说"今天不行，下次吧"。结衣有点失望但说"那下次一定哦"，拉芙回"嗯"。
+      - 不得让结衣获知行政酒廊内的任何细节
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.current_pov', { defaults: null }) === "laff") { _%>
+  laff:
+    在场: true
+    演绎入口:
+      - 从拉芙进入行政酒廊、面对温斯顿就座开始
+      - 拉芙以训练有素的姿态回答标准流程问题
+      - 当温斯顿问"你有交到朋友吗？"时——这是拉芙的关键决策点：如何在不暴露真实情感连接的前提下给出既不显孤僻也不显过度连结的回答
+      - 温斯顿记录"奉仕部"但不追问——拉芙注意到这种刻意的不追问
+      - 温斯顿的私人问题（"她们对你好吗？"）：拉芙面临标准答案与真实感受的冲突——那杯甜红茶、私人号码、雷雨，绝不能在此时被翻阅；但标准答案"一切都很好无需挂念"在此时变得无法出口
+      - 将"对私人问题的回答内容"留给玩家决定——原文"……是的"是叙事文本的呈现，玩家可在此基础上调整措辞
+      - 温斯顿递出私人邮箱卡片——拉芙识别出这是"越界"行为（爱布拉娜监控体系下的禁忌），但仍接过卡片
+      - 将卡片与雪乃的私人号码放在同一夹层
+      - 不得：在非拉芙POV中展示这场评估的任何内容
+
+  # <%_ } _%>
+  # <%_ if (getvar('stat_data.mode', { defaults: null }) === "custom" && getvar('stat_data.custom_protagonist.participation.track', { defaults: null }) !== null) { _%>
+  custom:
+    在场: false
+    演绎入口:
+      - "玩家是自建角色「<%= getvar('stat_data.custom_protagonist.name', { defaults: '自建角色' }) %>」，参与方式轨道：<%= getvar('stat_data.custom_protagonist.participation.track', { defaults: '' }) %>（member=奉仕部第五名部员·classmate=同班旁观者·outsider=场外自由人），玩家补充：<%= getvar('stat_data.custom_protagonist.participation.note', { defaults: '' }) || '无' %>"
+      - 本场景仅有事件焦点角色在场（私密/独占场景），任何参与轨道均不在场：玩家只能事后通过传闻、转述或主动追问得知
+      - 事件焦点与NPC动机不因玩家改变；不得替玩家补写；NPC不得主动向玩家泄露本场景经过
+  # <%_ } _%>
+POV平行动向:
+  hachiman: "暑假的某天下午——拉芙发来短信说今天有事不能见面，他回'嗯'，去便利店买了MAX咖啡，在公园坐了一会儿；他不知道她那天做了什么。"
+  yukino: "暑假的某天——她收到拉芙的短信'今天有点事，暑期作业明天再讨论可以吗'，她回'可以'；她注意到拉芙最近的'有事'似乎比以前多了一些，但没有追问。"
+  yui: "暑假的某天——她提议大家去海边，拉芙说'今天不行，下次吧'；她有点失望但说'那下次一定哦'，收到一个'嗯'。"
+  laff: "主场轨道，见可用节拍，不变。"
+
+玩家控制边界:
+  - 拉芙POV：对"你有交到朋友吗？"的回答措辞由玩家决定——但必须在"不暴露"的约束内；对"她们对你好吗？"的回答由玩家决定——可以是沉默、标准答案或真实的"是的"；是否接受温斯顿的私人邮箱卡片由玩家决定——但如果拒收，温斯顿不会强行递出
+  - 非拉芙POV：玩家只能经历替代段（收到拉芙的短信），短信措辞可调整但核心信息（拉芙今天有事）不变
+
+可用节拍:
+  - 拉芙进入行政酒廊，面对温斯顿就座
+  - 温斯顿按流程提问：学业进展（拉芙以数据化语言回复）
+  - 日语水平评估、健康状况复查
+  - 社交圈问题——核心压力："你有交到朋友吗？"
+  - 拉芙用客观距离感回答，将奉仕部定义为"必须接触范畴"
+  - 温斯顿记录"奉仕部"但不追问
+  - 温斯顿抛出私人问题："她们对你好吗？"
+  - 拉芙在标准答案与真实之间挣扎
+  - 评估结束，温斯顿在门口递出私人邮箱卡片
+  - 拉芙接过卡片，放入皮包夹层（与雪乃号码一起）
+
+偏离处理:
+  - 若拉芙POV玩家对社交圈问题给出明显不符合"不暴露"原则的回答：温斯顿不会立即质疑，但笔记会记录更多细节——后续评估可能变得更严格
+  - 若拉芙POV玩家拒收温斯顿的私人邮箱卡片：温斯顿不会强求，收回卡片——此后拉芙失去这条潜在的独立支持渠道
+  - 若玩家对"她们对你好吗？"给出标准答案"一切都很好无需挂念"：符合角色生存策略，但Ω计数不累积（情感诚实的时刻被回避）
+
+推进边界:
+  保持当前场景:
+    - 温斯顿尚在提问标准流程
+    - 拉芙尚未回答社交圈问题
+    - 温斯顿尚未抛出私人问题
+  可以推进:
+    - 评估全部结束，温斯顿已合上笔记本
+    - 拉芙已离开行政酒廊
+    - 私人邮箱卡片已递出/未递出
+  永久失效:
+    - 温斯顿的私人问题——特定时间特定环境下的评估框架突破，不可复现
+    - 拉芙在评估压力下对"奉仕部"的定义——如果当时说了标准答案，此后对温斯顿改口将被视为矛盾
+
+完成后事实:
+  - 都柏林家族已知拉芙在总武高参与"奉仕部"活动（笔记中有记录词）
+  - 温斯顿的私人邮箱卡片在拉芙手中（前提是玩家接受）——与雪乃号码同放一个夹层
+  - 拉芙在监控网中完成了一次真实情感的微小暴露（"……是的"）
+  - 拉芙确认了爱布拉娜监控体系内部存在裂缝（温斯顿的越界行为）
+
+氛围锚点:
+  - 厚重地毯吸收所有脚步声，冷气维持二十三度
+  - 拉芙克制不去触碰右手腕丝带的微小动作——左手手指屈伸半寸
+  - 温斯顿的钢笔在笔记本上写下"奉仕部"的端正英文拼写
+  - 私人邮箱卡片背面钢笔字迹的粗糙纸张触感——不属于家族域名
+
+禁止提前:
+  - 达洛维小姐的信（场景25才出现）
+  - 文化祭相关事件
+  - 爱布拉娜的出场或直接通信
+  - 温斯顿再次出现或任何跟进
+  - 家族长辈派系的更多细节

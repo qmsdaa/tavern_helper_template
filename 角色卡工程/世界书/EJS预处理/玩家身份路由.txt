@@ -8,6 +8,7 @@ const customPlayer = getvar('stat_data.custom_protagonist', { defaults: null });
 const playerIdentityState = getvar('stat_data.identity_state', { defaults: null });
 const playerPovNames = {
   hachiman: '比企谷八幡',
+  hachiman_f: '比企谷八幡（性转）',
   yukino: '雪之下雪乃',
   yui: '由比滨结衣',
   laff: '拉芙希妮·都柏林',
@@ -30,13 +31,29 @@ _%>
 叙事镜头、第一人称与可写内心只属于玩家视点；场景资料、事件焦点、身体外观与旁人判断均不得改写本项。
 </player_viewpoint>
 <%_ } _%>
-<%_ if (playerCampaign === 'dlc_genderbend_hachiman' && playerPov === 'hachiman') { _%>
+<%_ if (playerCampaign === 'dlc_genderbend_hachiman' && playerPov === 'hachiman_f') { _%>
 <player_identity>
 战役: 《错位的日常》·开放世界
-稳定本人: <user>始终是比企谷八幡；记忆、法律身份、既有关系与责任均连续，外观呈女性化不创建第二个八幡
-身体与公开身份: 当前身体仍属于比企谷八幡，presentation=female；旁人是否理解变化只取决于 disclosure 中已经发生的观察与告知
+稳定本人: <user>始终是比企谷八幡（性转）；她是本 DLC 独有的独立角色（区别于主线的男性比企谷八幡），记忆、法律身份、既有关系与责任均连续
+身体与公开身份: 当前身体为女性形态（presentation=female）；旁人是否理解/相信变化只取决于 disclosure 中已经发生的观察与告知
 人称与内心: 用八幡的第一人称与干瘪吐槽书写已发生之事的感受，但不替玩家决定遮掩、公开、调查、求医、上学或如何自称
 演绎边界: 身体细节只在当下行动确实触及时出现；原因调查完全由玩家主动选择，不自动生成治愈任务、公共危机或结局倒计时
+</player_identity>
+<%_ } else if (playerCampaign === 'dlc_genderbend_hachiman' && viewpointName) { _%>
+<player_identity>
+战役: 《错位的日常》·开放世界
+稳定本人: <user>始终是<%- viewpointName %>；本世界的比企谷八幡以女性形态「比企谷八幡（性转）」存在（DLC 专属独立角色）
+世界内玩家身份: <user>就是<%- viewpointName %>，是错位世界里的居民；八幡（性转）是事件中心 NPC，玩家可能认识他、卷入他的状况或保持旁观
+人称与内心: 第一人称；只写玩家视点可知的观察与内心，其余角色只呈现外部言行
+叙事分工: 不替玩家补写尚未表达的关键台词、行动或关系决定；与八幡（性转）的互动按实际观察与告知更新认知
+</player_identity>
+<%_ } else if (playerCampaign === 'dlc_genderbend_hachiman' && customPlayer) { _%>
+<player_identity>
+战役: 《错位的日常》·开放世界
+世界内玩家身份: <user>就是自建角色“<%- String(customPlayer.name || '未命名角色') %>”
+设定来源: 完整角色资料以开局提交与 custom_protagonist 变量为准；酒馆 user/persona 名称不得被解释为另一个世界内角色
+人称与内心: 用该自建角色的第一人称；其余角色只写可被观察的外部言行
+叙事分工: 不替玩家补写尚未表达的关键台词、行动与决定；本世界的比企谷八幡以女性形态「比企谷八幡（性转）」存在，玩家可接近、卷入或旁观
 </player_identity>
 <%_ } else if (playerCampaign === 'dlc_body_swap_mrs_yukinoshita' && viewpointName) { _%>
 <player_identity>

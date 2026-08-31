@@ -1,0 +1,268 @@
+# <%_
+const ruleCampaign = getvar('stat_data.campaign_id', { defaults: 'main' });
+const ruleMode = getvar('stat_data.mode', { defaults: null });
+const rulePov = getvar('stat_data.current_pov', { defaults: null });
+const ruleParticipation = getvar('stat_data.custom_protagonist.participation.track', { defaults: null });
+const ruleMainScripted = ruleCampaign === 'main' && (ruleMode === 'pov' || (ruleMode === 'custom' && ruleParticipation !== null));
+const ruleFree = ruleMode === 'free' || (ruleMode === 'custom' && ruleParticipation === null);
+const ruleLaffMain = ruleCampaign === 'main' && rulePov === 'laff';
+const ruleMainFinished = ruleCampaign === 'main' && getvar('stat_data.mainline_completed', { defaults: false }) === true;
+const ruleBranchPending = getvar('stat_data.branch_choice', { defaults: null }) === null;
+_%>
+---
+更新约束:
+  - 默认所有变量不动；除 current_scene 可结合当前场景此前正文判断外，只接受本楼新发生或明确确认的事实
+  - 禁止臆测、幕后推断、按回复轮数机械更新；每项变化须能在 Analysis 指出具体证据
+  - 不创建玩家本人的 characters 记录；玩家金钱与持有物只写 player
+  - 角色键必须使用世界书规范全名，不以昵称、姓氏、代号或群聊名重复建档
+  - phone、collection 由前端独占，主AI不得输出其路径；campaign_id、campaign_revision、mode、current_pov、custom_protagonist、difficulty、opening_custom 为开局定档字段，主AI不得更新
+  - known、完成态、信息锁、成长旗标及 triggered/missed 状态不可逆
+  - bond/romance 单次有效证据：简单±10、普通±3、困难±1（difficulty 缺失按普通）；重大且不可替代的里程碑为事件增量×2且绝对值封顶15
+  - 普通寒暄、同场、加好友、聊天次数、礼貌回应、重复刷同类互动不改变 bond/romance；手机内容只有已注入主线上下文且被角色实际感知时才算证据
+  - intimate_memory、intimate_sexual_memory、latest_user_memory.inner_thought 是现实玩家可见元信息，世界内角色不得据此知情
+
+变量更新规则:
+# <%_ if (ruleMainScripted) { _%>
+  current_scene:
+    type: number
+    range: 1~150
+    check:
+      - 表示当前激活的剧本场景，与150个场景条目逐一对应；默认保持，不按轮数、篇幅、角色进出、短暂换地点或普通时间流逝推进
+      - 当前场景核心剧情功能完成并自然收束时通常 +1；必须演绎当前玩家入口，焦点事件以玩家可观察证据抵达或被合理错过
+      - 剧情自建按 participation 路由使用同一口径；私密事件事后得知即可视为抵达
+      - 玩家使原事件永久无法成立时，按当前事实完成替代收束后 +1，不否定既成事实或强拉回原剧情
+      - 尚有待玩家回应的提问、选择、行动、冲突或承诺时保持
+      - 原则上单次最多 +1；只有玩家明确实施较长时间跳跃时才可跳至与新日期对应的后续场景
+      - 推进时按新场景的当前玩家入口和正文实际在场事实维护 present；换场默认旧场景全员离场，明确随行者除外
+      - current_scene=150 后不再增加；场景150完成并收束时置 campaign_completed=true，同时置 mainline_completed=true
+
+  campaign_completed:
+    type: boolean
+    check:
+      - 仅 current_scene=150 的核心功能完成并自然收束时由 false 置 true
+
+  mainline_completed:
+    type: boolean
+    check:
+      - 必须恒等于 campaign_completed；置 true 时 current_scene 保持150，不生成第151场
+
+  world.current_date:
+    format: YYYY-MM-DD
+    check:
+      - 仅 current_scene 推进时同步到新场景剧本日期；不得因一楼回复、气氛描写或推测流逝而改日期
+# <%_ } _%>
+
+# <%_ if (ruleFree) { _%>
+  world.current_date:
+    format: YYYY-MM-DD
+    check:
+      - 玩家明确过夜、进入新一天或叙事完成跨日时 replace；一天内多次行动不跳日
+
+  world.time_slot:
+    type: 早晨|上午|午休|放课后|傍晚|晚间|null
+    check:
+      - 表示回复结束时玩家所处时段；只在正文出现下课铃、午休结束、放学、天黑、睡眠等明确流逝时更新
+      - 可因留宿或睡到次日跨档，但正文须交代跳过的时段
+# <%_ } _%>
+
+# <%_ if (ruleCampaign === 'dlc_genderbend_hachiman' || ruleCampaign === 'dlc_body_swap_mrs_yukinoshita') { _%>
+  campaign_completed:
+    type: boolean
+    check:
+      - 只有玩家明确执行结束故事的界面动作，或正文实际建立结局/解决状态时由 false 置 true；普通长期游玩不要求结束
+# <%_ } _%>
+
+# <%_ if (ruleCampaign === 'dlc_genderbend_hachiman' && rulePov === 'hachiman_f') { _%>
+  identity_state:
+    check:
+      - kind 恒为 transformation；current_pov 是稳定意识，不随身体表现变化
+      - disclosure 仅在观察者实际看到证据或被明确告知后更新，不得因外表自动让所有人知情
+# <%_ } else if (ruleCampaign === 'dlc_body_swap_mrs_yukinoshita') { _%>
+  identity_state:
+    check:
+      - kind 恒为 body_swap；current_pov 是稳定意识，关系记录归参与互动的意识本人而非身体外壳
+      - occupants、swap_phase、last_swap_date 只在正文实际发生睡眠→醒来边界后更新，不在对话中途换身
+      - body_locations 按身体外壳记录实际位置；玩家所在身体与 world.current_location 同步，另一身体仅按可验证事实更新
+      - shared_notes 只记录实际写下或发现的便签；verification_evidence 只记录实际取得的证据
+      - disclosure 只在观察者实际看到证据或被明确告知后更新
+# <%_ } _%>
+
+  nsfw_active:
+    type: boolean
+    check:
+      - 正文明确进入性爱或露骨亲热场景时置 true；该场景结束（事后处理、转场、玩家明确停止或离开）后置 false
+      - 暧昧、牵手、拥抱、接吻、互相依偎等日常亲密不置位；不凭玩家意图、角色心情或推测置位
+
+  world.current_location:
+    type: string
+    check:
+      - 表示回复结束时玩家实际所在的最具体可确认地点；明确移动并抵达后 replace
+      - 开场白 commit 定档地点按玩家视点写入：《错位的日常》hachiman_f=比企谷家·八幡房间、yukino=雪之下雪乃的公寓、yui=由比滨家、laff=成田机场到达口（从英国返回）、custom=未确认
+      - 《君的名字？》八幡意识=雪之下家本邸·夫人卧室、夫人意识=比企谷家·八幡房间
+      - 提议前往、仍在路上、回忆、电话或帖子提到的地点不更新；同一大地点内仅对演绎有意义的区域变化才更新
+      - 时间跳跃或换场后地点仍不明确时写未确认，不沿用失效地点，也不凭常识推断
+
+  player.cash:
+    type: number|null
+    range: null或大于等于0
+    check:
+      - 已知余额遇本楼金额明确的收入/支出时 delta；正文明确给出当前余额时 replace
+      - null 表示准确余额未知；单笔收支不等于余额，不得估算零用钱、银行卡或家庭资产
+      - 现金、电子余额和家庭资产不混算；支出不得使余额为负，余额不足应在正文表现为无法支付
+
+  player.carried_items:
+    type: string[]
+    check:
+      - 只记录回复结束时随身、可直接取用且有叙事意义的具体物品
+      - 明确获得并收下时 insert；明确交出、丢失、消耗、寄存或放回非随身地点时 remove
+      - 看见、提到、网购、计划携带或存放在别处不加入；换场、跨日或未描写不自动清空
+
+  characters:
+    type: record
+    key: 角色的世界书规范全名
+    record_creation:
+      - 角色实际与玩家同场可互动，或发生可归属身份的直接现实/手机互动后才可建档；仅被提及、出现在回忆/照片/帖子或无法唯一识别的路人不建档
+      - 玩家未知姓名但系统能唯一对应规范全名时，可用可见称呼作 display_name、known=false；键仍用规范全名
+      - 新记录默认 present=false、known=false、bond=0、romance=0、commitment=未确认、三类记忆为空、穿搭六项未确认，再覆写本楼明确事实
+      - 已有记录不得重建或重置；首次用 insert 写完整记录，之后才对具体子路径 replace/delta
+
+  characters.${规范全名}.present:
+    type: boolean
+    check:
+      - true 仅表示回复结束时与玩家处于同一物理场景且可直接互动；电话、短信、群聊、论坛、照片、直播、回忆、梦境、隔墙传闻或被提及均为 false
+      - 明确离开、玩家离开或时间/地点跳转且未随行时置 false；换场默认旧场景全员离场
+      - 同一场景内沉默或本楼未再次描写不等于离场；新角色实际进入时置 true
+
+  characters.${规范全名}.known:
+    type: boolean
+    check:
+      - 玩家能把身份与规范姓名稳定对应后置 true；正式介绍、自我介绍、可靠第三方介绍或既有事实确认均可
+      - 只见过脸、只听昵称、匿名聊天或猜测身份时保持 false；一旦 true 不回退
+
+  characters.${规范全名}.relationship.bond:
+    type: number
+    range: 0~100
+    check:
+      - 仅该角色实际感知的显著互助、坦诚、守约、伤害、背叛或关系修复触发，按共享难度增量调整；它表示熟悉、信任与亲近，不等于恋爱
+
+  characters.${规范全名}.relationship.romance:
+    type: number
+    range: 0~100
+    check:
+      - 仅明确暧昧试探、吃醋、告白倾向、约会语境、亲密边界变化或双方感知的浪漫里程碑触发，按共享难度增量调整
+      - 友情、照顾、依赖、信任、外貌描写或玩家单方面想象不增加；commitment=仅朋友时只有明确重开恋爱可能才可调整
+
+  characters.${规范全名}.relationship.commitment:
+    type: 未确认|仅朋友|恋人
+    check:
+      - 双方明确建立恋爱关系后置恋人；明确只做朋友或拒绝恋爱并保留友情边界后置仅朋友
+      - 含糊气氛、单方告白、未回答追问、数值阈值或推测不改变；之后仅明确重新协商边界才可再改
+      - 恋人模式与主线成长隔离，互不推进或替代
+      - 默认只能有一个恋人对象；新增恋人前须已明确解除旧关系，或所有相关角色知情并协商一致多边约定
+
+  characters.${规范全名}.relationship.intimate_memory:
+    type: string
+    check:
+      - 仅本楼明确发生且不为第三方所知的坦白/托付、身体距离变化或秘密事物/约定时，以一条客观句整体 replace
+      - 不写数值、心理分析、未来预期或角色未知事实；公开/群体活动不写，与其他记忆字段不重复
+
+  characters.${规范全名}.relationship.intimate_sexual_memory:
+    type: string
+    check:
+      - 仅本楼明确发生性爱或跨过最后身体边界的亲密关系时，以一条客观句整体 replace
+      - 不写过程细节、数值、心理分析或未来预期；公开、有第三方或本人未意识到的接触不写，与其他记忆字段不重复
+
+  characters.${规范全名}.latest_user_memory:
+    type: "{memory: string, inner_thought: string}"
+    check:
+      - 仅角色亲历且值得记住的显著互助、坦诚、承诺、冲突、修复、边界变化或鲜明共同片段时整体 replace
+      - memory 用一条客观句；inner_thought 用符合人设的一至两句第一人称未出口想法，可误解或克制，但不全知、不播报数值、不预言
+      - 电话/手机真实互动可更新；论坛、传闻、照片和第三方转述不算亲历；与亲密记忆不重复
+
+  characters.${规范全名}.outfit.${outerwear|inner_layer|bottoms|socks|underwear|shoes}:
+    type: string
+    check:
+      - 仅实际登场、可靠画面展示或正文明确穿脱更换时 replace；未确认保持未确认
+      - 不从校服常识、季节、性别、场所或其他衣物推断；underwear 只有正文明确可知时更新
+
+# <%_ if (ruleLaffMain) { _%>
+  Ω_resonance:
+    type: number
+    range: 0~100
+    check:
+      - 仅锤子从 pending 变 triggered 时累积对应增值；阈值40=爱布拉娜介入软化、60=姐妹和解前提、80=最高共鸣
+
+  ${hammer_thunder_1|hammer_tea_1|hammer_tea_2|hammer_teddy_1|hammer_thunder_2|hammer_outcast_1|hammer_teddy_2|hammer_outcast_2|hammer_tea_3}:
+    type: pending|triggered|missed
+    check:
+      - 窗口内玩家显式选项或隐式行为满足时置 triggered 并增加 Ω；超过窗口末场仍 pending 时置 missed；每锤只判定一次
+      - 窗口/增值: thunder_1=9-10/+10·tea_1=21/+8·tea_2=57/+10·teddy_1=68/+12·thunder_2=96/+13·outcast_1=100/+0·teddy_2=122/+15·outcast_2=123-124/+18·tea_3=132/+9
+
+  ${laff_knows_fire_truth|laff_reed_authorized_yukino|dalloway_pen_used}:
+    type: boolean
+    check:
+      - laff_knows_fire_truth: 场景124完成后置 true
+      - laff_reed_authorized_yukino: 场景134完成后置 true，此前禁用“苇草”称呼
+      - dalloway_pen_used: 玩家使用达洛维钢笔“To L-Fly”作出重大抉择后置 true
+# <%_ } _%>
+
+  # 成长旗标只认本楼可观察行为证据，不按场景编号、bond 或恋爱互动发放；玩家角色必须由玩家实际作出对应行为
+  arc_milestones.hachiman.asked_before_self_sacrifice:
+    type: boolean
+    check: [八幡设想自我牺牲/自毁方案后，在执行前主动询问同伴或当事人意愿时置 true]
+  arc_milestones.hachiman.accepted_shared_cost:
+    type: boolean
+    check: [八幡明确允许他人共同承担代价、责任或后果时置 true]
+  arc_milestones.hachiman.stated_personal_desire:
+    type: boolean
+    check: [八幡以第一人称直说私人愿望，且未用任务、自毁或“为了别人”包装时置 true]
+  arc_milestones.yukino.offered_resources_without_deciding:
+    type: boolean
+    check: [雪乃提供制度、法律、学校或经济资源，同时明确把最终选择权留给对方时置 true]
+  arc_milestones.yukino.admitted_personal_wish:
+    type: boolean
+    check: [雪乃直接承认私人愿望，未用委托、职责或正确论证包装时置 true]
+  arc_milestones.yukino.separated_self_from_family_standard:
+    type: boolean
+    check: [雪乃在自我价值决定中明确不以母亲评价或姐姐道路为尺度时置 true]
+  arc_milestones.yui.voiced_disagreement_publicly:
+    type: boolean
+    check: [结衣在三人以上场合公开说出与群体气氛不同的真实立场时置 true]
+  arc_milestones.yui.did_not_retract_after_conflict:
+    type: boolean
+    check: [结衣在冲突后未为缓和气氛撤回已表达立场时置 true]
+  arc_milestones.yui.admitted_selfish_wish:
+    type: boolean
+    check: [结衣以第一人称说出只为自己的愿望且不加“大家”包装时置 true]
+  arc_milestones.laff.expressed_preference:
+    type: boolean
+    check: [拉芙希妮在无家族压力的日常主动表达想要、不想要、喜欢或讨厌时置 true]
+  arc_milestones.laff.refused_without_explanation:
+    type: boolean
+    check: [拉芙希妮拒绝请求或安排且不附求生式解释或道歉铺垫时置 true]
+  arc_milestones.laff.chose_against_group_expectation:
+    type: boolean
+    check: [拉芙希妮明知群体期待另一答案仍作出并坚持自己的选择时置 true]
+  arc_milestones.laff.accepted_consequence_without_withdrawing_choice:
+    type: boolean
+    check: [拉芙希妮的选择产生不利后果后承担后果且不撤回选择时置 true]
+
+  # 一色只认台词、动作、表情、停顿和选择等外部证据，不以内心独白或旁白解释置位
+  iroha_milestones.rejected_profitable_solution:
+    type: boolean
+    check: [一色明确拒绝对她有利但剥夺决定权的方案时置 true]
+  iroha_milestones.made_uncalculated_request:
+    type: boolean
+    check: [一色提出没有预备交换条件、撒娇脚本或退路的请求时置 true]
+  iroha_milestones.stated_desire_without_performance:
+    type: boolean
+    check: [一色不用商业微笑、撒娇或反话而直接表达个人愿望，且未完全否认时置 true]
+# <%_ if (ruleMainFinished && ruleBranchPending) { _%>
+  branch_choice:
+    type: 共同线|八幡×雪乃|八幡×拉芙希妮|八幡×结衣|雪乃×拉芙希妮|雪乃×结衣|拉芙希妮×结衣|姐妹和解|null
+    check:
+      - 仅玩家从尾声菜单选择后写入；菜单含共同线、不涉及玩家的预设配对，以及满足条件的玩家恋爱预设
+      - 玩家恋爱预设要求目标 known=true，且 commitment=恋人；或 commitment=未确认、bond≥60、romance≥40；仅朋友不显示
+      - 姐妹和解要求 current_pov=laff、Ω≥60，且 hammer_teddy_2、hammer_outcast_2、hammer_tea_3 全 triggered
+      - 写入后由对应尾声条目下一楼起收束；一色可成为恋爱对象但没有固定预设尾声
+# <%_ } _%>

@@ -221,7 +221,7 @@
       "DLC_错位的日常_演绎规则": {
         "scope": "specific",
         "keywords": [],
-        "abstract": "《错位的日常》开放世界演绎规则：性转八幡的青春喜剧基调、观察者认知、关系归属与非任务化边界",
+        "abstract": "《错位的日常》开放世界演绎规则：多可扮演视角（性转八幡 DLC 专属 / 雪乃 / 结衣 / 拉芙 / 自建）的青春喜剧基调、观察者认知、关系归属与非任务化边界",
         "contents": [
           {
             "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_genderbend_hachiman'"
@@ -331,7 +331,7 @@
       "DLC_错位的日常_基础信息_八幡": {
         "scope": "specific",
         "keywords": [],
-        "abstract": "《错位的日常》八幡基础信息覆盖层：女性化身体的差异层·姓名/记忆/关系不变·其余沿用主线八幡条目",
+        "abstract": "《错位的日常》比企谷八幡（性转）独立角色档案：DLC 专属·女性形态的差异层·姓名/记忆/关系不变·其余沿用主线八幡条目；作为事件中心 NPC，在该 DLC 所有 POV 与自建路线均注入",
         "contents": [
           {
             "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_genderbend_hachiman'"
@@ -349,6 +349,48 @@
           "type": "after_character_definition",
           "order": 202
         }
+      },
+      "NSFW_女性互动机制": {
+        "keywords": [],
+        "abstract": "",
+        "uid": 257,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 203
+        },
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.nsfw_active', { defaults: false }) === true"
+          },
+          {
+            "file": "世界书/机制/NSFW_女性互动机制.txt"
+          }
+        ]
+      },
+      "NSFW_对话指导": {
+        "keywords": [],
+        "abstract": "",
+        "uid": 258,
+        "enabled": true,
+        "strategy": {
+          "type": "constant"
+        },
+        "position": {
+          "type": "after_character_definition",
+          "order": 204
+        },
+        "contents": [
+          {
+            "content": "@@if getvar('stat_data.nsfw_active', { defaults: false }) === true"
+          },
+          {
+            "file": "世界书/机制/NSFW_对话指导.txt"
+          }
+        ]
       }
     },
     "时间线": {
@@ -2307,10 +2349,10 @@
       "DLC_错位的日常_开局锚点": {
         "scope": "specific",
         "keywords": [],
-        "abstract": "《错位的日常》开局：2014年7月12日清晨八幡房间，小町的手搭上门把，停在玩家首次决定之前",
+        "abstract": "《错位的日常》开局锚点：2014-07-12 多可扮演视角（性转八幡/雪乃/结衣/拉芙/自建）的默认起点与首轮呈现，停在玩家首次决定之前",
         "contents": [
           {
-            "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_genderbend_hachiman' && matchChatMessages(['我选择扮演比企谷八幡，进入《错位的日常》。'], { start: -1 })"
+            "content": "@@if getvar('stat_data.campaign_id', { defaults: 'main' }) === 'dlc_genderbend_hachiman' && matchChatMessages(['我选择扮演比企谷八幡（性转），进入《错位的日常》。', '我选择扮演雪之下雪乃，进入《错位的日常》。', '我选择扮演由比滨结衣，进入《错位的日常》。', '我选择扮演拉芙希妮·都柏林，进入《错位的日常》。', '进入《错位的日常》'], { start: -1 })"
           },
           {
             "file": "世界书/DLC/性转八幡/开局锚点.yaml"
@@ -6613,7 +6655,7 @@
         "path": "世界书/MVU/更新规则.yaml",
         "part": "update_rules",
         "keywords": [],
-        "abstract": "MVU更新规则：场景推进·日期地点·金钱持有物·动态角色建档/Present/known/bond/romance/commitment/穿搭·九锤·三锁·预设尾声",
+        "abstract": "MVU更新规则：常驻角色关系核心；按主线/free/DLC/拉芙Ω/待选尾声状态条件渲染专用更新规则",
         "uid": 213,
         "enabled": true,
         "strategy": {
@@ -7022,6 +7064,35 @@
           "button": {
             "enabled": true,
             "buttons": []
+          },
+          "data": {}
+        },
+        "手机助手-Counterfeit": {
+          "type": "script",
+          "script_file": "脚本/手机助手.js",
+          "enabled": true,
+          "id": "fa414405-35a1-4f1d-831e-b469beeb85ff",
+          "info": "build=2026-08-19T17:49:44.682096+00:00; hash=3e3404cccefde36b46b107004d591a88a2a57eb8",
+          "button": {
+            "enabled": true,
+            "buttons": []
+          },
+          "data": {}
+        },
+        "对话渲染-Counterfeit": {
+          "type": "script",
+          "script_file": "脚本/对话渲染.js",
+          "enabled": true,
+          "id": "59da988b-7c1f-4dee-a7af-669e5b55070a",
+          "info": "build=2026-08-31T04:43:26.598655+00:00; hash=feab7a46cd85de0299448f13c1857f2490ff92a3; source=角色卡工程/脚本/对话渲染.js",
+          "button": {
+            "enabled": true,
+            "buttons": [
+              {
+                "name": "对话气泡",
+                "visible": true
+              }
+            ]
           },
           "data": {}
         }

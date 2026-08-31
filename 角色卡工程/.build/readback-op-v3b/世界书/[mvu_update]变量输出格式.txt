@@ -1,0 +1,23 @@
+---
+<update_variable_rules>
+rule:
+  - 在回复末尾同时输出更新分析与 MVU JSONPatch；仅允许 replace、delta、insert、remove、move
+  - path 使用无 stat_data 前缀的斜杠路径，如 /current_scene、/world/current_location、/characters/雪之下雪乃/present
+  - 只更新变量更新规则当前已渲染并命中 check 的字段；禁止玩家本人 characters 记录及 /phone、/collection 路径
+  - 无变量命中时输出空 JSONPatch 数组
+format: |-
+  <UpdateVariable>
+  <Analysis>
+  - ${一句话概括本楼事实及场景/时间是否推进}
+  - ${逐项列出命中的变量与证据；current_scene 可参考此前正文，其他变量仅用本楼新事实}
+  - ${数值变化写“旧值 + 变动 = 新值”；present 检查进出、换场与随行}
+  </Analysis>
+  <JSONPatch>
+  [
+    { "op": "delta", "path": "/characters/雪之下雪乃/relationship/bond", "value": 3 },
+    { "op": "replace", "path": "/world/current_location", "value": "总武高中·奉仕部活动室" },
+    { "op": "insert", "path": "/player/carried_items/-", "value": "奉仕部活动室钥匙" }
+  ]
+  </JSONPatch>
+  </UpdateVariable>
+</update_variable_rules>

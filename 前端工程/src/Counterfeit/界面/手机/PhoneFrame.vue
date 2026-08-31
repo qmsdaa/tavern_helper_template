@@ -50,7 +50,9 @@ const statusText = computed(() => {
   position: relative;
   width: 392px;
   height: 820px;
-  max-height: calc(100vh - 40px);
+  max-width: 100%;
+  max-height: 100%;
+  flex-shrink: 0;
   padding: 12px;
   border-radius: 54px;
   background: linear-gradient(160deg, var(--c-phone-frame-hi), var(--c-phone-frame) 30%, #17171b);

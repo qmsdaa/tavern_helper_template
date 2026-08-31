@@ -50,6 +50,11 @@
   --c-friend-text: #0b62c4;
   --c-friend-badge-bg: rgba(10, 132, 255, 0.12);
 
+  /* 「炮友」徽章（NSFW 状态标记·commitment=未确认且性爱回忆非空）：
+     紫系区别于恋人粉/朋友蓝；#7c3aed 在卡面实测 5.68:1、徽章底 5.36:1，过 AA */
+  --c-fwb-text: #7c3aed;
+  --c-fwb-badge-bg: rgba(139, 92, 246, 0.14);
+
   /* 关系数值条渐变 */
   --c-bond-from: #7fb3f0;
   --c-bond-to: #4a86d8;
@@ -110,6 +115,10 @@
   --c-friend-text: #6cb6ff;
   --c-friend-badge-bg: rgba(108, 182, 255, 0.16);
 
+  /* 炮友徽章暗色：提亮紫 #c4a8ff 在深底与徽章底上均过 AA */
+  --c-fwb-text: #c4a8ff;
+  --c-fwb-badge-bg: rgba(196, 168, 255, 0.18);
+
   --c-bond-from: #8fc0f5;
   --c-bond-to: #5b93de;
   --c-romance-from: #f3a2c2;
@@ -154,6 +163,10 @@
 
   --c-friend-text: #5f7d52;
   --c-friend-badge-bg: rgba(95, 125, 82, 0.14);
+
+  /* 炮友徽章护眼主题：低饱和紫 #6d5d9c 在暖米底实测 5.2:1，过 AA */
+  --c-fwb-text: #6d5d9c;
+  --c-fwb-badge-bg: rgba(109, 93, 156, 0.14);
 
   --c-bond-from: #a8b58a;
   --c-bond-to: #7d8f5f;

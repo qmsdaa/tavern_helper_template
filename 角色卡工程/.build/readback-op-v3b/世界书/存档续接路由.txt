@@ -1,0 +1,23 @@
+@@generate_before
+@@private
+<%_
+let resumeMessages = [];
+try {
+  const resumeLastId = typeof getLastMessageId === 'function' ? getLastMessageId() : 1;
+  resumeMessages = getChatMessages('0-' + resumeLastId, { role: 'user' });
+} catch (error) {
+  resumeMessages = [];
+}
+const resumeUsers = Array.isArray(resumeMessages) ? resumeMessages : [];
+const isVerifiedResumeTurn = resumeUsers.length === 1 && resumeUsers.some((item) =>
+  typeof item.message === 'string' && item.message.includes('我已迁移旧档，请从存档中最后一个可观察时刻继续。')
+);
+_%>
+<%_ if (isVerifiedResumeTurn) { _%>
+<save_resume_route>
+这是已验证旧档迁移后的第一轮续接，不是新战役开场。
+连续性顺序：存档中实际建立的事实 → 迁移台账 legacy_established_facts → 当前战役默认值。只从续接胶囊最后一个可观察时刻向前写。
+不得复述或重放旧聊天，不得重新运行主线场景入口或DLC开局，不得补齐胶囊未包含的事件，也不得把迁移警告写成世界内事实。
+本轮建立一个与最后可观察动作自然相连、可由玩家回应的当前局面，然后交还行动权。
+</save_resume_route>
+<%_ } _%>
