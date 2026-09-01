@@ -105,8 +105,21 @@ onMounted(() => {
 });
 
 function postVisibility(open: boolean) {
-  if (embedded) {
-    window.parent.postMessage({ source: 'counterfeit-phone', open }, '*');
+  if (!embedded) return;
+  // TauriTavern 会把 iframe 挪进自己的浮层容器，re-parent 后 window.parent
+  // 可能已换对象；loader 在宿主顶层窗口监听，parent/top 各投一份兜底
+  const msg = { source: 'counterfeit-phone', open };
+  try {
+    window.parent.postMessage(msg, '*');
+  } catch {
+    /* 忽略 */
+  }
+  try {
+    if (window.top && window.top !== window.parent) {
+      window.top.postMessage(msg, '*');
+    }
+  } catch {
+    /* 忽略 */
   }
 }
 
@@ -120,12 +133,19 @@ if (embedded) {
   document.body.style.background = 'transparent';
   window.addEventListener('message', event => {
     const data = event.data;
-    if (event.source === window.parent && data && data.source === 'counterfeit-phone-loader' && data.action === 'open') {
+    // 不校验 event.source === window.parent：TauriTavern 的浮层准入会挪动 iframe，
+    // re-parent 后二者可能不再相等，open 消息会被静默丢弃（v4 移动端点不开手机的根因）。
+    // data.source 命名空间是我们的私有令牌，足够区分消息来源。
+    if (data && data.source === 'counterfeit-phone-loader' && data.action === 'open') {
       store.open();
     }
   });
   // 就绪握手：通知加载器 app 已挂载，补发被竞态丢掉的 open
-  window.parent.postMessage({ source: 'counterfeit-phone', ready: true }, '*');
+  try {
+    window.parent.postMessage({ source: 'counterfeit-phone', ready: true }, '*');
+  } catch {
+    /* 忽略 */
+  }
 }
 </script>
 

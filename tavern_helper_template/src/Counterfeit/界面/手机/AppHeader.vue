@@ -50,6 +50,9 @@ const store = usePhoneStore();
   font-size: 16px;
   font-weight: 700;
   transform: translateX(-17px);
+  /* 标题盒子因 translateX 与 34px 返回键重叠，作为后渲染兄弟会吞掉返回键的点按；
+     标题是纯文本无交互，直接放穿透 */
+  pointer-events: none;
 }
 
 .header-slot {

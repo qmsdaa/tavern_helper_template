@@ -18,8 +18,8 @@ test('OP 双画幅源：桌面 16:9 / 移动竖屏', () => {
   assert.equal(OP_MOBILE_BASE, 'op_mobile');
 });
 
-test('OP 画面段时长 84s（到点交棒标题屏 BGM）', () => {
-  assert.equal(OP_PICTURE_END, 84);
+test('OP 画面段时长 85.4s（到点交棒标题屏 BGM）', () => {
+  assert.equal(OP_PICTURE_END, 85.4);
 });
 
 test('node 环境（无 window）默认桌面版', () => {

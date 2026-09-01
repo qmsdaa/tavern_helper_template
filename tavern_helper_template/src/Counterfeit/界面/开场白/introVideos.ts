@@ -1,12 +1,12 @@
 // 前端工程/src/Counterfeit/界面/开场白/introVideos.ts
 import { ASSET_BASE, ASSET_VERSION } from '../../config';
 
-/** 开场白 OP（2026-08-31 标题屏接管 BGM 版：视频只含 84s 画面段；画面播完即白幕收束，
- *  BGM 由标题屏从交接位置续播 bgm.mp3——与 OP 音轨同一条曲子，体验等同完整 240s OP）。
+/** 开场白 OP（2026-08-31 v2 换新成片：85.4s，音轨与 bgm.mp3 同曲同时轴 0.999@lag0；
+ *  画面播完即白幕收束，BGM 由标题屏从交接位置续播 bgm.mp3——与 OP 音轨同一条曲子）。
  *  双画幅源：桌面 16:9（op_desktop，1080p 1250k）/ 移动竖屏模糊填充（op_mobile，900k），按视口画幅选择。 */
 
-/** OP 画面段时长（秒）：到点即收束进标题屏（视频本身恰为 84s，ended 事件兜底） */
-export const OP_PICTURE_END = 84;
+/** OP 画面段时长（秒）：到点即收束进标题屏（视频本身 85.4s，ended 事件兜底） */
+export const OP_PICTURE_END = 85.4;
 
 export const OP_DESKTOP_BASE = 'op_desktop';
 export const OP_MOBILE_BASE = 'op_mobile';

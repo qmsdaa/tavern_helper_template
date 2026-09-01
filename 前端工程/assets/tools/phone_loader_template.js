@@ -227,7 +227,10 @@ console.info('[Counterfeit·手机助手] eval');
 
     let appReady = false;
     let pendingOpen = false;
-    const sendOpen = () => iframe.contentWindow?.postMessage({ source: 'counterfeit-phone-loader', action: 'open' }, '*');
+    // 每次操作前重取 iframe 节点：宿主（如 TauriTavern 浮层准入）可能挪走/替换元素，
+    // 持有的旧引用 contentWindow 可能已成死上下文，postMessage 无声丢失
+    const freshIframe = () => hostDocument.getElementById(IFRAME_ID) || iframe;
+    const sendOpen = () => freshIframe().contentWindow?.postMessage({ source: 'counterfeit-phone-loader', action: 'open' }, '*');
     const openPhone = () => {
       pendingOpen = true;
       // App 未就绪前不放开事件与可见性，否则死掉的 App 会留下透明但吃点击的全屏层
@@ -372,7 +375,9 @@ console.info('[Counterfeit·手机助手] eval');
 
     hostWindow[LISTENER_KEY] = event => {
       const data = event.data;
-      if (event.source !== iframe.contentWindow || !data || data.source !== 'counterfeit-phone') {
+      // 不校验 event.source === iframe.contentWindow：宿主挪动 iframe 后 source 恒不等，
+      // 旧校验会把 App 的 ready/open 回执静默丢掉；data.source 私有命名空间令牌足够区分
+      if (!data || data.source !== 'counterfeit-phone') {
         return;
       }
       if (data.ready) {
@@ -407,7 +412,7 @@ console.info('[Counterfeit·手机助手] eval');
       injectApis();
       syncIframeSize();
     });
-    console.info('[Counterfeit·手机助手] 已挂载（加载器 v6 · viewport-host · 视口锁定+独立开关）');
+    console.info('[Counterfeit·手机助手] 已挂载（加载器 v7 · viewport-host · 视口锁定+独立开关 · 握手去 source 硬校验）');
   }
 
   if (hostDocument.body) {
