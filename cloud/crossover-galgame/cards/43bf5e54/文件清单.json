@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "card_sha256": "43bf5e54d484ce806c55beb35147f9029257290d7482cb190cdfc23b797be4bf",
+  "files": [
+    {
+      "file": "黑长直综漫卡.png",
+      "bytes": 6269635,
+      "sha256": "5bb1520cdd6ff84d4ff99c85b9c4811b1b9d98c3ed7b549003786a99b2a108df"
+    },
+    {
+      "file": "黑长直综漫卡.json",
+      "bytes": 2093169,
+      "sha256": "43bf5e54d484ce806c55beb35147f9029257290d7482cb190cdfc23b797be4bf"
+    },
+    {
+      "file": "使用说明.md",
+      "bytes": 512,
+      "sha256": "23332c540205d46aaf27b28f00bb3bef5c671643e111584485160c390d91dde7"
+    },
+    {
+      "file": "云端配置.json",
+      "bytes": 2185,
+      "sha256": "d0a670533bda1cff6b26eb1ef2404247858a2e606968c32c457839a7600c8d48"
+    },
+    {
+      "file": "构建核对.json",
+      "bytes": 2904,
+      "sha256": "7aa09bfac4eb33be21ca005763d163e4251ba6a300f9534232577fa63697667a"
+    }
+  ]
+}

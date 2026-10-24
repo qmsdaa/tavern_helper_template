@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "repository": "qmsdaa/tavern_helper_template",
+  "commit": "fd36642ab235d21c0140ba9a7a99374ff78062a9",
+  "namespace": "cloud/crossover-galgame/20261024-6b86da49",
+  "manifest_sha256": "72c56e2398f714601ae346db02f62a0e4878b79135f34fd4aae30ef3436a08cb",
+  "frontend": {
+    "url": "https://raw.githubusercontent.com/qmsdaa/tavern_helper_template/fd36642ab235d21c0140ba9a7a99374ff78062a9/cloud/crossover-galgame/20261024-6b86da49/runtime/e40e330b4940e0bcbda62127ac17e6364d5cfe8cac465cde844448de5eaa06a0.js",
+    "sha256": "e40e330b4940e0bcbda62127ac17e6364d5cfe8cac465cde844448de5eaa06a0"
+  },
+  "modules": [
+    {
+      "script_id": "410d3b6d-4fad-4ab3-b7d8-4a5e520c6b0d",
+      "url": "https://raw.githubusercontent.com/qmsdaa/tavern_helper_template/fd36642ab235d21c0140ba9a7a99374ff78062a9/cloud/crossover-galgame/20261024-6b86da49/runtime/47c133e110e1667846e7f60baa16272eb72d5fb8412f20acf02d44cbd2515172.mjs",
+      "remote_sha256": "47c133e110e1667846e7f60baa16272eb72d5fb8412f20acf02d44cbd2515172",
+      "loader_sha256": "8e1a7b8c209af2cadab73dc3c88cdb060c4f26d12a8737e53cca17278f437414"
+    },
+    {
+      "script_id": "07d99dee-2b15-431f-947d-fca13b8fcaf9",
+      "url": "https://raw.githubusercontent.com/qmsdaa/tavern_helper_template/fd36642ab235d21c0140ba9a7a99374ff78062a9/cloud/crossover-galgame/20261024-6b86da49/runtime/a4c9ba4ffcd49c546c386ed2e90d574291cc16371b35ac846da1756fc061ffda.mjs",
+      "remote_sha256": "a4c9ba4ffcd49c546c386ed2e90d574291cc16371b35ac846da1756fc061ffda",
+      "loader_sha256": "74748afbd5a00c00cfa757fa92404b77853c4ad7ccfc8348c9b3b5baf9304b57"
+    }
+  ],
+  "video": {
+    "tag": "crossover-galgame-20261023-29f7b176",
+    "file": "c7cd0b2b7afcfe46a324bbbba51ac8ab75b68ed3fd54994dca56025a3a770a36.mp4",
+    "url": "https://github.com/qmsdaa/tavern_helper_template/releases/download/crossover-galgame-20261023-29f7b176/c7cd0b2b7afcfe46a324bbbba51ac8ab75b68ed3fd54994dca56025a3a770a36.mp4",
+    "sha256": "c7cd0b2b7afcfe46a324bbbba51ac8ab75b68ed3fd54994dca56025a3a770a36",
+    "bytes": 161655771
+  },
+  "source_card_sha256": "6b86da4928e8506ceb76a42f668df82730cc2731ca6dbec10f6b029233853681"
+}
