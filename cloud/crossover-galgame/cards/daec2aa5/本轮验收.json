@@ -1,0 +1,70 @@
+{
+  "status": "pass_current_art_delivery",
+  "card_sha256": "daec2aa51901e0a7cc4e7b70eb4267140f7806933816d4e1e7d7b2b37b741759",
+  "title": "Remix Anime Crossover: King of the nai Dragons",
+  "counts": {
+    "playable_cast": 140,
+    "base_portraits": 140,
+    "expression_images": 616,
+    "expression_cast": 128,
+    "backgrounds": 19,
+    "new_dating_backgrounds": 13,
+    "redrawn_cgs": 4,
+    "worldbook_entries": 437,
+    "cloud_images": 780
+  },
+  "art_style": "粗细变化的手绘墨线、草稿叠线、断线、赛璐璐硬边平涂与排线阴影",
+  "native_browser_checked": true,
+  "native_chat_files_exact_after_install_and_browser": 13,
+  "current_api_connected": true,
+  "cg_semantic_test": {
+    "host": "isolated real runtime/core functions with actual DeepSeek model",
+    "positive_unlocks": 4,
+    "remote_hearsay_denied": 1,
+    "actual_native_ui_cg_unlock_test": false
+  },
+  "checks": {
+    "frontend_tests": 231,
+    "mvu_schema_cases": 66,
+    "forge_pack_guard_cases": 22,
+    "cg_redraw_guard_cases": 6,
+    "first_publication_guard_cases": 12,
+    "story_router_and_artifact": "pass"
+  },
+  "remaining_art": {
+    "important_expressions": 34,
+    "important_workflow": "用户网页端绘制后回传",
+    "minor_expressions": 16,
+    "minor_status": "暂停"
+  },
+  "evidence": [
+    {
+      "file": ".build/交付收口_20261024_最终/美术独立复核.json",
+      "sha256": "585efbfb8a9e142908aa66b56b52c39d0cae416bfcf107820689350ba9ac98d6"
+    },
+    {
+      "file": ".build/交付收口_20261024_最终/蕾妮合并独立复核_v003.json",
+      "sha256": "e55d74f8418ae1724339fb0ba23304987ed36e886a990aaf6c712fec376f63c9"
+    },
+    {
+      "file": ".build/交付收口_20261024_最终/蕾妮登记回读.json",
+      "sha256": "17d94a379536e426dd654bd51067f226fff0aed1c66f75c3105914b51954f316"
+    },
+    {
+      "file": ".build/交付收口_20261024_最终/CG重建兼容独立代码复核.json",
+      "sha256": "08f3ccccff6d7e2eb01fa0f477951d77723904a7cd2a1ac6dbf8e252abd4a51d"
+    },
+    {
+      "file": ".build/交付收口_20261024_最终/CG模型语义验收汇总.json",
+      "sha256": "4c43c89ab41890b4bbf7fb1bd53e7650e88ca4ab04ac498dc1406f28805d4473"
+    },
+    {
+      "file": ".build/交付收口_20261024_最终/最终云端资源回读_daec2aa5.json",
+      "sha256": "525821de79f1972d1233b91ee3dfe16b817b067cec0cdd48cc9ae4def22936b0"
+    },
+    {
+      "file": ".build/交付收口_20261024_最终/最终原生界面回读_daec2aa5.json",
+      "sha256": "1e9ae13cf33ddfc1d1bf0d1c56625e3b99e97541f63466324a9d6e057c2a0c75"
+    }
+  ]
+}

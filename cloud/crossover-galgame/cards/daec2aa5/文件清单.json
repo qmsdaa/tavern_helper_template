@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "card_sha256": "daec2aa51901e0a7cc4e7b70eb4267140f7806933816d4e1e7d7b2b37b741759",
+  "files": [
+    {
+      "file": "黑长直综漫卡.png",
+      "bytes": 6414675,
+      "sha256": "7a61a4529c6160aa9d022974cc8cbfdf962f5bb642edb2a79d532f83282aa3a2"
+    },
+    {
+      "file": "黑长直综漫卡.json",
+      "bytes": 2147759,
+      "sha256": "daec2aa51901e0a7cc4e7b70eb4267140f7806933816d4e1e7d7b2b37b741759"
+    },
+    {
+      "file": "使用说明.md",
+      "bytes": 541,
+      "sha256": "709432f905dc4018e0a8dc7aea4ea1a20d2550dd21b1ce2e4c15099775ab5bea"
+    },
+    {
+      "file": "构建核对.json",
+      "bytes": 2904,
+      "sha256": "fdfc3d9b3c1ecda7ee2ab4a84841128b0b50d16d471a7ae14df55cf26a643229"
+    },
+    {
+      "file": "云端配置.json",
+      "bytes": 2185,
+      "sha256": "30f0821a26ef28d45ce1cd16461129f98b1e398d6b0fffc3b47a491e44dae4bd"
+    },
+    {
+      "file": "worldbook/黑长直综漫卡.json",
+      "bytes": 4550683,
+      "sha256": "442c18a4c0d5d9829bbb487287af638086f70256249c26fec9d3b99fc40f4398"
+    },
+    {
+      "file": "首次导入.md",
+      "bytes": 1173,
+      "sha256": "f08c432b2d937229bab8b9d337b5c8fa57ccb5551f7ac08a88e4197fae6fa430"
+    },
+    {
+      "file": "剩余差分清单.md",
+      "bytes": 952,
+      "sha256": "eadf82fe4a81468d63f389c96262b976ec4f9148e02263da497beb17b98d0864"
+    },
+    {
+      "file": "本轮验收.json",
+      "bytes": 2592,
+      "sha256": "f499662ac90bcc0e9f496687140dd118ef6f29a1ec26978aa4fb935c364a7ffe"
+    }
+  ]
+}
