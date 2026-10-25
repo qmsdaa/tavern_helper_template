@@ -1,0 +1,55 @@
+{
+  "status": "pass_source_native_ui",
+  "review_kind": "author_review",
+  "independent_review": false,
+  "candidate_file_sha256": "cdf50dccd01f16a77d4768cf70ed0b7fdf7a671338c6a7ade5048483b2d6dbb4",
+  "candidate_normalized_sha256": "f1ff6708e849bdd913137db3925aeb049daf052ae89a5df57877cf11191f9d08",
+  "targeted_tests": 54,
+  "schema_unchanged": true,
+  "real_model_calls": 0,
+  "checks": [
+    "常规视口按504比1075计算机身尺寸",
+    "首屏四行图标和底部留白，Dock固定底部",
+    "文字至少16px，顶部日期与灵动岛分开",
+    "场景编号从已提交助手日志派生，仅展示",
+    "收起和展开通过，既有应用保留"
+  ],
+  "screenshot_sha256": "dafdffdbf719859e2b7af421ae437ab9df620bf474acb9c8cbd2d3928b43c3d2",
+  "layout": {
+    "contentHeight": 530,
+    "device": {
+      "bottom": 750,
+      "height": 710,
+      "left": 283.125,
+      "right": 615.9895935058594,
+      "top": 40,
+      "width": 332.8645935058594,
+      "x": 283.125,
+      "y": 40
+    },
+    "dockGap": 73.35416412353516,
+    "gridColumns": "50.4271px 50.4271px 50.4271px 50.4271px",
+    "labelFonts": [
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px",
+      "16px"
+    ],
+    "ratio": 0.4688233711350132,
+    "referenceRatio": 0.4688372093023256,
+    "scene": "场景 4",
+    "scrollHeight": 530
+  }
+}
