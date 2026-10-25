@@ -1,0 +1,166 @@
+{
+  "status": "pass_source_component_ui",
+  "review_kind": "author_review",
+  "independent_review": false,
+  "candidate_file_sha256": "9a73b32a8cf52e3e581d62f3fe45e1715ce083778397f933fb5a1acbf837a3f2",
+  "candidate_normalized_sha256": "449d507674dde6af9b1488eedcda2b20f74a1ffe88bdcfe9c1853c2cd5dd5e8c",
+  "targeted_tests": 66,
+  "schema_unchanged": true,
+  "real_model_calls": 0,
+  "checks": [
+    "主题选择位于状态标题栏，正文工具栏数量为0",
+    "主题选项切换成功且字体16px",
+    "140个姓名和稳定ID对应原PNG，原图字节未改动",
+    "14张最高alpha为254的透明原图正常接入",
+    "地图仅显示有明确行踪且可见的人物Q版",
+    "实际预览中的平冢静Q版完成加载，未知人物未批量出现",
+    "手机仅保留12个现有功能，无第二页",
+    "文字大小16—24px，24px实看，刷新后保存，20px起三列"
+  ],
+  "chibi_characters": 140,
+  "chibi_source_bytes": 171259543,
+  "chibi_visual_spot_checks": [
+    "平冢静",
+    "紫苑寺有子"
+  ],
+  "screenshots": {
+    "顶部主题_预览.png": "1d7bbb45a7c1236db8a687946e74433d538096ce27c98de9690582fa8606e345",
+    "Q版地图_预览.png": "38d562fd9162436ef15543ff438d6f2e69a08de91d547ed3d156fc16a2fe0d9a",
+    "手机精简_预览.png": "5ae221f41f741c67ad54cb561455ef62d9285399972568f1b8be9ab360de9413",
+    "文字大小_24px.png": "ae1de745f95a399de2539c0b2262bd6cb98bc817ba3bccb6da19fb7fa11e24f5",
+    "手机大字_24px.png": "35ce5a967a04e51cf50ffa0be8b2abb5791acf09fb1952d924e2f81d0ed2e0cf",
+    "移动端_双尺寸.png": "36fcca060bda0833f3ad1d87b614c0cc342ce5064a9e7f83e468c7f6c98fb9e1"
+  },
+  "theme_layout": {
+    "bodyToolbars": 0,
+    "font": "16px",
+    "header": {
+      "bottom": 84.92708587646484,
+      "height": 64.92708587646484,
+      "left": 16,
+      "right": 616,
+      "top": 20,
+      "width": 600,
+      "x": 16,
+      "y": 20
+    },
+    "select": {
+      "bottom": 71.45833396911621,
+      "height": 40,
+      "left": 404.1770935058594,
+      "right": 496.1770935058594,
+      "top": 31.45833396911621,
+      "width": 92,
+      "x": 404.1770935058594,
+      "y": 31.45833396911621
+    },
+    "status": {
+      "bottom": 458.7187728881836,
+      "height": 345.79168701171875,
+      "left": 44,
+      "right": 588,
+      "top": 112.92708587646484,
+      "width": 544,
+      "x": 44,
+      "y": 112.92708587646484
+    },
+    "themeSelectorInHeader": true
+  },
+  "landscape_ui": {
+    "interactive_portrait": {
+      "active": "true",
+      "canvasHeight": 632,
+      "canvasWidth": 764,
+      "exitButton": true,
+      "root": {
+        "height": 764,
+        "width": 632,
+        "x": 0,
+        "y": 0
+      },
+      "stageHeight": 632,
+      "transform": "translateX(632px) rotate(90deg)"
+    },
+    "exit_restored": true,
+    "responsive_fixture_sizes": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 844,
+        "height": 390
+      }
+    ],
+    "fixture_interaction_supported": false,
+    "geometry_tests_passed": true
+  },
+  "phone_font_ui": {
+    "appCount": 12,
+    "columns": "81.8646px 81.875px 81.8646px",
+    "fontSize": "24px",
+    "labels": [
+      {
+        "height": 33.59375,
+        "text": "消息",
+        "width": 48
+      },
+      {
+        "height": 33.59375,
+        "text": "联系人",
+        "width": 72
+      },
+      {
+        "height": 33.59375,
+        "text": "地图",
+        "width": 48
+      },
+      {
+        "height": 33.59375,
+        "text": "论坛",
+        "width": 48
+      },
+      {
+        "height": 33.59375,
+        "text": "照片墙",
+        "width": 72
+      },
+      {
+        "height": 33.59375,
+        "text": "购物",
+        "width": 48
+      },
+      {
+        "height": 33.59375,
+        "text": "图廊",
+        "width": 48
+      },
+      {
+        "height": 33.59375,
+        "text": "委托",
+        "width": 48
+      },
+      {
+        "height": 33.59375,
+        "text": "日志",
+        "width": 48
+      },
+      {
+        "height": 33.59375,
+        "text": "日程",
+        "width": 48
+      },
+      {
+        "height": 33.59375,
+        "text": "状态",
+        "width": 48
+      },
+      {
+        "height": 33.59375,
+        "text": "设置",
+        "width": 48
+      }
+    ],
+    "reload_persisted": true
+  }
+}
