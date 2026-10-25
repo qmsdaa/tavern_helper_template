@@ -1,0 +1,20 @@
+{
+  "status": "pass_source_and_component_ui",
+  "review_kind": "author_review",
+  "independent_review": false,
+  "candidate_file_sha256": "572ff67566e45aa8589b2779842f3e8e77c5c9ec26fc8cf9f59ca94973579e68",
+  "candidate_normalized_sha256": "db16f06577f236a62dc4706858eeef185ef4c8f578a61e9751557c47fefc4853",
+  "source_schema_sha256": "6db3ffe0754e6eafa72e9a8cc06a966b7e145b8ed651920b7fc84ce32b4014a2",
+  "frontend_tests": 259,
+  "runtime_tests": 139,
+  "real_model_calls": 0,
+  "checks": [
+    "旧双维与commitment原值保留、Schema幂等",
+    "认可度独立，缺依据旧档显示未评价",
+    "特殊关系需依据，多标签并存；恋人由commitment唯一派生",
+    "已知人物及地图位置过滤不变",
+    "徽章字体16px、三维正文18px",
+    "实际组件预览已查看并截图；预览关系不写入聊天"
+  ],
+  "screenshot_sha256": "04fdd9fc3ba70dcff381d0621b1c694c8f1c7542091b6e0006b10c1428a1f717"
+}
