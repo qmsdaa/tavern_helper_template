@@ -1,0 +1,75 @@
+{
+  "status": "pass_isolated_persistent_stage",
+  "review_kind": "author_review",
+  "independent_review": false,
+  "candidate_file_sha256": "8ed57117c46fc2d00761ce16ad4e0bda21966a75df2eb901f0e90a83853f10de",
+  "candidate_normalized_sha256": "95d75e7d3c5f3634735d4cc206534381581934dd4dbc0a5d6fd7eea8ab7a8f3e",
+  "tests": 282,
+  "targeted_subset": 83,
+  "schema_unchanged": true,
+  "real_model_calls": 0,
+  "explicit_native_viewport_height": true,
+  "native_style_fixture": {
+    "status": "pass",
+    "rootHeight": "0px",
+    "frameHeight": 809,
+    "sameDocument": true,
+    "bootCount": 1,
+    "opened": true
+  },
+  "ui": {
+    "generation": {
+      "samePhone": true,
+      "draft": "保留在输入框里的动作",
+      "text": "这是下一条隔离检查回复。\n\n⌄"
+    },
+    "failure": {
+      "sameFrame": true,
+      "sameDocument": true,
+      "sameRoot": true,
+      "samePhone": true,
+      "draft": "保留在输入框里的动作",
+      "stageVisible": true,
+      "errors": [
+        "这条回复的变量尚未保存，可重新生成。×"
+      ],
+      "retry": true,
+      "status": {
+        "mounted": true,
+        "visible": true,
+        "bootCount": 1,
+        "eventCount": 5,
+        "generating": false
+      }
+    },
+    "repair": {
+      "sameDocument": true,
+      "draft": "保留在输入框里的动作",
+      "errors": []
+    },
+    "hideShow": {
+      "hidden": true,
+      "visible": true,
+      "sameDocument": true
+    },
+    "stageCount": 1,
+    "status": {
+      "mounted": true,
+      "visible": true,
+      "bootCount": 1,
+      "eventCount": 7,
+      "generating": false
+    },
+    "chatSwitch": {
+      "sameFrame": true,
+      "sameDocument": true,
+      "text": "这是另一个隔离会话。\n\n⌄",
+      "draft": "",
+      "stageCount": 1
+    },
+    "mode": "isolated_actual_vue_and_helper_host_fixture",
+    "runtime_candidate": "runtime_01",
+    "real_model_calls": 0
+  },
+  "message_regex_removed": true
+}
