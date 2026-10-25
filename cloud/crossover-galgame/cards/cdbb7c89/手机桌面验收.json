@@ -1,0 +1,23 @@
+{
+  "status": "pass_source_native_ui",
+  "review_kind": "author_review",
+  "independent_review": false,
+  "candidate_file_sha256": "804d80d01179b10113e79dc93e01567dfd51f55868b9dc7d8a322a714618fbac",
+  "candidate_normalized_sha256": "dede72887c5b524feb69a8fd9aedd6c7fe5d9e51f313e97795ca75ab50c67516",
+  "targeted_tests": 70,
+  "schema_unchanged": true,
+  "real_model_calls": 0,
+  "checks": [
+    "四列16个首屏入口与四个Dock快捷入口",
+    "第二页保留照片墙/购物/图廊/日程",
+    "所有桌面文字16px，四排完整可见；原生窗口632x764",
+    "设置页BGM关闭，14首曲目可选；壁纸切换后恢复暮色",
+    "备忘保存/删除通过，检查内容已清理",
+    "手机内地图真实建筑与平冢静行踪显示，出行只建立草稿",
+    "三维关系与特殊关系徽章保留"
+  ],
+  "screenshots": {
+    "原生手机桌面.png": "91a81d601eb6e53ebea7138051243f82c39ab7d70ff5ec248b5fb38e0da83f8e",
+    "手机内地图.png": "bb0fe90b78241cf7ecddda50557bbb16d0227f6bda6c9fa81819e2a374c69fb1"
+  }
+}
