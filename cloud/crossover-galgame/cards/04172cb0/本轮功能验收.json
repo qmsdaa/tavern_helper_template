@@ -1,0 +1,48 @@
+{
+  "status": "pass",
+  "card_id": "04172cb0",
+  "cloud_card_sha256": "04172cb057856009243b651c07a7c699d7d4239839a36b5237ef307af04392db",
+  "resource_commit": "5b189d82864f248fc833e519fb530894df468eda",
+  "worldbook_entries": 437,
+  "base_portraits": 140,
+  "expressions": 616,
+  "backgrounds": 19,
+  "cg": 4,
+  "map_places": 23,
+  "map_atlases": 2,
+  "bgm_tracks": 14,
+  "q_portraits_ready": 0,
+  "q_portraits_pending": 140,
+  "targeted_tests_passed": 58,
+  "real_model_phone_prompt_tokens": 243,
+  "native_story_calls": 1,
+  "native_story_result": {
+    "current_date": "2026-04-20",
+    "current_time": "15:40",
+    "time_slot": "放学后",
+    "current_location": "总武高中·奉仕部活动室",
+    "weather": "未确认",
+    "turn": 4
+  },
+  "phone_persisted_across_new_floor": true,
+  "native_known_map_person": {
+    "name": "平冢静",
+    "location": "总武高中·奉仕部活动室"
+  },
+  "journal_floors": 9,
+  "journal_choices_removed": true,
+  "latest_five_full_text_boundary": "actual native request replay passed",
+  "all_original_chat_message_bodies_preserved": 13,
+  "unrelated_chat_files_byte_exact": 12,
+  "test_chat_added_messages": 2,
+  "api_credentials_not_in_delivery": true,
+  "phone_default_restored": "酒馆连接",
+  "bgm_after_test": "关闭",
+  "http_verified_changed_resource_groups": 8,
+  "art_review": "author visual checks; no independent agent review claimed",
+  "evidence": {
+    "map": ".build/校园伴随功能_20261024/界面检查/云端地图_奉仕部.png",
+    "cast": ".build/校园伴随功能_20261024/界面检查/选角_列表滚动后编辑.png",
+    "phone": ".build/校园伴随功能_20261024/界面检查/原生手机_生成后仍打开.png"
+  }
+}
