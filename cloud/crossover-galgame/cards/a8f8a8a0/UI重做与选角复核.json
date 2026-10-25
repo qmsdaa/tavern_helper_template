@@ -1,0 +1,84 @@
+{
+  "status": "pass_source_component_ui",
+  "review_kind": "author_review",
+  "independent_review": false,
+  "candidate_file_sha256": "0b3d37fd250f1b56d6568629e29e7e564595b4520fd1fec7eb6ef24c0a5571fd",
+  "candidate_normalized_sha256": "4f7d3571a3c7cbabfb3bbcffeceef84fde2c1e22b7a22684646a7d17ccca0a50",
+  "tests": 278,
+  "targeted_recheck_subset": 82,
+  "schema_unchanged": true,
+  "real_model_calls": 0,
+  "ui": {
+    "status": "pass",
+    "mode": "isolated_source_component_preview",
+    "viewports": [
+      [
+        390,
+        844
+      ],
+      [
+        844,
+        390
+      ]
+    ],
+    "minimum_visible_font_px": 16,
+    "normal_action_height_px": 44,
+    "phone_actual_apps": 12,
+    "mobile_shop": {
+      "scroll_top": 444.6667,
+      "scroll_max": 445,
+      "last_buy_bottom": 754,
+      "content_bottom": 771.9792
+    },
+    "landscape_cast": {
+      "height": 254,
+      "scroll_height": 614,
+      "scroll_top": 360,
+      "start_button_bottom": 357.9792,
+      "panel_bottom": 358
+    },
+    "landscape_main_settings": {
+      "height": 363,
+      "scroll_height": 524,
+      "scroll_top": 161.3333,
+      "volume_bottom": 351.3333,
+      "panel_bottom": 378
+    },
+    "landscape_phone_settings": {
+      "content_height": 251,
+      "scroll_height": 463,
+      "scroll_top": 212,
+      "volume_bottom": 333.46,
+      "content_bottom": 353.33
+    },
+    "music": {
+      "native_loop": true,
+      "list_advances_on_simulated_ended": true,
+      "random_excludes_current_on_simulated_ended": true,
+      "mode_persisted": true,
+      "audio_instances": 1,
+      "ready_state": 4,
+      "playing_verified": true,
+      "restored_disabled": true
+    },
+    "role_selection": {
+      "preview_start_cast": "legacy_101",
+      "succeeded": true,
+      "native_start_model_request": false,
+      "host_regression_cases": [
+        "cold_start",
+        "native_filename_finalization",
+        "different_array_rejected",
+        "chat_switch_rejected"
+      ]
+    },
+    "fixture_only_forum_demo": true,
+    "real_model_calls": 0
+  },
+  "screenshots": {
+    "横向手机_最终.png": "2bd6fc15ac9f5f73b1cb782d6afcdfa23b140369b22ce9904e484cb0d9885439",
+    "购物_最终.png": "334616e4dc5a663597aeafa67ab4e93ae3319cb5f0d1a0f11d21085288acab8c",
+    "选角_最终.png": "b161ea889377df4ade8ff54dda2d225240b3be9594005215c30178221a26c3c6",
+    "主菜单_最终.png": "d709bf0454c80c728beeb8e68215f9d820f42bf0c8f7af4f212bbacee56be0cf"
+  }
+}
