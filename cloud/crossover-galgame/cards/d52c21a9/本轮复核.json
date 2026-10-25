@@ -1,0 +1,45 @@
+{
+  "status": "pass_author_review_and_isolated_ui",
+  "review_kind": "author_review",
+  "independent_code_review": false,
+  "independent_opening_review": true,
+  "candidate_file_sha256": "00451afb6902a6ee8fc4bca8e65ba660306858f89f8a57f2138cee85f5939765",
+  "candidate_normalized_sha256": "7244d03e5dfd9d657589f67051de14069bc672360f37c17563588dd881f94d90",
+  "tests": 321,
+  "schema_unchanged": true,
+  "real_model_calls": 0,
+  "backgrounds": 55,
+  "authored_openings": 77,
+  "cg_assets": 65,
+  "cg_candidates_per_turn_max": 2,
+  "ui": {
+    "status": "pass",
+    "isolated_context": true,
+    "actual_vue": true,
+    "real_model_calls": 0,
+    "desktop": [
+      1440,
+      900
+    ],
+    "mobile": [
+      390,
+      844
+    ],
+    "landscape": [
+      844,
+      390
+    ],
+    "cg_assets": 65,
+    "locked": 64,
+    "sample_unlocked": 1,
+    "locked_image_requests": false,
+    "cg_stage_replaces_sprites": true,
+    "gallery_and_phone_scroll": true,
+    "ui_text_min_px": 16,
+    "map_text_min_px": 16.1,
+    "hover_shows_known_character": true,
+    "map_projection": "north_up_chiba_coast_and_railways",
+    "console_errors": [],
+    "production_state_written": false
+  }
+}
