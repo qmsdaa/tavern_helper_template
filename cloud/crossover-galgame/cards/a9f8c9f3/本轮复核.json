@@ -1,0 +1,24 @@
+{
+  "status": "pass_author_review_and_independent_data_check",
+  "candidate_sha256": "3b996d2cc67cd9c2db065761a75ee6a7f93f96424900f6450e896fce4fd6ed03",
+  "candidate_normalized_sha256": "e75fc483a6bd8f1e3bcc7266a79aa857007f541242c3cf65564f6b5ee18762c1",
+  "schema_sha256": "7656e6168616c5497749edb2f7eb87ab05eba10afc66036fab28a56e4e2540a5",
+  "automatic_checks": 644,
+  "cast": 140,
+  "statistics_rows": 141,
+  "dimensions": 6,
+  "initial_contact_edges": 186,
+  "initial_groups": 26,
+  "cg_placeholders": 65,
+  "cg_images": 0,
+  "real_model_calls": 0,
+  "preview_ui": {
+    "cast_start_snow": true,
+    "six_dimensions_and_wallet_visible": true,
+    "cg_conditions_visible": true,
+    "cg_early_unlock_local_only": true,
+    "cg_image_requests": 0,
+    "mobile_width_overflow": false
+  },
+  "native_ui": "pending_install"
+}
