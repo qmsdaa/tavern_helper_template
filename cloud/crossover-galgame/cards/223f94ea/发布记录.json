@@ -22,5 +22,62 @@
   "approved_events": 134,
   "ready_images": 157,
   "placeholders": 4,
-  "public_directory": "cloud/crossover-galgame/cards/223f94ea"
+  "public_directory": "cloud/crossover-galgame/cards/223f94ea",
+  "variable_reference_repair": {
+    "status": "pass",
+    "release_kind": "变量引用与剧情触发修复",
+    "card_version": "223f94ea",
+    "card_sha256": "223f94ea787ae9d9846b13c59997f123c2c0d6e9e2a9dd96090d63f0277d8b0e",
+    "reference_categories_checked": 26,
+    "targeted_tests": {
+      "pass": 401,
+      "fail": 0
+    },
+    "compiled_runtime_replay": {
+      "status": "pass",
+      "actual_deployed_core_bundle": true,
+      "actual_formal_runtime": true,
+      "provided_mobile_patch_saved": true,
+      "story_messages_added_by_test": 1,
+      "retries": 1,
+      "world_turn": 3,
+      "idempotent": true,
+      "model_requests": 0
+    },
+    "independent_counts": {
+      "catalog": 161,
+      "ready": 157,
+      "placeholder": 4,
+      "hooks": 32,
+      "isolated_static_reachable": 157,
+      "offline_service_fixed_judge_pass": 157,
+      "full_catalog_top2_omissions": 0,
+      "hook_initial_reachable": 32,
+      "hook_continuation_signal_losses": 0,
+      "fixed_judge_calls": 315,
+      "targeted_regressions": 35,
+      "targeted_pass": 35,
+      "targeted_failed": 0,
+      "cross_event_competition_cases": 11,
+      "cross_event_competition_pass": 11,
+      "mandatory_findings": 0,
+      "resolved_findings": 6,
+      "real_api_requests": 0
+    },
+    "independent_review": {
+      "path": ".build/变量引用与剧情触发审计_20261027/独立CG钩子审计/最终独立复核.json",
+      "sha256": "58faff6d4a859ce350df8e6e20dd78ed98a10dc1a48750bb089bec8fcbda27f5"
+    },
+    "approved_cg_images": 157,
+    "reachable_hooks": 32,
+    "character_profiles_unchanged": 140,
+    "cg_png_bytes_unchanged": true,
+    "worldbook_entries": 211,
+    "model_requests": 0,
+    "existing_chat_modified": false,
+    "png_json_equal": true,
+    "story_design": "docs/剧情主线与分支树_20261027.md",
+    "story_design_installed_in_worldbook": false,
+    "notes": "157张已接入CG的离线筛选与回执协议通过；实际模型语义判定未作联网验收。新提交的未接入图片留给CG监控。"
+  }
 }
