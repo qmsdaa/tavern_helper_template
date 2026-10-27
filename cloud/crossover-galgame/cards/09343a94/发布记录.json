@@ -1,0 +1,26 @@
+{
+  "work": ".build/人工CG同步/20261027_040540",
+  "started_utc": "2026-10-27T04:05:40.312042+00:00",
+  "freeze_cg": true,
+  "code_refresh": true,
+  "runtime": {
+    "path": ".build/人工CG同步/20261027_040540/runtime/Zod_事务集成_approved_cg.txt",
+    "bytes": 4970239,
+    "sha256": "69750b957e3844430e9a2440dbe49b2c77b628d19a777122130aae46d137361a"
+  },
+  "schema_sha256": "c64dbb2376da10ecde6cf39114b30ceaa69d6de9aa45556ea99e5c92e5eff6f4",
+  "full_package": "产物/Galgame候选_20261022_7431c6d4",
+  "version": "20261027-7431c6d4",
+  "namespace": "cloud/crossover-galgame/20261027-7431c6d4",
+  "resource_commit": "9101efa3b3860516cc3f209676494af8440a8674",
+  "resources_pushed": true,
+  "cloud_folder": "产物/Galgame云端_09343a94",
+  "card_sha256": "09343a94512779d625a1baeb8fe6a35bac34b84cce12854eb0a304d36e13f4ed",
+  "png_bytes": 4337075,
+  "json_bytes": 1225839,
+  "approved_files": 155,
+  "approved_events": 132,
+  "ready_images": 155,
+  "placeholders": 5,
+  "public_directory": "cloud/crossover-galgame/cards/09343a94"
+}
