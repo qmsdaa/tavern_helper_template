@@ -22,5 +22,40 @@
   "approved_events": 132,
   "ready_images": 155,
   "placeholders": 5,
-  "public_directory": "cloud/crossover-galgame/cards/09343a94"
+  "public_directory": "cloud/crossover-galgame/cards/09343a94",
+  "personality_content_release": {
+    "status": "pass",
+    "release_kind": "人物性格重写与世界书中文清理",
+    "people": 140,
+    "worldbook_entries": 211,
+    "before_profile_tokens": 135309,
+    "profile_tokens": 102524,
+    "token_encoding": "o200k_base",
+    "worldbook_meta_explanation_hits": [],
+    "png_json_semantically_equal": true,
+    "all_packaged_profiles_equal_approved_source": true,
+    "entry_manifest_unchanged": true,
+    "initial_values_changed": false,
+    "only_initial_basis_reworded": 141,
+    "ui_source_and_approved_cg_unchanged": true,
+    "approved_cg_images": 155,
+    "offline_checks": {
+      "scoped_context": {
+        "pass": 188,
+        "fail": 0
+      },
+      "story_router": {
+        "pass": 126,
+        "fail": 0
+      }
+    },
+    "model_requests": 0,
+    "live_chat_changed": false,
+    "card_sha256": "09343a94512779d625a1baeb8fe6a35bac34b84cce12854eb0a304d36e13f4ed",
+    "resource_commit": "9101efa3b3860516cc3f209676494af8440a8674",
+    "global_review": {
+      "path": ".build/心理模型性格重写_20261026/全局独立复核.json",
+      "sha256": "ec30da8767d7468ab69a88d09c1d42f63c1214bfc0b1ccfd51db41a3a03483b1"
+    }
+  }
 }
