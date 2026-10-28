@@ -1,0 +1,42 @@
+{
+  "provider": "NAI",
+  "model": "nai-diffusion-5-full",
+  "review": "主代理目视通过，非用户人工确认",
+  "sprites": [
+    {
+      "id": "otonari_mahiru",
+      "name": "椎名真昼",
+      "raw_sha256": "057f056bda57da1df678a030517db87cf0d12344b07717ab6131a4b24b75d50a",
+      "display_sha256": "85c471cd4d1a7a693192768f1cd6d6cf563dbba4cf9c517f154063e7576329c4",
+      "seed": 2026102846,
+      "native_transparency": true
+    },
+    {
+      "id": "otonari_amane",
+      "name": "藤宫周",
+      "raw_sha256": "9dc1d2e175cc18f481930a53bbc21afe4bbd9c894b02dea3150393dd4f6577d9",
+      "display_sha256": "18373a3fab1a53fa11303ef415a51db8bb0a997fcc5de9e9ce8e23a378ea9519",
+      "seed": 2026102842,
+      "native_transparency": true
+    },
+    {
+      "id": "otonari_itsuki",
+      "name": "赤泽树",
+      "raw_sha256": "9206f9cf3d4595f8e2105fc87f89ccdf73c323e31ae30c587f1a7e8627966eb6",
+      "display_sha256": "24b2b657cb6b2240280f04170405158248ef81f822c843b2fd59d06969ca178a",
+      "seed": 2026102843,
+      "native_transparency": true
+    },
+    {
+      "id": "otonari_chitose",
+      "name": "白河千岁",
+      "raw_sha256": "b64ef575e50678ea2f25fd8a65cfed8a0e43318e9bba5d53b7a9fa0c88b97739",
+      "display_sha256": "27d33767ba1dc22b4e9bcd0cefcbe493ca06ea889dbcaa655947c34f2a6bfa8d",
+      "seed": 2026102847,
+      "native_transparency": true
+    }
+  ],
+  "worldbook_changes": 0,
+  "other_character_art_changes": 0,
+  "story_model_requests": 0
+}
