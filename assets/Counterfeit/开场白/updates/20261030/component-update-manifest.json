@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "deliveryMode": "component",
+  "kind": "helper-script",
+  "artifacts": [
+    {
+      "artifactName": "counterfeit-opening-laff-op",
+      "id": "2f001d6a-e38d-46c4-98fd-10d30996950e",
+      "kind": "helper-script",
+      "relativePath": "counterfeit-opening-laff-op.script.json",
+      "sha256": "9099f5a9f7615e02a521b8128202dbaa70ce91dcb0a824cc6918cfee9b4a5778"
+    }
+  ]
+}

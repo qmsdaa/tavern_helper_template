@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "cardId": "counterfeit",
+  "assets": [
+    {
+      "id": "laff-algernon-op-v2",
+      "kind": "video",
+      "source": {
+        "type": "local",
+        "path": "laff_algernon_v2_preview720.mp4"
+      },
+      "bytes": 31818852,
+      "sha256": "65f589fde953a47adf09af3ab8a08ffdf7df0020be1dc3415c6e3dcb36ff2731",
+      "preload": "on-demand",
+      "lifetime": "message",
+      "fallbackAssetId": null,
+      "runtimeUrl": "https://raw.githubusercontent.com/qmsdaa/tavern_helper_template/6d68dd6c0983152038208bc48df68294d4f7165a/assets/Counterfeit/%E5%BC%80%E5%9C%BA%E7%99%BD/laff_algernon_v2_preview720.mp4",
+      "durationSeconds": 245.4,
+      "width": 1280,
+      "height": 720,
+      "codecs": [
+        "h264",
+        "aac"
+      ],
+      "provenance": "用户提供：阿尔吉侬MV/pv/render/algernon_v2_preview720.mp4，逐字节复制，未重新编码",
+      "trigger": "主线确认拉芙希妮视角后，进入原序幕正文前",
+      "delivery": "确认视角后从固定 GitHub 提交按需 fetch 完整视频，再通过 Blob URL 播放；离屏中止并释放",
+      "fallback": "加载或解码失败时提示并进入原序幕；自动播放受限时展示播放按钮；始终可跳过",
+      "cleanup": "播放结束、跳过、离开页面时暂停并移除视频源；仅正常结束或跳过时按进入前状态恢复菜单音乐",
+      "redistribution": "用户明确要求发布到指定 GitHub 公开仓库",
+      "originRepository": "qmsdaa/tavern_helper_template",
+      "originCommit": "6d68dd6c0983152038208bc48df68294d4f7165a",
+      "loadingTimeoutSeconds": 180
+    }
+  ]
+}

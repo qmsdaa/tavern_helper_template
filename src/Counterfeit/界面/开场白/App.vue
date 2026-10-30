@@ -8,6 +8,7 @@
       <CampaignSelect v-else-if="store.step === 'campaign'" key="campaign" />
       <ModeSelect v-else-if="store.step === 'mode'" key="mode" />
       <PovConfirm v-else-if="store.step === 'pov'" key="pov" />
+      <CharacterIntro v-else-if="store.step === 'character_intro'" key="character-intro" />
       <CustomForm v-else-if="store.step === 'custom'" key="custom" />
       <DlcSetup v-else-if="store.step === 'dlc_setup'" key="dlc-setup" />
       <SaveImportScreen v-else-if="store.step === 'save_import'" key="save-import" />
@@ -50,6 +51,7 @@
 <script setup lang="ts">
 import CustomForm from './CustomForm.vue';
 import CampaignSelect from './CampaignSelect.vue';
+import CharacterIntro from './CharacterIntro.vue';
 import DlcSetup from './DlcSetup.vue';
 import GalleryScreen from './GalleryScreen.vue';
 import GateScreen from './GateScreen.vue';

@@ -2,7 +2,7 @@ import { OPENING_TEXTS, dlcPovByKey, povByKey, renderCustomOpening, renderDlcCus
 import { OPENING_DRAFT_MAX, parseOpeningDate, resolveOpeningText } from './openingDraft';
 import { showToast } from './toast';
 
-export type Step = 'gate' | 'intro' | 'title' | 'campaign' | 'mode' | 'pov' | 'custom' | 'dlc_setup' | 'save_import' | 'opening' | 'gallery' | 'done';
+export type Step = 'gate' | 'intro' | 'title' | 'campaign' | 'mode' | 'pov' | 'character_intro' | 'custom' | 'dlc_setup' | 'save_import' | 'opening' | 'gallery' | 'done';
 export type Mode = 'pov' | 'custom';
 export type CampaignId = 'main' | 'dlc_genderbend_hachiman' | 'dlc_body_swap_mrs_yukinoshita';
 export type DlcMind = 'hachiman' | 'mrs_yukinoshita';
@@ -452,6 +452,14 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
   }
 
   function toOpening() {
+    step.value = campaignId.value === 'main' && mode.value === 'pov' && selectedPov.value === 'laff'
+      ? 'character_intro'
+      : 'opening';
+  }
+
+  /** 专属 OP 结束或跳过只进入正文；不提交开局，不写游戏变量。 */
+  function finishCharacterIntro() {
+    if (step.value !== 'character_intro') return;
     step.value = 'opening';
   }
 
@@ -711,6 +719,7 @@ export const useOpeningStore = defineStore('counterfeit-opening', () => {
     toCustom,
     confirmCustom,
     toOpening,
+    finishCharacterIntro,
     commit,
   };
 });
